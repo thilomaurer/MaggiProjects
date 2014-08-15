@@ -1,0 +1,220 @@
+
+body, h1, h2, h3, h4 {
+margin: 0;
+padding: 0;
+cursor: default;
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Open Sans'), local('OpenSans'), url(cJZKeOuBrn4kERxqtaUH3T8E0i7KZn-EPnyo3HZu7kw.woff) format('woff'), url(https://themes.googleusercontent.com/static/fonts/opensans/v8/cJZKeOuBrn4kERxqtaUH3T8E0i7KZn-EPnyo3HZu7kw.woff) format('woff');
+}
+
+input {
+	font-family: 'Open Sans', sans-serif;
+	box-sizing: border-box;
+	font-size: 16px;
+	padding: 0px;
+	margin: 0px;
+}
+input::-moz-selection {
+	background:#29a1d3;
+}
+input::selection {
+	background:#29a1d3;
+}
+
+body {
+	font-family: 'Open Sans', sans-serif;
+}
+
+.preformatted {
+	outline: 1px solid #ccc; padding: 5px; margin: 5px; white-space: pre; font-family: "Courier New", monospace; background: #fff;
+}
+
+table {
+	border-collapse: collapse;
+	border-spacing:0px;
+}
+
+button {
+	text-align:center;
+	vertical-align:middle;
+	cursor:pointer;
+	border-radius:4px;
+	background:#525864;
+	padding:5px;
+	color:white;
+	border:0;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+button:hover {
+	box-shadow: 0px 1px 1px black;
+}
+
+button.red {
+	background: #ee4e10;
+}
+button.green {
+	background: #8ab71c;
+}
+button.blue {
+	background: #29a1d3;
+}
+button.yellow {
+	background: #f1b018;
+}
+button.inactive, button.disabled {
+	background: #888888 !important;
+	box-shadow: none;
+}
+
+.table > * {
+	display:table-row;
+}
+
+.table > * > * {
+	display:table-cell;
+}
+
+.popup .scroll {
+	height:400px;
+}
+
+#panes {
+	display:table;
+	width:100%;
+	table-layout:fixed;
+}
+
+.pane {
+	display:table-cell;
+	vertical-align:top;
+	width:128px;
+}
+
+.pane iframe {
+	width:100%;
+	height:600px;
+}
+
+.pane  .code #editor {
+	width:100%;
+	height:600px;
+}
+
+.pane #file {
+	display:inline-block;
+}
+.pane #mode {
+	display:inline-table;
+}
+.pane #menu {
+	padding-left:4px;
+	padding-right:4px;
+	display:inline-block;
+}
+
+.pane #menu:hover {
+	background:#ddd;
+}
+
+.code {
+	font-family: "Courier New", monospace; 
+	font-size:16px;
+	width:100%;
+}
+
+.code #editor {
+	font-family: "Courier New", monospace; 
+	font-size:16px;
+}
+
+iframe {
+	border:0;
+	background:white;
+}
+
+.code #annot {
+	height:100px;
+	padding:4px;
+}
+
+.code #annot > *:hover {
+	background:#ddd;
+}
+.code #annot > .selected {
+	background:#ddf;
+}
+
+.code #annot > * > * {
+	display:inline;
+}
+
+.code #annot > * > #row:after {
+	content:":";
+}
+
+.code #annot > * > #column {
+	padding-right:8px;
+}
+.code #annot > * > #type {
+	padding-right:8px;
+}
+
+.select {
+	display:table;
+	border:1px solid black;
+	border-radius:4px;
+}
+
+.select input {
+	display:none;
+}
+
+.select label {
+	color: black;
+	display:inline-block;
+	text-align:center;
+	padding:2px;
+}
+
+.select label:hover {
+	background:#888;
+}
+
+.select label:nth-child(2) {
+	border-top-left-radius:3px;
+	border-bottom-left-radius:3px;
+}
+
+.select label:last-child {
+	border-top-right-radius:3px;
+	border-bottom-right-radius:3px;
+}
+
+/*
+.select.items4 label  {
+	width:25%;
+}
+
+.select.items3 label {
+	width:33.3333333%;
+}
+
+.select.items2 label {
+	width:50%;
+}
+*/
+.select input:checked + label {
+	background:black;
+	color:white;
+}

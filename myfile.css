@@ -1,0 +1,62 @@
+#files.list {
+	text-align:left;
+}
+
+.popup {
+	background:white;
+	padding:16px;
+	border-radius:8px;
+	border:1px solid gray;
+	box-shadow: 0px 1px 1px black;
+}
+
+.list> .myfile:first-child {
+	border-top:1px solid gray;
+}
+
+.list > .myfile > #name {
+	border-bottom:1px solid gray;
+	padding-left:0;
+}
+.list > .myfile:last-child > #name {
+	border-bottom:0;
+}
+
+.list > .myfile:last-child {
+	border-bottom:1px solid gray;
+}
+
+.myfile.selected {
+	background:#ddf;
+}
+
+.myfile:hover {
+	background:#ddd;
+}
+
+.myfile.selected:hover {
+	background:#ccf;
+}
+
+.myfile img {
+	display:block;
+	width:100%;
+}
+
+.myfile > #type {
+	vertical-align: bottom;
+	width:24px;
+}
+
+.myfile > * {
+	display:inline-block;
+	padding:6px;
+}
+
+.myfile.directory > #type {
+	content:"X";
+}
+
+.myfile > #files {
+	padding-left:16px;
+}
