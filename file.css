@@ -10,53 +10,53 @@
 	box-shadow: 0px 1px 1px black;
 }
 
-.list> .myfile:first-child {
+.list> .file:first-child {
 	border-top:1px solid gray;
 }
 
-.list > .myfile > #name {
+.list > .file > #name {
 	border-bottom:1px solid gray;
 	padding-left:0;
 }
-.list > .myfile:last-child > #name {
+.list > .file:last-child > #name {
 	border-bottom:0;
 }
 
-.list > .myfile:last-child {
+.list > .file:last-child {
 	border-bottom:1px solid gray;
 }
 
-.myfile.selected {
+.file.selected {
 	background:#ddf;
 }
 
-.myfile:hover {
+.file:hover {
 	background:#ddd;
 }
 
-.myfile.selected:hover {
+.file.selected:hover {
 	background:#ccf;
 }
 
-.myfile img {
+.file img {
 	display:block;
 	width:100%;
 }
 
-.myfile > #type {
+.file > #type {
 	vertical-align: bottom;
 	width:24px;
 }
 
-.myfile > * {
+.file > * {
 	display:inline-block;
 	padding:6px;
 }
 
-.myfile.directory > #type {
+.file.directory > #type {
 	content:"X";
 }
 
-.myfile > #files {
+.file > #files {
 	padding-left:16px;
 }
