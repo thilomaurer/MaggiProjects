@@ -1,4 +1,20 @@
-.ide > #project > #name {
+.ide > #projectname {
 	font-size:20px;
 	padding:8px;
+}
+
+#project #revision:before {
+	content: "revision ";
+}
+
+#project #revisions .selected {
+	background: #ccf;
+}
+
+.ide > #projectname, .ide > #project, .ide > #addpane {
+	display:inline-block;
+}
+
+.project > * {
+	display:inline-block;
 }

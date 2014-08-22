@@ -34,6 +34,9 @@ var panedata=function() {
 			files: files
 		}
 	});
+	p.bind(function(k,v) {
+		if (k=="files") p.preview.files=v;
+	});
 	p.actions.add("renamefile",function() {
 		var f=p.file;
 		var newname=prompt("Please enter new name for file '"+f.name+"'", f.name);
@@ -93,11 +96,17 @@ var paneui = function() {
 				data.preview.file=data.file; 
 				data.editor.file=data.file;
 			};
-			data.bind(function(k,v) {
-				if (k=="file") updateFile();
-				if (k=="mode") ui.order=modeorder[v];
-			});
+			var handlers={
+				set:function(k,v) {
+					if (k=="file") updateFile();
+					if (k=="mode") ui.order=modeorder[v];
+				}
+			};
+			data.bind(handlers.set);
 			ui.order=modeorder[data.mode];
+			dom._MaggdiUnbind=function() {
+				data.unbind(handlers.set);
+			};
 		}
 	});
 }
