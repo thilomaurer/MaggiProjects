@@ -54,18 +54,15 @@ Maggi.UI.iframe=function(ui,s,sets,format) {
 		}
 		doc.close();
 
-		var m=ui._Maggi[0];
-		if (m) {
-			var cw=m.contentWindow;
-			if (cw) {
-				var d=cw.document;
-				if (d) {
-					d.open();
-					d.write(doc.documentElement.outerHTML);
-					d.close();
-				} 
-			} else console.log("iframe has no contentWindow");
-		}
+		var cw=iframe[0].contentWindow;
+		if (cw) {
+			var d=cw.document;
+			if (d) {
+				d.open();
+				d.write(doc.documentElement.outerHTML);
+				d.close();
+			} 
+		} else console.log("iframe has no contentWindow");
 	};
 
 	var updateFile = function(file) {
@@ -79,22 +76,19 @@ Maggi.UI.iframe=function(ui,s,sets,format) {
 
 	var sethandler=function(k,v) {
 		if (k=="file") makedocument();
-		//if (k[0]=="file"||k=="file"||k=="files") makedocument();
 		if (k[0]=="files"&&k[2]=="data") updateFile(s.files[k[1]]);
 	};
 
-	if (!ui._Maggi) {
-		Maggi.UI.BaseFunctionality(ui,format);
-		ui._Maggi=$('<iframe>', {name:s.name}).appendTo(ui);
-		s.bind("set", sethandler); 
-		s.bind("add", makedocument);
-		var unbind = function() {
-			s.unbind("set",sethandler);
-			s.unbind("add",makedocument);
-		}
-		ui._MaggiUnbind=unbind;
-	}
+	Maggi.UI.BaseFunctionality(ui,format);
+	var iframe=$('<iframe>', {name:s.name}).appendTo(ui);
 
+	s.bind("set", sethandler); 
+	s.bind("add", makedocument);
+	var unbind = function() {
+		s.unbind("set",sethandler);
+		s.unbind("add",makedocument);
+	}
 	makedocument();
+	return unbind;
 };
 
