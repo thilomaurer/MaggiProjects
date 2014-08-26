@@ -1,13 +1,21 @@
 .ide > #projectname {
-	font-size:20px;
+	font-size:24px;
 	padding:8px;
 }
 
-#project #revision:before {
+.project #revision:hover {
+	background: #ddd;
+}
+
+#projectname:hover {
+	background: #ddd;
+}
+
+.project #revision:before {
 	content: "revision ";
 }
 
-#project #revisions .selected {
+.project #revisions .selected {
 	background: #ccf;
 }
 
@@ -17,4 +25,13 @@
 
 .project > * {
 	display:inline-block;
+}
+
+
+.project_info #name {
+	font-size:20px;
+}
+
+#projects > *:hover {
+	background: #ddd;
 }

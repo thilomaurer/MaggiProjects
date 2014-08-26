@@ -1,4 +1,5 @@
 Maggi.UI.editor=function(dom,data,setdata,ui) {
+	backbuild_base=Maggi.UI.BaseFunctionality(dom,ui);
 	var d=Maggi({editor:"",annot:{}});
 	var fmt=Maggi({
 		type:"object",
@@ -34,11 +35,13 @@ Maggi.UI.editor=function(dom,data,setdata,ui) {
 	var disableEvents=false; //hack to work around ACE issue.
 
 	function updateMode() {
-		var type=data.file.type;
 		var mode="text";
-		if (type=="js") mode="javascript";
-		if (type=="css") mode="css";
-		if (type=="html") mode="html";
+		if (data.file) {
+			var type=data.file.type;
+			if (type=="js") mode="javascript";
+			if (type=="css") mode="css";
+			if (type=="html") mode="html";
+		}
 		editor.getSession().setMode("ace/mode/"+mode);
 	}
 
@@ -53,12 +56,17 @@ Maggi.UI.editor=function(dom,data,setdata,ui) {
 	});	
 
 	var updateText = function() {
-		if (editor.getValue()==data.file.data) return;
+		var text=null;
+		if (data.file) {
+			var text=data.file.data;
+			if (editor.getValue()==text) return;
+		}
 		disableEvents=true; //hack to work around ACE issue.
-		editor.setValue(data.file.data);
-		isableEvents=false;
+		editor.setValue(text);
+		disableEvents=false;
 	};
 	var updateCursor = function() {
+		if (data.file==null) return;
 		var op=editor.getCursorPosition();
 		var c=data.file.cursor;
 		if ((c.row==op.row)&&(c.column==op.column)) return;
@@ -66,19 +74,27 @@ Maggi.UI.editor=function(dom,data,setdata,ui) {
 		editor.selection.setSelectionRange({start:c,end:c},false);
 		disableEvents=false;
 	};
+	var updateFile = function() {
+		var file=data.file;
+		editor.setReadOnly(file==null);
+		updateText();
+		updateMode();
+		updateCursor();
+	};
 	var sethandler=function(k,v) {
-		if (k=="file") { updateMode(); updateText(); updateCursor(); }
+		if (k=="file") updateFile(); 
 		if (k[0]=="file"&&k[1]=="type") updateMode();
 		if (k[0]=="file"&&k[1]=="data") updateText();
 		if (k[0]=="file"&&k[1]=="cursor") updateCursor();
 	};
 	data.bind(sethandler);
 	fmt.children.annot.bind(annotsethandler);
-	sethandler("file",data.file);
+	updateFile();
 	return function() {
 		data.unbind(sethandler);
 		fmt.children.annot.unbind(annotsethandler);
 		editor.destroy();
 		if (backbuild) backbuild();
+		backbuild_base();
 	}
 };

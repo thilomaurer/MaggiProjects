@@ -3,7 +3,12 @@ var filesui=function() {
 		type:"list",
 		childdefault:fileui,
 		select:"single",
-		selected:""
+		selected:"",
+		builder:function(dom,data,ui) {
+			var empty=(data==null);
+			if (empty) empty=(Object.keys(data.files).length==0);
+			if (empty) dom.text("<no files>");
+		}
 	});
 };
 
@@ -16,6 +21,10 @@ var fileui=function() {
 		},
 		order:["type","name"],
 		class:"file",
+		builder:function(dom,data,ui) {
+			if (data==null) 
+				dom.text("<no file>");
+		}
 	});
 };
 
@@ -104,7 +113,7 @@ var paneui = function() {
 			};
 			data.bind(handlers.set);
 			ui.order=modeorder[data.mode];
-			dom._MaggdiUnbind=function() {
+			return function() {
 				data.unbind(handlers.set);
 			};
 		}

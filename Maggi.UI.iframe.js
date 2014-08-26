@@ -79,7 +79,7 @@ Maggi.UI.iframe=function(ui,s,sets,format) {
 		if (k[0]=="files"&&k[2]=="data") updateFile(s.files[k[1]]);
 	};
 
-	Maggi.UI.BaseFunctionality(ui,format);
+	backbuild_base=Maggi.UI.BaseFunctionality(ui,format);
 	var iframe=$('<iframe>', {name:s.name}).appendTo(ui);
 
 	s.bind("set", sethandler); 
@@ -87,6 +87,7 @@ Maggi.UI.iframe=function(ui,s,sets,format) {
 	var unbind = function() {
 		s.unbind("set",sethandler);
 		s.unbind("add",makedocument);
+		backbuild_base();
 	}
 	makedocument();
 	return unbind;

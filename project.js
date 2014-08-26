@@ -37,6 +37,8 @@ var project=function() {
 				revision:newid,
 				name:fromrev.name,
 				started:new Date(),
+				completed:null,
+				committer:null,
 				parentrevision:fromid,
 				files:JSON.parse(JSON.stringify(fromrev.files))
 			};
@@ -95,10 +97,8 @@ var demoproject=function(complete) {
 		data.commitnbranch();
 		data.view.panes.add(0,{fileid:4,mode:"edit"});
 		data.view.panes.add(1,{fileid:6,mode:"preview"});
-		complete();
+		complete(data);
 	}
-
-	return data;
 };
 
 
@@ -124,9 +124,30 @@ var projectui=function() {
 		},
 		class:"project",
 		builder:function(dom,data,ui) {
-			ui.children.revisions.bind(function(k,v) {
+			revsethandler=function(k,v) {
 				if (k=="selected") { ui.children.revisions.visible=false; data.view.revision=v; }
-			});		
+			};		
+			ui.children.revisions.bind(revsethandler);
+			return function() {
+				ui.children.revisions.unbind(revsethandler);
+			}
+		}
+	};
+}
+
+var projectui_info=function() {
+	return {
+		type:"object",
+		children:{
+			name: {type:"text"},
+			view: {type:"object",children:{revision:{type:"text"}}},
+		},
+		class:"project_info",
+		builder:function(dom,data,ui) {
+			var rev=data.view.revision;
+			var name=data.revisions[rev].name;
+			var d=Maggi({name:name,date:new Date()});
+			Maggi.UI(dom,d,{type:"object",children:{name:{type:"text"},date:{type:"text"}}});
 		}
 	};
 }

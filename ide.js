@@ -61,10 +61,13 @@ var main = function() {
 			v.actions.add("closepane",function() {data.panes.remove(k);});
 		});
 
-		var project=demoproject(function() {
+		demoproject(function(project) {
 			data.projects.add(0,project);
 			data.project=project;
 		});
+		var p=project();
+		p.revisions[0].name="Empty Project";
+		data.projects.add(1,p);
 
 		return data;
 	};
@@ -76,6 +79,14 @@ var main = function() {
 			children:{
 				projectname: {type: "text"},
 				project: projectui,
+				projects: {
+					type:"list",
+					popup:true,
+					popuptrigger:"projectname",
+					childdefault:projectui_info,
+					select:"single",
+					selected:null
+				},
 				addpane: {type:"function",label:"Add Pane"},
 				panes: { 
 					type:"object",
