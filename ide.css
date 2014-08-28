@@ -3,35 +3,79 @@
 	padding:8px;
 }
 
-.project #revision:hover {
+.ide > #projectname:hover {
 	background: #ddd;
-}
-
-#projectname:hover {
-	background: #ddd;
-}
-
-.project #revision:before {
-	content: "revision ";
-}
-
-.project #revisions .selected {
-	background: #ccf;
 }
 
 .ide > #projectname, .ide > #project, .ide > #addpane {
 	display:inline-block;
 }
 
+
+
+
+.project #view #revision:hover {
+	background: #ddd;
+}
+
+.project #view #revision {
+	padding:4px;
+}
+
+.project #view #revision:before {
+	content: "revision ";
+}
+
+
+
+
+.project #revisions .selected {
+	background: #ccf;
+}
+
+
+
 .project > * {
 	display:inline-block;
 }
-
 
 .project_info #name {
 	font-size:20px;
 }
 
-#projects > *:hover {
-	background: #ddd;
+.list > .project_info {
+	border-top:1px solid gray;
+	padding:4px;
 }
+
+.list > .project_info:last-child {
+	border-bottom:1px solid gray;
+}
+
+.list > .project_info.selected {
+	background:#ddf;
+}
+
+.list > .project_info:hover {
+	background:#ddd;
+}
+
+.list > .project_info.selected:hover {
+	background:#ccf;
+}
+
+
+#projectmenu button {
+	font-size:20px;
+	width:100%;
+	margin-bottom:20px;
+}
+
+.revision > #committer, .revision > #started, .revision > #completed, .revision > #revision {
+	display:inline;
+}
+.revision > #started:before {
+	content:'\A';
+	white-space:pre;
+}
+

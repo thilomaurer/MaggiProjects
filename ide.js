@@ -1,5 +1,16 @@
 var main = function() {
 
+moment.locale('en', {
+    calendar : {
+        lastDay : '[Yesterday at] LT',
+        sameDay : '[Today at] LT',
+        nextDay : '[Tomorrow at] LT',
+        lastWeek : '[last] dddd [at] LT',
+        nextWeek : 'dddd [at] LT',
+        sameElse : 'llll'
+    }
+});
+
 	var data = function() {
 
 		var addpane=function() {
@@ -16,10 +27,27 @@ var main = function() {
 				data.panes.remove(k);
 		};
 
+		var projects=Maggi({});
+
+		var addproject=function(project) {
+			var n=Object.keys(data.projects).length;
+			data.projects.add(n,project);
+		};
+
+		var addnewproject=function() {
+			var p=project();
+			p.branch();
+			addproject(p);
+		};
+
 		var data=Maggi({
 			projectname: null,
+			projectmenu: {
+				addnewproject:addnewproject,
+				projects:projects
+			},
 			project: null,
-			projects: {},
+			projects: projects,
 			addpane: addpane,
 			panes: {}
 		});
@@ -28,11 +56,12 @@ var main = function() {
 		 	var prj=data.project;
 
 			var loadrevision = function() {
+				removeallpanes();
 				var view=prj.view;
 				var revid=view.revision;
+				if (revid==null) {data.projectname="empty project"; return; }
 				var rev=prj.revisions[revid];
 				data.projectname=rev.name;
-				removeallpanes();
 				for (var idx in view.panes) {
 					var p=view.panes[idx];
 					var pane=addpane();
@@ -42,7 +71,7 @@ var main = function() {
 			};
 			if (prj==null) {
 				removeallpanes();
-				data.projectname=null;
+				data.projectname="<no project>";
 			} else {
 				prj.view.bind(function(k,v) {
 					if (k=="revision") loadrevision(); 
@@ -62,12 +91,10 @@ var main = function() {
 		});
 
 		demoproject(function(project) {
-			data.projects.add(0,project);
-			data.project=project;
+			var n=Object.keys(data.projects).length;
+			data.projects.add(n,project);
 		});
-		var p=project();
-		p.revisions[0].name="Empty Project";
-		data.projects.add(1,p);
+		loadproject();
 
 		return data;
 	};
@@ -79,13 +106,19 @@ var main = function() {
 			children:{
 				projectname: {type: "text"},
 				project: projectui,
-				projects: {
-					type:"list",
+				projectmenu: {
+					type: "object",
 					popup:true,
 					popuptrigger:"projectname",
-					childdefault:projectui_info,
-					select:"single",
-					selected:null
+					children: {
+						addnewproject:{type:"function",label:"Create new project"},
+						projects: {
+							type:"list",
+							childdefault:projectui_info,
+							select:"single",
+							selected:null
+						}
+					}
 				},
 				addpane: {type:"function",label:"Add Pane"},
 				panes: { 
@@ -93,7 +126,21 @@ var main = function() {
 					childdefault: paneui,
 				}
 			},
-			class:"ide"
+			class:"ide",
+			builder: function(dom,data,ui) {
+				var pm=ui.children.projectmenu;
+				var ps=pm.children.projects;
+				projectshandler = function(k,v) {
+					if (k=="selected") {
+						data.project=data.projects[v];
+						pm.visible=false;
+					}
+				};
+				ps.bind(projectshandler);
+				return function() {
+					ps.unbind(projectshandler);
+				};
+			}
 		};
 	};
 

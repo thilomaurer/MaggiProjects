@@ -10,7 +10,7 @@
 	box-shadow: 0px 1px 1px black;
 }
 
-.list> .file:first-child {
+.list > .file:first-child {
 	border-top:1px solid gray;
 }
 
