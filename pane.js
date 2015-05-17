@@ -49,8 +49,8 @@ var panedata=function() {
 	p.actions.add("renamefile",function() {
 		var f=p.file;
 		var newname=prompt("Please enter new name for file '"+f.name+"'", f.name);
-		f.name=newname;
-		//p.actions.visible
+		if (newname!=null) f.name=newname;
+		//p.actions.visible=false;
 	});
 	return p;
 };
@@ -64,17 +64,18 @@ var paneui = function() {
 		children:{
 			file:fileui,
 			files:fui,
-			mode:{type:"select",choices:["edit","preview"],class:"items2"},
+			mode:{type:"select",choices:{edit:{label:"edit"},preview:{label:"preview"}}},
 			menu:{type:"text"},
 			actions: {
 				type:"object",
-				popup:"true", popuptrigger:"menu",
+				popup:true, popuptrigger:"menu",
 				children: {
-					closepane:{type:"function",label:"close pane"},
-					renamefile:{type:"function",label:"rename file"}
+					close:{type:"function",label:"close pane", class:"button blue"},
+					detach:{type:"function",label:"detach pane", class:"button blue"},
+					renamefile:{type:"function",label:"rename file", class:"button blue"}
+					
 				}
 			},
-			closepane:{type:"function",label:"X"},
 			editor: {type:"editor"},
 			preview: {type:"iframe"}
 		},
@@ -98,8 +99,8 @@ var paneui = function() {
 				if (k=="selected") openfile(data.files[v]);
 			});
 			var modeorder={
-				edit:["file","files","mode","menu","actions","editor"],
-				preview:["file","files","mode","menu","actions","preview"]
+				edit:["menu","file","files","mode","actions","editor"],
+				preview:["menu","file","files","mode","actions","preview"]
 			};
 			var updateFile = function() {
 				data.preview.file=data.file; 

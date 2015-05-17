@@ -1,0 +1,58 @@
+.mui input {
+	font-size:18px;
+}
+
+.mui .input {
+	border: 1px solid transparent;
+	border-radius: 4px;
+	background: #24252a;
+	color: white;
+	padding:4px;
+}
+
+.mui .input > #prefix {
+	float:left;
+}
+
+.mui .input > #postfix {
+	float:right;
+}
+
+.mui .input > #midfix {
+	overflow:hidden;
+	display:block;
+}
+
+.mui .input input {
+	width: 100%;
+	border-radius: 4px;
+	background: transparent;
+	color: inherit;
+	outline: none;
+	border: 0px solid #29a1d3;
+}
+
+.mui .input.focused {
+	border: 1px solid #29a1d3;
+	box-shadow: 0 0 0 1px #29a1d3;
+}
+
+.mui .input > div.spinner {
+	width: 20px !important;
+	height: 20px !important;
+	position: relative;
+	top: 4px;
+	margin-right: 5px;
+}
+
+.mui .input.first {
+	margin-bottom:0px;
+	border-bottom-left-radius:0px;
+	border-bottom-right-radius:0px;
+}
+
+.mui .input + .input {
+	margin-top:1px;
+	border-top-left-radius:0px;
+	border-top-right-radius:0px;
+}

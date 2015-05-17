@@ -4,13 +4,31 @@
 
 .popup {
 	background:white;
-	padding:16px;
 	border-radius:8px;
 	border:1px solid gray;
 	box-shadow: 0px 1px 1px black;
 }
 
-.list> .file:first-child {
+.popup > .popup-triangle-wrapper {
+	position: fixed;
+	overflow: hidden;
+	height:17px;
+	margin: 0px;
+	margin-top:-17px;
+	padding: 0px;
+}
+
+.popup > .popup-triangle-wrapper > .popup-triangle-inner {
+	margin:5.142135624px;
+	width: 22.627px;
+	height: 22.627px;
+	border: 1px solid gray;
+	transform: rotate(45deg);
+	transform-origin: 50% 50%;
+	background: white;
+}
+
+.list > .file:first-child {
 	border-top:1px solid gray;
 }
 
@@ -50,7 +68,7 @@
 
 .file > * {
 	display:inline-block;
-	padding:6px;
+	padding:5px;
 }
 
 .file.directory > #type {

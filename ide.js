@@ -1,4 +1,4 @@
-var main = function() {
+var ide = function(dom,oprojects) {
 
 	var data = function() {
 
@@ -23,6 +23,7 @@ var main = function() {
 			addpane: addpane,
 			panes: {}
 		});
+		if (oprojects!=null) data.projects=oprojects;
 
 		var loadproject = function() {
 		 	var prj=data.project;
@@ -52,7 +53,7 @@ var main = function() {
 		};
 
 
-		data.bind(function(k,v) {
+		data.bind("set",function(k,v) {
 			if (k=="project") loadproject();
 		});
 
@@ -60,19 +61,11 @@ var main = function() {
 			if (k instanceof Array) return;
 			v.actions.add("closepane",function() {data.panes.remove(k);});
 		});
-
-		demoproject(function(project) {
-			data.projects.add(0,project);
-			data.project=project;
-		});
-		var p=project();
-		p.revisions[0].name="Empty Project";
-		data.projects.add(1,p);
-
 		return data;
 	};
 
 	var d = data();
+
 	var ui = function() {
 		return {
 			type:"object",
@@ -85,9 +78,17 @@ var main = function() {
 					popuptrigger:"projectname",
 					childdefault:projectui_info,
 					select:"single",
-					selected:null
+					selected:null,
+					builder:function(dom,data,ui) {
+						ui.bind("set",function(k,v) {
+							if (k=="selected") {
+								d.project=d.projects[v];
+								ui.visible=false;
+							}
+						});
+					}
 				},
-				addpane: {type:"function",label:"Add Pane"},
+				addpane: {type:"function",label:"Add Pane",class:"button blue"},
 				panes: { 
 					type:"object",
 					childdefault: paneui,
@@ -97,6 +98,6 @@ var main = function() {
 		};
 	};
 
-	var dom=$('body');
 	Maggi.UI(dom,d,ui);
+	return d;
 }

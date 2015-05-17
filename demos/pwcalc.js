@@ -1,14 +1,12 @@
-function main() {
+var pwcalc=function(dom) {
 	var data=Maggi({
-		header:"Password Calculator",
 		alias:"",
 		secret:"",
 		password:""
 	});
 
-	data.bind(function(k,v) {
-		if (k=="alias"||k=="secret")
-			data.password=calcPassword(data.alias,data.secret);
+	data.bind("set",["alias","secret"],function(k,v) {
+		data.password=calcPassword(data.alias,data.secret);
 	});
 
 	var calcPassword = function(alias,secret) {
@@ -20,21 +18,15 @@ function main() {
 
 	var ui=Maggi({
 		type:"object",
-		childdefault: {type:"text"},
 		children: {
-			alias: {type:"input", placeholder:"alias", class:""},
-			secret: {type:"input", placeholder:"secret", class:"", kind:"password"}
-		},
-		builder: function(dom,data,ui) {
-		var validate=function(k,v) {
-		    if (k=="alias"||k=="secret")
-			ui.children[k].class=(data[k]==="")?"redborder":"";
-		    };
-		    data.bind(validate);
-		    validate("alias");
-		    validate("secret");
+			header: {type:"label", label:"Password Calculator"},
+			alias:  {type:"input", placeholder:"alias"},
+			secret: {type:"input", placeholder:"secret", kind:"password"},
+			password: "text"
 		}
 	});
 
 	Maggi.UI($('body'),data,ui);
-}
+};
+
+main=pwcalc;

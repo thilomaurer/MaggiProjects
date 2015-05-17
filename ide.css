@@ -25,6 +25,7 @@
 
 .project > * {
 	display:inline-block;
+	margin-right:10px;
 }
 
 
@@ -34,4 +35,23 @@
 
 #projects > *:hover {
 	background: #ddd;
+}
+
+#panes {
+	display:table;
+	width:100%;
+	table-layout:fixed;
+}
+
+#panes > .pane {
+  border-left: 1px solid black;
+}
+
+#panes > .pane:first-child {
+  border-left: none;
+}
+
+iframe {
+	border:0;
+	background:white;
 }

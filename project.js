@@ -61,46 +61,6 @@ var project=function() {
 	return data;
 };
 
-var demoproject=function(complete) {
-	var data=project();
-	var rev=0;
-	data.user.name="Thilo Maurer";
-	data.user.email="username@domain";
-	data.revisions[rev].name="Password Calculator";
-	rev=data.commitnbranch();
-
-	var sources = [
-		"jquery-2.0.3.js",
-		"Maggi.js",
-		"Maggi.UI.js",
-		"Maggi.UI.css",
-		"demos/pwcalc.js",
-		"demos/pwcalc.css",
-		"demos/pwcalc.html",
-		"demos/utils.js"
-	];
-	var files=data.revisions[rev].files;
-	$.each(sources, function(idx,k) {
-		var parts=k.split(".");
-		var type="text";
-		if (parts.length>0) type=parts[parts.length-1];
-		$.get( k, null, function(rawdata) {
-			var file={name:k,type:type,data:rawdata,cursor:{row:0,column:0}};
-			data.addfile(file);
-		},"text");
-	});
-	files.bind("add",function(k,v) {
-		if (Object.keys(files).length==sources.length) filesloaded();
-	});
-
-	var filesloaded = function() {
-		data.commitnbranch();
-		data.view.panes.add(0,{fileid:4,mode:"edit"});
-		data.view.panes.add(1,{fileid:6,mode:"preview"});
-		complete(data);
-	}
-};
-
 
 var projectui=function() {
 	return {
@@ -120,7 +80,7 @@ var projectui=function() {
 				select:"single",
 				selected:null
 			},
-			commitnbranch: {type:"function",label:"commit revision"},
+			commitnbranch: {type:"function",label:"commit revision",class:"button blue"},
 		},
 		class:"project",
 		builder:function(dom,data,ui) {
@@ -139,18 +99,49 @@ var projectui_info=function() {
 	return {
 		type:"object",
 		children:{
-			name: {type:"text"},
-			view: {type:"object",children:{revision:{type:"text"}}},
+			//name: {type:"text"},
+			//view: {type:"object",children:{revision:{type:"text"}}},
 		},
 		class:"project_info",
 		builder:function(dom,data,ui) {
 			var rev=data.view.revision;
 			var name=data.revisions[rev].name;
 			var d=Maggi({name:name,date:new Date()});
-			Maggi.UI(dom,d,{type:"object",children:{name:{type:"text"},date:{type:"text"}}});
+			Maggi.UI(dom,d,{type:"object",children:{name:{type:"text"}/*,date:{type:"text"}*/}});
 		}
 	};
 }
 
 
+
+var initproject=function(username,email,name,sources,complete) {
+	var data=project();
+	var rev=0;
+	data.user.name=username;
+	data.user.email=email;
+	data.revisions[rev].name=name;
+	rev=data.commitnbranch();
+
+	var files=data.revisions[rev].files;
+	var nfloaded=0;
+	$.each(sources, function(idx,k) {
+		var parts=k.split(".");
+		var type="text";
+		if (parts.length>0) type=parts[parts.length-1];
+		var file=Maggi({name:k,type:type,data:null,cursor:{row:0,column:0}});
+		data.addfile(file);
+		$.get( k, null, function(rawdata) {
+			file.data=rawdata;
+			nfloaded++;
+			if (nfloaded==sources.length) filesloaded();
+		},"text");
+	});
+
+	var filesloaded = function() {
+		data.commitnbranch();
+		data.view.panes.add(0,{fileid:0,mode:"edit"});
+		data.view.panes.add(1,{fileid:0,mode:"preview"});
+		complete(data);
+	}
+};
 
