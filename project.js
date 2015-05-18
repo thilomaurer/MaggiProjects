@@ -140,7 +140,8 @@ var initproject=function(username,email,name,sources,complete) {
 	var filesloaded = function() {
 		data.commitnbranch();
 		data.view.panes.add(0,{fileid:0,mode:"edit"});
-		data.view.panes.add(1,{fileid:0,mode:"preview"});
+		data.view.panes.add(1,{fileid:1,mode:"edit"});
+		data.view.panes.add(2,{fileid:0,mode:"preview"});
 		complete(data);
 	}
 };

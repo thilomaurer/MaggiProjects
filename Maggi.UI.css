@@ -62,7 +62,7 @@
 }
 
 .popup.mui > .popup-triangle-wrapper {
-	position: fixed;
+	//position: fixed;
 	overflow: hidden;
 	height:17px;
 	margin: 0px;

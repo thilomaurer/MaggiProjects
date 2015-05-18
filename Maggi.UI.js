@@ -68,6 +68,10 @@ Maggi.UI.BaseFunctionality=function(dom,format) {
 			var top=outer.top+pad(dom,"top");
 			var bottom=outer.bottom-pad(dom,"bottom");
 			var right=outer.right-pad(dom,"right");
+			top=top+window.scrollY;
+			bottom=bottom+window.scrollY;
+			left=left+window.scrollX;
+			right=right+window.scrollX;
 			return {left:left,right:right,top:top,bottom:bottom};
 		}
 

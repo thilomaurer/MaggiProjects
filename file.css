@@ -6,11 +6,11 @@
 	background:white;
 	border-radius:8px;
 	border:1px solid gray;
-	box-shadow: 0px 1px 1px black;
+	box-shadow: 0px 0px 100px rgba(0,0,0,0.5);
 }
 
 .popup > .popup-triangle-wrapper {
-	position: fixed;
+	//position: fixed;
 	overflow: hidden;
 	height:17px;
 	margin: 0px;
