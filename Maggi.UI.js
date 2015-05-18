@@ -372,9 +372,16 @@ Maggi.UI.object=function(dom,data,setdata,ui,datachange) {
 		return fmt;
 	};
 	var update=function(k,v) {
-		if (k instanceof Array) return;
-		if (sethandler[k]) 
-			sethandler[k](v);
+		if (!(k instanceof Array)) {
+			if (sethandler[k]) 
+				sethandler[k](v);
+		}
+		/*
+		if ((ui.bubbleupdate==true)&&(k instanceof Array)) {
+			k=k[0];
+			if (sethandler[k]) 
+				sethandler[k](v);
+		}*/
 	};
 	var make=function(k) {
 		if (backbuild[k]) 

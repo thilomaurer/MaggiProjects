@@ -1,4 +1,4 @@
-var ide = function(dom,oprojects) {
+var ide = function(dom,odata,setdata,oui,datachange) {
 
 	var data = function() {
 
@@ -23,7 +23,7 @@ var ide = function(dom,oprojects) {
 			addpane: addpane,
 			panes: {}
 		});
-		if (oprojects!=null) data.projects=oprojects;
+		if (odata!=null) data.projects=odata;
 
 		var loadproject = function() {
 		 	var prj=data.project;
@@ -92,11 +92,23 @@ var ide = function(dom,oprojects) {
 				panes: { 
 					type:"object",
 					childdefault: paneui,
-				}
+				},
 			},
+			order:[],
 			class:"ide"
 		};
 	};
+	ui=ui();
+
+	oui.bind("set","projectid",function(k,v) {
+		d.project=d.projects[v];
+	});
+	oui.bind("set","panesonly",function(k,v) {
+		if (v) 
+			ui.order=["addpane","panes"];
+	});
+	if (oui.panesonly) 
+		ui.order=["addpane","panes"];
 
 	Maggi.UI(dom,d,ui);
 	return d;
