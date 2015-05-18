@@ -100,14 +100,14 @@ var ide = function(dom,odata,setdata,oui,datachange) {
 	};
 	ui=ui();
 
-	oui.bind("set","projectid",function(k,v) {
+	if (oui) oui.bind("set","projectid",function(k,v) {
 		d.project=d.projects[v];
 	});
-	oui.bind("set","panesonly",function(k,v) {
+	if (oui) oui.bind("set","panesonly",function(k,v) {
 		if (v) 
 			ui.order=["addpane","panes"];
 	});
-	if (oui.panesonly) 
+	if (oui) if (oui.panesonly) 
 		ui.order=["addpane","panes"];
 
 	Maggi.UI(dom,d,ui);
