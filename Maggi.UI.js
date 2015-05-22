@@ -156,8 +156,13 @@ Maggi.UI.text=function(dom,data,sets,ui,onDataChange) {
 	var build=function(data) {
 		var s="(null)";
 		if (data!=null) { 
-			if (ui.format) 
-				s=vsprintf(ui.format,[data]) 
+			if (ui.format) {
+				if (data instanceof Object)
+					data=Object.keys(data).map(function (key) {return data[key]});
+				else 
+					data=[data];
+				s=vsprintf(ui.format,data) 
+			}
 			else 
 				s=data.toString();
 		}

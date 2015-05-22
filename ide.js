@@ -108,7 +108,7 @@ var ide = function(dom,odata,setdata,oui,datachange) {
 			ui.order=["addpane","panes"];
 	});
 	if (oui) if (oui.panesonly) 
-		ui.order=["addpane","panes"];
+		ui.order=["panes"];
 
 	Maggi.UI(dom,d,ui);
 	return d;
