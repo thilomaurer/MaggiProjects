@@ -94,8 +94,8 @@ var ide = function(dom,odata,setdata,oui,datachange) {
 					childdefault: paneui,
 				},
 			},
-			order:[],
-			class:"ide"
+			order:null,
+			class:"ide mui-light"
 		};
 	};
 	ui=ui();
@@ -105,7 +105,7 @@ var ide = function(dom,odata,setdata,oui,datachange) {
 	});
 	if (oui) oui.bind("set","panesonly",function(k,v) {
 		if (v) 
-			ui.order=["addpane","panes"];
+			ui.order=["panes"];
 	});
 	if (oui) if (oui.panesonly) 
 		ui.order=["panes"];
