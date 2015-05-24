@@ -41,7 +41,7 @@
 }
 
 .list > .file:last-child {
-	border-bottom:1px solid gray;
+//	border-bottom:1px solid gray;
 }
 
 .file.selected {
@@ -68,7 +68,7 @@
 
 .file > * {
 	display:inline-block;
-	padding:6px;
+	padding:5px;
 }
 
 .file.directory > #type {
