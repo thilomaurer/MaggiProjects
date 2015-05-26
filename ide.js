@@ -7,6 +7,10 @@ var ide = function(dom,odata,setdata,oui,datachange) {
 			var pane=panedata();
 			var rev=data.project.view.revision;
 			pane.files=data.project.revisions[rev].files;
+			pane.key=n;
+			pane.bind("add","removenow",function(k,v) {
+				data.panes.remove(pane.key);
+			});
 			data.panes.add(n,pane);
 			return pane;
 		};

@@ -46,6 +46,9 @@ var panedata=function() {
 	p.bind(function(k,v) {
 		if (k=="files") p.preview.files=v;
 	});
+	p.actions.add("close",function() {
+		p.add("removenow",true);
+	});
 	p.actions.add("renamefile",function() {
 		var f=p.file;
 		var newname=prompt("Please enter new name for file '"+f.name+"'", f.name);
