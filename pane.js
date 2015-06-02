@@ -79,12 +79,23 @@ var paneui = function() {
 					
 				}
 			},
-			editor: {type:"editor"},
-			preview: {type:"iframe"}
+			//editor: {type:"editor"},
+			editor_actions:{type:"object",children:{
+			}},
+			//preview: {type:"iframe"},
+			preview_actions:{
+				type:"object",
+				data:{},
+				children:{
+					preview_detach:{type:"label",label:"detach"}
+				}	
+			}
 		},
-		order:[],
 		class:"pane",
 		builder:function(dom,data,ui) {
+			/*ui.children.preview.bind("set","detach",function(k,v) {
+				ui.children.preview_actions.children.preview_detach.label=v?"attach":"detach";
+			});*/
 			ui.children.files.bind(function(k,v) {
 				var openfile = function(file) {
 					if (file.type!="directory") {
@@ -101,24 +112,36 @@ var paneui = function() {
 				}
 				if (k=="selected") openfile(data.files[v]);
 			});
-			var modeorder={
-				edit:["menu","file","files","mode","actions","editor"],
-				preview:["menu","file","files","mode","actions","preview"]
+			dom.ui.preview_actions.ui.preview_detach.click(function() {
+				ui.children.preview.detach=!ui.children.preview.detach;
+			});
+			var updateFile = function(k,v) {
+				data.preview.file=v; 
+				data.editor.file=v;
 			};
-			var updateFile = function() {
-				data.preview.file=data.file; 
-				data.editor.file=data.file;
-			};
-			var handlers={
-				set:function(k,v) {
-					if (k=="file") updateFile();
-					if (k=="mode") ui.order=modeorder[v];
+			var updateMode = function(k,v) {
+				if (v=="preview") { 
+					ui.children.remove("editor"); 
+					ui.children.add("preview",{type:"iframe"}); 
+				}
+				if (v=="edit") { 
+					ui.children.remove("preview"); 
+					ui.children.add("editor",{type:"editor"});
 				}
 			};
-			data.bind(handlers.set);
-			ui.order=modeorder[data.mode];
+			
+			var handlers=[
+				["set", "file", updateFile],
+				["set", "mode", updateMode]
+			];
+			updateMode("mode",data.mode);
+			$.each(handlers,function(idx,v) {
+				data.bind.apply(null,v);
+			});
 			return function() {
-				data.unbind(handlers.set);
+				$.each(handlers,function(idx,v) {
+					data.unbind.apply(null,v);
+				});
 			};
 		}
 	});
