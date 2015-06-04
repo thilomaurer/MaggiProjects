@@ -17,37 +17,45 @@
 	margin-left:5px;
 	margin-right:5px;
 }
-.pane #menu {
-	padding:2px;
-	display:inline-block;
-	font-size:20px;
-	float:right;
-	width: 28px;
-	text-align: center;
-}
-
-.pane #menu:hover {
-	background:#ddd;
-}
 
 .pane #actions .button {
 	margin:5px;
 }
 
+.pane #editor_actions,
 .pane #preview_actions {
 	float:right;
 }
 
-.pane #preview_actions #detach {
-	height: 22px;
-	width: 22px;
-	padding: 5px;
-	background-image: url(icons/detach.svg);
+.icon {
+	height: 20px;
+	width: 20px;
+	padding: 6px;
 	background-repeat: no-repeat;
 	background-size: contain;
 	background-origin: content-box;
+	border-radius:3px;
 }
 
-.pane #detach:hover {
-	background:#ddd;
+.icon:hover {
+	background-color:#ccc;
 }
+
+.icon.activated {
+	-webkit-filter: invert(100%);
+	background-color:cyan;
+}
+
+.icon.activated:hover {
+	background-color:#8ff;
+}
+
+.pane #detach.icon {
+	background-image: url(icons/detach.svg);
+}
+
+.pane #menu.icon {
+	float:right;
+	text-align: center;
+}
+

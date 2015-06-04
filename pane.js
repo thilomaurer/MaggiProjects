@@ -68,7 +68,7 @@ var paneui = function() {
 			file:fileui,
 			files:fui,
 			mode:{type:"select",choices:{edit:{label:"edit"},preview:{label:"preview"}}},
-			menu:{type:"text"},
+			menu:{type:"text",class:"icon"},
 			actions: {
 				type:"object",
 				popup:true, popuptrigger:"menu",
@@ -125,6 +125,10 @@ var paneui = function() {
 				if (p) { 
 					ui.children.remove("editor"); 
 					ui.children.add("preview",{type:"iframe"});
+					var dc=ui.children.preview_actions.children.detach;
+					ui.children.preview.bind("set","detach",function(k,v) {
+						if (v) dc.class="icon activated"; else dc.class="icon";
+					});
 				}
 				if (e) { 
 					ui.children.remove("preview"); 
