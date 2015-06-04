@@ -74,23 +74,21 @@ var paneui = function() {
 				popup:true, popuptrigger:"menu",
 				children: {
 					close:{type:"function",label:"close pane", class:"button blue"},
-					detach:{type:"function",label:"detach pane", class:"button blue"},
 					renamefile:{type:"function",label:"rename file", class:"button blue"}
 					
 				}
 			},
-			//editor: {type:"editor"},
-			editor_actions:{type:"object",children:{
-			}},
-			//preview: {type:"iframe"},
+			editor_actions:{type:"object",children:{},visible:true},
 			preview_actions:{
 				type:"object",
 				data:{},
 				children:{
-					preview_detach:{type:"label",label:"detach"}
-				}	
+					detach:{type:"label",class:"icon"}
+				},
+				visible:true	
 			}
 		},
+		order: ["menu","editor_actions","preview_actions","file","files","mode","actions","editor","preview"],
 		class:"pane",
 		builder:function(dom,data,ui) {
 			/*ui.children.preview.bind("set","detach",function(k,v) {
@@ -112,7 +110,7 @@ var paneui = function() {
 				}
 				if (k=="selected") openfile(data.files[v]);
 			});
-			dom.ui.preview_actions.ui.preview_detach.click(function() {
+			dom.ui.preview_actions.ui.detach.click(function() {
 				ui.children.preview.detach=!ui.children.preview.detach;
 			});
 			var updateFile = function(k,v) {
@@ -120,11 +118,15 @@ var paneui = function() {
 				data.editor.file=v;
 			};
 			var updateMode = function(k,v) {
-				if (v=="preview") { 
+				var p=(v=="preview");
+				var e=(v=="edit");
+				ui.children.editor_actions.visible=e;
+				ui.children.preview_actions.visible=p;
+				if (p) { 
 					ui.children.remove("editor"); 
-					ui.children.add("preview",{type:"iframe"}); 
+					ui.children.add("preview",{type:"iframe"});
 				}
-				if (v=="edit") { 
+				if (e) { 
 					ui.children.remove("preview"); 
 					ui.children.add("editor",{type:"editor"});
 				}

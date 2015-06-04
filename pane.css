@@ -18,10 +18,12 @@
 	margin-right:5px;
 }
 .pane #menu {
-	padding:5px;
+	padding:2px;
 	display:inline-block;
 	font-size:20px;
 	float:right;
+	width: 28px;
+	text-align: center;
 }
 
 .pane #menu:hover {
@@ -30,4 +32,22 @@
 
 .pane #actions .button {
 	margin:5px;
+}
+
+.pane #preview_actions {
+	float:right;
+}
+
+.pane #preview_actions #detach {
+	height: 22px;
+	width: 22px;
+	padding: 5px;
+	background-image: url(icons/detach.svg);
+	background-repeat: no-repeat;
+	background-size: contain;
+	background-origin: content-box;
+}
+
+.pane #detach:hover {
+	background:#ddd;
 }
