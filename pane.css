@@ -54,8 +54,11 @@
 	background-image: url(icons/detach.svg);
 }
 
-.pane #menu.icon {
+.pane #options.icon {
+	background-image: url(icons/options.svg);
 	float:right;
+}
+.pane .texticon {
 	text-align: center;
 }
 

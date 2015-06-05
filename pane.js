@@ -36,7 +36,7 @@ var panedata=function() {
 		files:files,
 		mode:"edit",
 		editor:{file:f},
-		menu:"☰",
+		//otptions:"☰",
 		actions: {},
 		preview: {
 			file: null,
@@ -68,10 +68,10 @@ var paneui = function() {
 			file:fileui,
 			files:fui,
 			mode:{type:"select",choices:{edit:{label:"edit"},preview:{label:"preview"}}},
-			menu:{type:"text",class:"icon"},
+			options:{type:"label",class:"icon"},
 			actions: {
 				type:"object",
-				popup:true, popuptrigger:"menu",
+				popup:true, popuptrigger:"options",
 				children: {
 					close:{type:"function",label:"close pane", class:"button blue"},
 					renamefile:{type:"function",label:"rename file", class:"button blue"}
@@ -88,7 +88,7 @@ var paneui = function() {
 				visible:true	
 			}
 		},
-		order: ["menu","editor_actions","preview_actions","file","files","mode","actions","editor","preview"],
+		order: ["options","editor_actions","preview_actions","file","files","mode","actions","editor","preview"],
 		class:"pane",
 		builder:function(dom,data,ui) {
 			/*ui.children.preview.bind("set","detach",function(k,v) {
