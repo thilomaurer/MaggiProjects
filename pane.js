@@ -34,7 +34,7 @@ var panedata=function() {
 		file:f,
 		files:files,
 		mode:"edit",
-		editor:{file:f},
+		edit:{file:f},
 		actions: {},
 		preview: {
 			detach: false,
@@ -103,10 +103,6 @@ var paneuiheader = function() {
 			dom.ui.preview_actions.ui.detach.click(function() {
 				data.preview.detach=!data.preview.detach;
 			});
-			var updateFile = function(k,v) {
-				data.preview.file=v; 
-				data.editor.file=v;
-			};
 			var updateMode = function(k,v) {
 				var p=(v=="preview");
 				var e=(v=="edit");
@@ -121,55 +117,48 @@ var paneuiheader = function() {
 			};
 			
 			var handlers=[
-				["set", "file", updateFile],
 				["set", "mode", updateMode]
 			];
-			updateMode("mode",data.mode);
-			$.each(handlers,function(idx,v) {
-				data.bind.apply(null,v);
-			});
-			return function() {
-				$.each(handlers,function(idx,v) {
-					data.unbind.apply(null,v);
-				});
-			};
+			return installBindings(data,handlers);
 		}
 	});
 }
 
+var installBindings=function(o,handlers) {
+	$.each(handlers,function(idx,v) {
+		o.bind.apply(null,v);
+		v[2](v[1],o[v[1]]);
+	});
+	return function() {
+		$.each(handlers,function(idx,v) {
+			o.unbind.apply(null,v);
+		});
+	};
+};
+
 var paneui = function() {
 	return {
 		children:{
-			header:paneuiheader()
+			header:paneuiheader(),
+			preview:{type:"iframe"},
+			edit:{type:"editor"}
 		},
+		order:["header","edit"],
 		class:"pane tablerows",
 		builder: function(dom,data,ui) {
 			ui.children.header.add("data",data);
 			var updateMode = function(k,v) {
-				var p=(v=="preview");
-				var e=(v=="edit");
-				if (p) { 
-					ui.children.remove("editor"); 
-					ui.children.add("preview",{type:"iframe"});
-				}
-				if (e) { 
-					ui.children.remove("preview"); 
-					ui.children.add("editor",{type:"editor"});
-				}
+				ui.order=["header",v];
 			};
-
+			var updateFile = function(k,v) {
+				data.preview.file=v; 
+				data.edit.file=v;
+			};
 			var handlers=[
+				["set", "file", updateFile],
 				["set", "mode", updateMode]
 			];
-			updateMode("mode",data.mode);
-			$.each(handlers,function(idx,v) {
-				data.bind.apply(null,v);
-			});
-			return function() {
-				$.each(handlers,function(idx,v) {
-					data.unbind.apply(null,v);
-				});
-			};
+			return installBindings(data,handlers);
 		}
 	};
 }

@@ -37,14 +37,21 @@
 	background: #ddd;
 }
 
+.ide,
+#projects,
 #panes {
+	height:100%;
 }
 
 #panes > * {
-  border-left: 1px solid black;
+	table-layout:fixed;
 }
 
-#panes > *:first-child {
-  border-left: none;
+#panes > * > * {
+	border-left: 1px solid black;
+}
+
+#panes > * > *:first-child {
+	border-left: none;
 }
 
