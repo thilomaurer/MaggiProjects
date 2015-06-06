@@ -64,15 +64,13 @@ var project=function() {
 
 var projectui=function() {
 	return {
-		type:"object",
 		children:{
-			view: {type:"object",children:{revision:{type:"text"}}},
+			view: {children:{revision:{type:"text"}}},
 			revisions:{
 				type:"list",
 				popup:true,
 				popuptrigger:"view",
 				childdefault:{
-					type:"object",
 					children:{
 						revision:{type:"text"}
 					}
@@ -97,17 +95,16 @@ var projectui=function() {
 
 var projectui_info=function() {
 	return {
-		type:"object",
 		children:{
 			//name: {type:"text"},
-			//view: {type:"object",children:{revision:{type:"text"}}},
+			//view: {children:{revision:{type:"text"}}},
 		},
 		class:"project_info",
 		builder:function(dom,data,ui) {
 			var rev=data.view.revision;
 			var name=data.revisions[rev].name;
 			var d=Maggi({name:name,date:new Date()});
-			Maggi.UI(dom,d,{type:"object",children:{name:{type:"text"}/*,date:{type:"text"}*/}});
+			Maggi.UI(dom,d,{children:{name:{type:"text"}/*,date:{type:"text"}*/}});
 		}
 	};
 }

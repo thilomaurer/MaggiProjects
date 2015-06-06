@@ -94,12 +94,15 @@ var ide = function(dom,odata,setdata,oui,datachange) {
 				},
 				addpane: {type:"function",label:"Add Pane",class:"button blue"},
 				panes: { 
+					wrap:true,
+					wrapchildren:true,
 					type:"object",
 					childdefault: paneui,
+					class:"tablecolumns"
 				},
 			},
 			order:null,
-			class:"ide mui-light"
+			class:"ide mui-light tablerows"
 		};
 	};
 	ui=ui();

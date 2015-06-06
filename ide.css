@@ -38,20 +38,13 @@
 }
 
 #panes {
-	display:table;
-	width:100%;
-	table-layout:fixed;
 }
 
-#panes > .pane {
+#panes > * {
   border-left: 1px solid black;
 }
 
-#panes > .pane:first-child {
+#panes > *:first-child {
   border-left: none;
 }
 
-iframe {
-	border:0;
-	background:white;
-}

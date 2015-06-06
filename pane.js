@@ -14,7 +14,6 @@ var filesui=function() {
 
 var fileui=function() {
 	return Maggi({
-		type:"object",
 		children:{
 			type: {type:"image",urls:{js:"icons/js.svg",html:"icons/html5.svg",css:"icons/css3.svg"}},
 			name: {type:"text"},
@@ -36,9 +35,9 @@ var panedata=function() {
 		files:files,
 		mode:"edit",
 		editor:{file:f},
-		//otptions:"☰",
 		actions: {},
 		preview: {
+			detach: false,
 			file: null,
 			files: files
 		}
@@ -53,47 +52,38 @@ var panedata=function() {
 		var f=p.file;
 		var newname=prompt("Please enter new name for file '"+f.name+"'", f.name);
 		if (newname!=null) f.name=newname;
-		//p.actions.visible=false;
 	});
 	return p;
 };
 
-var paneui = function() {
+var paneuiheader = function() {
 	var fui=filesui();
 	fui.add("popup",true);
 	fui.add("popuptrigger","file");
 	return Maggi({
-		type:"object",
 		children:{
 			file:fileui,
 			files:fui,
 			mode:{type:"select",choices:{edit:{label:"edit"},preview:{label:"preview"}}},
 			options:{type:"label",class:"icon"},
 			actions: {
-				type:"object",
 				popup:true, popuptrigger:"options",
 				children: {
 					close:{type:"function",label:"close pane", class:"button blue"},
 					renamefile:{type:"function",label:"rename file", class:"button blue"}
-					
 				}
 			},
-			editor_actions:{type:"object",children:{},visible:true},
+			editor_actions:{data:{},children:{}},
 			preview_actions:{
-				type:"object",
 				data:{},
 				children:{
 					detach:{type:"label",class:"icon"}
-				},
-				visible:true	
+				}
 			}
 		},
-		order: ["options","editor_actions","preview_actions","file","files","mode","actions","editor","preview"],
-		class:"pane",
+		order: ["a","options","editor_actions","preview_actions","file","files","mode","actions","editor","preview"],
+		class:"paneheader",
 		builder:function(dom,data,ui) {
-			/*ui.children.preview.bind("set","detach",function(k,v) {
-				ui.children.preview_actions.children.preview_detach.label=v?"attach":"detach";
-			});*/
 			ui.children.files.bind(function(k,v) {
 				var openfile = function(file) {
 					if (file.type!="directory") {
@@ -111,7 +101,7 @@ var paneui = function() {
 				if (k=="selected") openfile(data.files[v]);
 			});
 			dom.ui.preview_actions.ui.detach.click(function() {
-				ui.children.preview.detach=!ui.children.preview.detach;
+				data.preview.detach=!data.preview.detach;
 			});
 			var updateFile = function(k,v) {
 				data.preview.file=v; 
@@ -120,19 +110,13 @@ var paneui = function() {
 			var updateMode = function(k,v) {
 				var p=(v=="preview");
 				var e=(v=="edit");
-				ui.children.editor_actions.visible=e;
-				ui.children.preview_actions.visible=p;
+				ui.children.editor_actions.add("visible",e);
+				ui.children.preview_actions.add("visible",p);
 				if (p) { 
-					ui.children.remove("editor"); 
-					ui.children.add("preview",{type:"iframe"});
 					var dc=ui.children.preview_actions.children.detach;
-					ui.children.preview.bind("set","detach",function(k,v) {
+					data.preview.bind("set","detach",function(k,v) {
 						if (v) dc.class="icon activated"; else dc.class="icon";
 					});
-				}
-				if (e) { 
-					ui.children.remove("preview"); 
-					ui.children.add("editor",{type:"editor"});
 				}
 			};
 			
@@ -151,4 +135,41 @@ var paneui = function() {
 			};
 		}
 	});
+}
+
+var paneui = function() {
+	return {
+		children:{
+			header:paneuiheader()
+		},
+		class:"pane tablerows",
+		builder: function(dom,data,ui) {
+			ui.children.header.add("data",data);
+			var updateMode = function(k,v) {
+				var p=(v=="preview");
+				var e=(v=="edit");
+				if (p) { 
+					ui.children.remove("editor"); 
+					ui.children.add("preview",{type:"iframe"});
+				}
+				if (e) { 
+					ui.children.remove("preview"); 
+					ui.children.add("editor",{type:"editor"});
+				}
+			};
+
+			var handlers=[
+				["set", "mode", updateMode]
+			];
+			updateMode("mode",data.mode);
+			$.each(handlers,function(idx,v) {
+				data.bind.apply(null,v);
+			});
+			return function() {
+				$.each(handlers,function(idx,v) {
+					data.unbind.apply(null,v);
+				});
+			};
+		}
+	};
 }
