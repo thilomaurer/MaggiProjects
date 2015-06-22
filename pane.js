@@ -45,8 +45,11 @@ var panedata=function() {
 	p.bind(function(k,v) {
 		if (k=="files") p.preview.files=v;
 	});
-	p.actions.add("close",function() {
-		p.add("removenow",true);
+	p.actions.add("closepane",function() {
+		p.trigger("closepane");
+	});
+	p.actions.add("insertpane",function() {
+		p.trigger("insertpane");
 	});
 	p.actions.add("renamefile",function() {
 		var f=p.file;
@@ -69,7 +72,8 @@ var paneuiheader = function() {
 			actions: {
 				popup:true, popuptrigger:"options",
 				children: {
-					close:{type:"function",label:"close pane", class:"button blue"},
+					closepane:{type:"function",label:"close pane", class:"button blue"},
+					insertpane:{type:"function",label:"insert pane", class:"button blue"},
 					renamefile:{type:"function",label:"rename file", class:"button blue"}
 				}
 			},
@@ -99,6 +103,12 @@ var paneuiheader = function() {
 					openfile(root[v]);
 				}
 				if (k=="selected") openfile(data.files[v]);
+			});
+			dom.ui.actions.ui.closepane.click(function() {
+				ui.children.actions.visible=false;
+			});
+			dom.ui.actions.ui.insertpane.click(function() {
+				ui.children.actions.visible=false;
 			});
 			dom.ui.preview_actions.ui.detach.click(function() {
 				data.preview.detach=!data.preview.detach;

@@ -1,13 +1,9 @@
-.ide > #projectname {
+.project > #name {
 	font-size:24px;
 	padding:8px;
 }
 
-.project #revision:hover {
-	background: #ddd;
-}
-
-#projectname:hover {
+.project > #name:hover {
 	background: #ddd;
 }
 
@@ -15,12 +11,16 @@
 	content: "revision ";
 }
 
-.project #revisions .selected {
+.project #revision:hover {
+	background: #ddd;
+}
+
+.project #revisions.list .selected {
 	background: #ccf;
 }
 
-.ide > #projectname, .ide > #project, .ide > #addpane {
-	display:inline-block;
+.project #revisions.list #revision {
+	padding: 5px;
 }
 
 .project > * {
@@ -33,18 +33,33 @@
 	font-size:20px;
 }
 
-#projects > *:hover {
-	background: #ddd;
-}
-
 .ide,
 #projects,
-#panes {
+#panes,
+.prj > #view {
 	height:100%;
 }
+/*
+.prj.selected {
+	height:0px;
+}
 
+.prj {
+	transition: height 200ms ease-in;
+}
+*/
 #panes > * {
 	table-layout:fixed;
+}
+
+#panes > * > .wrap {	
+	transition:width 0.2s ease-out;
+	overflow:hidden;
+	width:100%;
+}
+
+#panes > * > .wrap.closepane {
+	width:0%;
 }
 
 #panes > * > * {

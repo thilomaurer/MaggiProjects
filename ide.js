@@ -1,86 +1,90 @@
 var prj = function(dom,prjdata,setdata,oui,datachange) {
 
-	var addpane=function() {
-		var n=Object.keys(data.panes).length;
-		var pane=panedata();
-		var rev=data.project.view.revision;
-		pane.files=data.project.revisions[rev].files;
-		pane.key=n;
-		pane.bind("add","removenow",function(k,v) {
-			data.panes.remove(pane.key);
-		});
-		data.panes.add(n,pane);
-		return pane;
-	};
-
-	var removeallpanes=function() {
-		for (k in data.panes)
-			data.panes.remove(k);
-	};
-
 	var data=Maggi({
-		projectname: null,
 		project: prjdata,
-		addpane: addpane,
-		panes: {}
-	});
-
-	var loadproject = function() {
-		var prj=data.project;
-
-		var loadrevision = function() {
-			var view=prj.view;
-			var revid=view.revision;
-			var rev=prj.revisions[revid];
-			data.projectname=rev.name;
-			removeallpanes();
-			for (var idx in view.panes) {
-				var p=view.panes[idx];
-				var pane=addpane();
-				pane.mode=p.mode;
-				pane.file=pane.files[p.fileid];
-			}
-		};
-		if (prj==null) {
-			removeallpanes();
-			data.projectname=null;
-		} else {
-			prj.view.bind(function(k,v) {
-				if (k=="revision") loadrevision(); 
-			});
-			loadrevision();
-		}
-	};
-
-	datachange(loadproject);
-	loadproject();
-
-	data.panes.bind("add",function(k,v) {
-		if (k instanceof Array) return;
-		v.actions.add("closepane",function() {data.panes.remove(k);});
+		panes: {},
+		view: prjdata.view
 	});
 
 	var ui = function() {
 		return {
 			type:"object",
 			children:{
-				projectname: {type: "text"},
 				project: projectui,
-				addpane: {type:"function",label:"Add Pane",class:"button blue"},
-				panes: { 
-					wrap:true,
-					wrapchildren:true,
+				view: {
 					type:"object",
-					childdefault: paneui,
-					class:"tablecolumns"
-				},
+					children:{ 
+						panes:panesui(prjdata)
+					},
+					builder:function(dom,data,ui) {
+						var rev=data.revision;
+						ui.files=prjdata.revisions[rev].files;
+					}
+				}
 			},
-			class:"ide mui-light tablerows"
+			class:"prj tablerows"
 		};
 	};
 	ui=ui();
 
 	return Maggi.UI(dom,data,ui);
+}
+
+var panesui = function(prjdata) {
+	var panes=null;
+	return {
+		wrapchildren:true,
+		wrap:true,
+		class:"tablecolumns",
+		childdefault:{
+			type:"user",
+			user:function(dom,data,setdata,ui,onDataChange) {
+				var u=paneui();
+				var d=panedata();
+				var rem=function(i) {
+					dom.parent().addClass("closepane");
+					setTimeout(function() {
+						panes.remove(i);
+					},200);
+				};
+				var ins=function(i) {
+					i=parseInt(i);
+					var p=prjdata.view.panes;
+					var n=Object.keys(p).length;
+					p.add(n,{fileid:null,mode:"edit"});
+				};
+				d.bind("closepane",function(k,v) {
+					for (var i in panes) if (panes[i]===data) rem(i);
+				});
+				d.bind("insertpane",function(k,v) {
+					for (var i in panes) if (panes[i]===data) ins(i);
+				});
+	
+				var build=function(data) {
+					var rev=prjdata.view.revision;
+					d.files=prjdata.revisions[rev].files;
+					d.mode=data.mode;
+					d.file=d.files[data.fileid];
+				};
+				build(data);
+				onDataChange(build);
+				dom.parent().addClass("closepane");
+				setTimeout(function() { 
+					dom.parent().removeClass("closepane");
+				},0);
+				return Maggi.UI(dom,d,u);
+			}
+		},
+		builder:function(dom,data,ui) {
+			panes=data;
+			prjdata.bind("add",function(k,v) {
+				console.log(k);
+			});
+			data.bind("add",function(k,v) {
+				console.log(k);
+			});
+		}
+	}
 }
 
 var ide = function(dom,data,setdata,oui,datachange) {

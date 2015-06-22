@@ -16,6 +16,12 @@ var main = function() {
 			project.view.panes[0].fileid=6;
 			project.view.panes[1].fileid=7;
 			project.view.panes[2].fileid=6;
+			project.bind("set",function(k,v) {
+				console.log("set " + JSON.stringify(k));
+			});
+			project.bind("add",function(k,v) {
+				console.log("add " + JSON.stringify(k));
+			});
 			m.data.projects.add(0,project);
 			m.ui.children.projects.selected=0;
 		}

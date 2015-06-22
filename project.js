@@ -82,6 +82,13 @@ var projectui=function() {
 		},
 		class:"project",
 		builder:function(dom,data,ui) {
+			var name={type:"label",builder:function(dom) { 
+				var rev=data.view.revision;
+				dom.text(data.revisions[rev].name);
+			}};
+			ui.children.add("name",name);
+			ui.add("order",["name","view","revisions","commitnbranch"]);
+			
 			revsethandler=function(k,v) {
 				if (k=="selected") { ui.children.revisions.visible=false; data.view.revision=v; }
 			};		
