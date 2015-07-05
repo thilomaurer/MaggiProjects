@@ -1,0 +1,6 @@
+#!/bin/bash
+nodejs=$(which nodejs)
+if [ -z "$nodejs" ]; then
+	nodejs=$(which node)
+fi
+$nodejs ./ide-server.js

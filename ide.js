@@ -88,7 +88,7 @@ var panesui = function(prjdata) {
 }
 
 var ide = function(dom,data,setdata,oui,datachange) {
-
+	
 	if (data==null) data=Maggi({projects: {}});
 
 	var ui = {
