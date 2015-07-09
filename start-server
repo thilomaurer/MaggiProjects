@@ -3,4 +3,7 @@ nodejs=$(which nodejs)
 if [ -z "$nodejs" ]; then
 	nodejs=$(which node)
 fi
+if [ "$1" == "reset" ]; then
+	echo "{}" > data
+fi
 $nodejs ./ide-server.js

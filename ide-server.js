@@ -25,8 +25,8 @@ function httpHandler(req, res) {
 var allconnections=[];
 
 
-Maggi.ff=function(fn) {
-	var data;
+Maggi.db=function(fn) {
+	var db;
 	var fp=__dirname + "/" + fn;
 	var enc="utf8";
 	var saving=false;
@@ -35,25 +35,30 @@ Maggi.ff=function(fn) {
 		save_again=saving;
 		if (saving) return;
 		saving=true;
-		fs.writeFile(fp, JSON.stringify(data), enc, function(err) {
+		fs.writeFile(fp, JSON.stringify(db), enc, function(err) {
 			saving=false;
 			if (err) console.log(JSON.stringify(err));
 			if (save_again) save();
 		}); 
 	};
-	data=fs.readFileSync(fp, enc);
-	data=JSON.parse(data);
-	data=Maggi(data);
-	data.bind(["set","remove","add"],save);
-	return data;
+	try {
+		db=fs.readFileSync(fp, enc);
+		db=JSON.parse(db);
+	} catch(e) {
+		db={data:{},rev:1};
+	}
+	db=Maggi(db);
+	db.bind("set","rev",save);
+	return db;
 };
 
-var data=Maggi.ff("data");
+var db=Maggi.db("data");
+Maggi.sync.log=true;
 
 io.sockets.on('connection', function(socket) {
-	console.log("new connection by client socket "+socket.id);
+	console.log("connected "+socket.id);
 	allconnections.push(socket);
-	Maggi.serve(socket,data);
+	Maggi.serve(socket,db);
 });
 
 console.log("Maggi.UI IDE Server localhost:"+port);
