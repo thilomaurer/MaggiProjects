@@ -36,6 +36,7 @@ var panesui = function(prjdata) {
 		wrapchildren:true,
 		wrap:true,
 		class:"tablecolumns",
+		order:{},
 		childdefault:{
 			type:"user",
 			user:function(dom,data,setdata,ui,onDataChange) {
@@ -44,14 +45,18 @@ var panesui = function(prjdata) {
 				var rem=function(i) {
 					dom.parent().addClass("closepane");
 					setTimeout(function() {
+						var p=prjdata.view.panes;
+						p.order=orderRemove(p.order,i);
 						panes.remove(i);
 					},200);
 				};
 				var ins=function(i) {
-					i=parseInt(i);
 					var p=prjdata.view.panes;
-					var n=Object.keys(p).length;
-					p.add(n,{fileid:null,mode:"edit"});
+					var k=parseInt(i)+1;
+					while (panes[k]!=null) k+=1;
+					k=k.toString();
+					panes.add(k,{fileid:panes[i].fileid,mode:"edit"});
+					p.order=orderInsert(p.order,i,k);
 				};
 				d.bind("closepane",function(k,v) {
 					for (var i in panes) if (panes[i]===data) rem(i);
@@ -63,8 +68,10 @@ var panesui = function(prjdata) {
 				var build=function(data) {
 					var rev=prjdata.view.revision;
 					d.files=prjdata.revisions[rev].files;
-					d.mode=data.mode;
-					d.file=d.files[data.fileid];
+					if (data!=null) {
+						d.mode=data.mode;
+						d.file=d.files[data.fileid];
+					}
 				};
 				build(data);
 				onDataChange(build);
@@ -77,12 +84,8 @@ var panesui = function(prjdata) {
 		},
 		builder:function(dom,data,ui) {
 			panes=data;
-			prjdata.bind("add",function(k,v) {
-				console.log(k);
-			});
-			data.bind("add",function(k,v) {
-				console.log(k);
-			});
+			data.bind("set","order",function(k,v) {ui.order=v;});
+			ui.order=data.order;
 		}
 	}
 }
@@ -104,4 +107,21 @@ var ide = function(dom,data,setdata,oui,datachange) {
 	};
 	Maggi.UI(dom,data,ui);
 	return {data:data,ui:ui};
+}
+
+
+var orderRemove=function(o,k) {
+	var order=toArray(o);
+	order.splice(order.indexOf(k),1);
+	return order;
+}
+
+var orderInsert=function(o,k,i) {
+	var order=toArray(o);
+	order.splice(order.indexOf(k)+1,0,i);
+	return order;
+}
+
+var toArray = function(o) {
+	return Object.keys(o).sort().map(function(k) { return o[k]; });
 }

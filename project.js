@@ -16,7 +16,8 @@ var project=function() {
 			revision:0,
 			panes:{/*
 				1:{fileid:4,mode:"edit"},
-				2:{fileid:6,mode:"preview"}*/
+				2:{fileid:6,mode:"preview"},*/
+				order:{}
 			}
 		},
 		user: {
@@ -146,6 +147,7 @@ var initproject=function(username,email,name,sources,complete) {
 		data.view.panes.add(0,{fileid:0,mode:"edit"});
 		data.view.panes.add(1,{fileid:1,mode:"edit"});
 		data.view.panes.add(2,{fileid:0,mode:"preview"});
+		data.view.panes.order=["0","1","2"];
 		complete(data);
 	}
 };
