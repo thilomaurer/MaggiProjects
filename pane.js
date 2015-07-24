@@ -4,6 +4,7 @@ var filesui=function() {
 		childdefault:fileui,
 		select:"single",
 		selected:"",
+		class:"selectable table",
 		builder:function(dom,data,ui) {
 			var empty=(data==null);
 			if (empty) empty=(Object.keys(data.files).length==0);
@@ -15,7 +16,7 @@ var filesui=function() {
 var fileui=function() {
 	return Maggi({
 		children:{
-			type: {type:"image",urls:{js:"icons/js.svg",html:"icons/html5.svg",css:"icons/css3.svg"}},
+			type: {type:"image",urls:{js:"icons/js.svg",html:"icons/html5.svg",css:"icons/css3.svg",plus:"icons/plus.svg"}},
 			name: {type:"text"},
 		},
 		order:["type","name"],
@@ -23,6 +24,21 @@ var fileui=function() {
 		builder:function(dom,data,ui) {
 			if (data==null) 
 				dom.text("<no file>");
+		}
+	});
+};
+
+var listentryui=function() {
+	return Maggi({
+		children:{
+			type: {type:"image",urls:{js:"icons/js.svg",html:"icons/html5.svg",css:"icons/css3.svg"}},
+			name: {type:"text"},
+		},
+		order:["type","name"],
+		class:"file",
+		builder:function(dom,data,ui) {
+			if (data==null) 
+				dom.text("<empty>");
 		}
 	});
 };
@@ -59,14 +75,46 @@ var panedata=function() {
 	return p;
 };
 
+var buildFilesEdit = function(dom,data,ui) {
+	var int_data=Maggi({
+		files:data,
+		actions:{
+			adder:{type:"plus",name:"Create New File..."}
+		},
+	});
+	var int_ui={
+		visible:false,
+		children: {
+			actions:filesui(),
+			filesLabel:{type:"label",label:"FILES", class:"listlabel"},
+			files: filesui(),
+		},
+		builder:function(dom,int_data,int_ui) {
+			int_ui.children.files.bind("set",function(k,v) {
+				var openfile = function(file) {
+					if (file.type!="directory") {
+						ui.selected=v;
+						ui.visible=false;
+					}
+				};
+				if (k=="selected") openfile(v);
+			});
+		}
+	};
+	return Maggi.UI(dom,int_data,int_ui);
+};
+
 var paneuiheader = function() {
-	var fui=filesui();
-	fui.add("popup",true);
-	fui.add("popuptrigger","file");
 	return Maggi({
 		children:{
 			file:fileui,
-			files:fui,
+			files:{
+				popup:true,
+				popuptrigger:"file",
+				order:[],
+				builder:buildFilesEdit,
+				selected:null,
+			},
 			mode:{type:"select",choices:{edit:{label:"edit"},preview:{label:"preview"}}},
 			options:{type:"label",class:"icon"},
 			actions: {
@@ -85,24 +133,11 @@ var paneuiheader = function() {
 				}
 			}
 		},
-		order: ["a","options","editor_actions","preview_actions","file","files","mode","actions","editor","preview"],
+		order: ["options","editor_actions","preview_actions","file","files","mode","actions","editor","preview"],
 		class:"paneheader",
 		builder:function(dom,data,ui) {
-			ui.children.files.bind(function(k,v) {
-				var openfile = function(file) {
-					if (file.type!="directory") {
-						data.file=file;
-						ui.children.files.visible=false;
-					}
-				};
-				if (k instanceof Array) {
-					var N=k.length;
-					if (k[N-1]!="selected") return;
-					var root=data.files;
-					for (var i=1;i<N-1;i+=2) root=root[k[i]];
-					openfile(root[v]);
-				}
-				if (k=="selected") openfile(data.files[v]);
+			ui.children.files.bind("set","selected",function(k,v) {
+				data.file=data.files[v];
 			});
 			dom.ui.actions.ui.closepane.click(function() {
 				ui.children.actions.visible=false;

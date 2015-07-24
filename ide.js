@@ -96,14 +96,20 @@ var ide = function(dom,data,setdata,oui,datachange) {
 
 	var ui = {
 		children: {
+			dadsa: {type:"label",label:"XXXXXXXXXX"},
 			projects: {
-				type:"list",
+				//type:"list",
 				childdefault:{type:"user",user:prj},
-				select:"single",
-				selected:null,
+				//select:"single",
+				//selected:null,
 			}
 		},
-		class:"ide mui-light"
+		class:"ide mui-light",
+		builder:function(dom,data,ui) {
+			dom.ui.dadsa.click(function() {
+				if (ui.class=="ide mui-light") ui.class="ide mui"; else ui.class="ide mui-light";
+			});
+		}
 	};
 	Maggi.UI(dom,data,ui);
 	return {data:data,ui:ui};
