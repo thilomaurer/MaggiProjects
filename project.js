@@ -79,7 +79,7 @@ var projectui=function() {
 				select:"single",
 				selected:null
 			},
-			commitnbranch: {type:"function",label:"commit revision",class:"button blue"},
+			commitnbranch: {type:"function",label:"commit revision",class:"button"}
 		},
 		class:"project",
 		builder:function(dom,data,ui) {

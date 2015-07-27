@@ -1,10 +1,10 @@
 var filesui=function() { 
 	return Maggi({ 
 		type:"list",
-		childdefault:fileui,
+		childdefault:fileui2,
 		select:"single",
 		selected:"",
-		class:"selectable table",
+		class:"selectable tablegrid",
 		builder:function(dom,data,ui) {
 			var empty=(data==null);
 			if (empty) empty=(Object.keys(data.files).length==0);
@@ -19,8 +19,48 @@ var fileui=function() {
 			type: {type:"image",urls:{js:"icons/js.svg",html:"icons/html5.svg",css:"icons/css3.svg",plus:"icons/plus.svg"}},
 			name: {type:"text"},
 		},
-		order:["type","name"],
 		class:"file",
+		builder:function(dom,data,ui) {
+			if (data==null) 
+				dom.text("<no file>");
+		}
+	});
+};
+
+var fileui2=function() {
+	return Maggi({
+		children:{
+			type: {type:"image",urls:{js:"icons/js.svg",html:"icons/html5.svg",css:"icons/css3.svg",plus:"icons/plus.svg"}},
+			name: {type:"text"},
+			details: {type:"label", class:"icon info", label:"\u00A0"}
+		},
+		class:"file",
+		builder:function(dom,data,ui) {
+			if (data==null) 
+				dom.text("<no file>");
+			dom.ui.details.click(function() {
+				makeFileEditor($('body'),data,function() { data.remove(v); });
+				return false;
+			});
+		}
+	});
+};
+
+var fileeditui=function() {
+	return Maggi({
+		children:{
+			type: {type:"select",choices:{js:{label:"JS"},html:{label:"HTML"},css:{label:"CSS"}},class:"fillhorizontal"},
+			name: {type:"input"},
+			cursor: {
+				children: {
+					label:{type:"label",label:"cursor position "},
+					row:"text",
+					label2:{type:"label",label:":"},
+					column:"text"
+				}
+			}
+		},
+		class:"fileedit",
 		builder:function(dom,data,ui) {
 			if (data==null) 
 				dom.text("<no file>");
@@ -75,6 +115,39 @@ var panedata=function() {
 	return p;
 };
 
+var makeFileEditor=function(dom,file,onRemove,onClose) {
+	var data=Maggi({
+		delete:function() { 
+			onRemove();
+			data.close();
+		},
+		close:function() { 
+			removeOverlay();
+			if (onClose) onClose();
+		},
+		data:file
+	});
+	var ui=Maggi({
+		type:"object",
+		class:"popup",
+		children: {
+			title:{type:"label", label:"File Settings"},
+			data:fileeditui,
+			close:{type:"function",class:"right button",label:"Done"},
+			delete:{type:"function",class:"left button red",label:"Delete File"},
+		},
+		builder: function(dom,data,ui) {
+			var update=function(k,v) {
+				ui.children.close.visible=data.data.valid;
+			};
+			data.data.bind("set","valid",update);
+			update();
+			dom.parent().addClass("mui-light");
+		}
+	});
+	var removeOverlay=Maggi.UI.overlay(dom,data,ui);
+};
+
 var buildFilesEdit = function(dom,data,ui) {
 	var int_data=Maggi({
 		files:data,
@@ -90,6 +163,10 @@ var buildFilesEdit = function(dom,data,ui) {
 			files: filesui(),
 		},
 		builder:function(dom,int_data,int_ui) {
+			dom.ui.actions.ui.adder.click(function() {
+				var v=0;
+				makeFileEditor($('body'),data[v],function() { data.remove(v); }, function() { ui.selected=null; });
+			});
 			int_ui.children.files.bind("set",function(k,v) {
 				var openfile = function(file) {
 					if (file.type!="directory") {
@@ -120,8 +197,8 @@ var paneuiheader = function() {
 			actions: {
 				popup:true, popuptrigger:"options",
 				children: {
-					closepane:{type:"function",label:"close pane", class:"button blue"},
-					insertpane:{type:"function",label:"insert pane", class:"button blue"},
+					closepane:{type:"function",label:"close pane", class:"button red"},
+					insertpane:{type:"function",label:"insert pane", class:"button"},
 					renamefile:{type:"function",label:"rename file", class:"button blue"}
 				}
 			},
@@ -136,9 +213,9 @@ var paneuiheader = function() {
 		order: ["options","editor_actions","preview_actions","file","files","mode","actions","editor","preview"],
 		class:"paneheader",
 		builder:function(dom,data,ui) {
-			ui.children.files.bind("set","selected",function(k,v) {
+			var updateSelected=function(k,v) {
 				data.file=data.files[v];
-			});
+			};
 			dom.ui.actions.ui.closepane.click(function() {
 				ui.children.actions.visible=false;
 			});
@@ -160,23 +237,31 @@ var paneuiheader = function() {
 					});
 				}
 			};
-			
 			var handlers=[
-				["set", "mode", updateMode]
+				[data,"set", "mode", updateMode],
+				[ui.children.files,"set","selected",updateSelected]
 			];
-			return installBindings(data,handlers);
+			return installBindings(handlers);
 		}
 	});
 }
 
-var installBindings=function(o,handlers) {
+var installBindings=function(handlers) {
 	$.each(handlers,function(idx,v) {
-		o.bind.apply(null,v);
-		v[2](v[1],o[v[1]]);
+		var o=v[0];
+		var e=v[1];
+		var k=v[2];
+		var f=v[3];
+		o.bind(e,k,f);
+		f(k,o[k]);
 	});
 	return function() {
 		$.each(handlers,function(idx,v) {
-			o.unbind.apply(null,v);
+			var o=v[0];
+			var e=v[1];
+			var k=v[2];
+			var f=v[3];
+			o.unbind(e,k,f);
 		});
 	};
 };
@@ -200,10 +285,10 @@ var paneui = function() {
 				data.edit.file=v;
 			};
 			var handlers=[
-				["set", "file", updateFile],
-				["set", "mode", updateMode]
+				[data,"set", "file", updateFile],
+				[data,"set", "mode", updateMode]
 			];
-			return installBindings(data,handlers);
+			return installBindings(handlers);
 		}
 	};
 }

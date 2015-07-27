@@ -70,7 +70,8 @@ var panesui = function(prjdata) {
 					d.files=prjdata.revisions[rev].files;
 					if (data!=null) {
 						d.mode=data.mode;
-						d.file=d.files[data.fileid];
+						//d.file=d.files[data.fileid];
+						u.children.header.children.files.selected=data.fileid;
 					}
 				};
 				build(data);

@@ -30,18 +30,30 @@
 	white-space:nowrap;
 }
 
-.icon {
+.pane .paneheader .icon {
 	height: 20px;
 	width: 20px;
 	padding: 6px;
-	background-repeat: no-repeat;
-	background-size: contain;
-	background-origin: content-box;
 	border-radius:3px;
 }
 
-.icon:hover {
-	background-color:#ccc;
+.paneheader > .file > * {
+	display:inline-block;
+}
+
+.icon {
+	background-repeat: no-repeat;
+	background-size: contain;
+	background-origin: content-box;
+}
+
+
+.mui .icon:hover {
+	background-color:hsla(224, 8%, 50%, 1);
+}
+
+.mui-light .icon:hover {
+	background-color:hsla(0, 0%, 85%, 1);
 }
 
 .icon.activated {
@@ -51,6 +63,14 @@
 
 .icon.activated:hover {
 	background-color:#8ff;
+}
+
+.icon.info {
+	background-image:url(icons/info.svg);
+}
+
+.icon.trash {
+	background-image:url(icons/trash.svg);
 }
 
 .pane #detach.icon {

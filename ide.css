@@ -62,8 +62,12 @@
 	width:0%;
 }
 
-#panes > * > * {
+.mui-light #panes > * > * {
 	border-left: 1px solid black;
+}
+
+.mui #panes > * > * {
+	border-left: 1px solid white;
 }
 
 #panes > * > *:first-child {
