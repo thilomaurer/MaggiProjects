@@ -129,7 +129,7 @@ var makeFileEditor=function(dom,file,setfile,onRemove,onClose) {
 			var validate=function() {
 				ui.children.close.enabled=validfile(data.file);
 			};
-			data.data.bind("set",validate);
+			data.bind("set","data",validate);
 			validate();
 		}
 	});
