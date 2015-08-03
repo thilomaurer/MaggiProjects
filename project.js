@@ -141,11 +141,12 @@ var initproject=function(username,email,name,sources,complete) {
 
 	var files=data.revisions[rev].files;
 	var nfloaded=0;
+	var mime={js:"text/javascript",html:"text/html",css:"text/css",txt:"text"};
 	$.each(sources, function(idx,k) {
 		var parts=k.split(".");
-		var type="text";
+		var type="txt";
 		if (parts.length>0) type=parts[parts.length-1];
-		var fileid=data.addfile({name:k,type:type});
+		var fileid=data.addfile({name:k,type:mime[type]});
 		$.get( k, null, function(rawdata) {
 			files[fileid].data=rawdata;
 			nfloaded++;

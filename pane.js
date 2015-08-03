@@ -29,7 +29,7 @@ var buildFilesEdit = function(dom,data,ui) {
 	var int_data=Maggi({
 		files:data,
 		actions:{
-			adder:{type:"plus",name:"Create New File..."}
+			adder:{type:"plus",name:"Add File..."}
 		},
 	});
 	var int_ui={
