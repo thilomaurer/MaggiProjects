@@ -2,7 +2,6 @@ var prj = function(dom,prjdata,setdata,oui,datachange) {
 
 	var data=Maggi({
 		project: prjdata,
-		panes: {},
 		view: prjdata.view
 	});
 
@@ -45,18 +44,16 @@ var panesui = function(prjdata) {
 				var rem=function(i) {
 					dom.parent().addClass("closepane");
 					setTimeout(function() {
-						var p=prjdata.view.panes;
-						p.order=orderRemove(p.order,i);
+						panes.order=orderRemove(panes.order,i);
 						panes.remove(i);
 					},200);
 				};
 				var ins=function(i) {
-					var p=prjdata.view.panes;
 					var k=parseInt(i)+1;
 					while (panes[k]!=null) k+=1;
 					k=k.toString();
 					panes.add(k,{fileid:panes[i].fileid,mode:"edit"});
-					p.order=orderInsert(p.order,i,k);
+					panes.order=orderInsert(panes.order,i,k);
 				};
 				d.bind("closepane",function(k,v) {
 					for (var i in panes) if (panes[i]===data) rem(i);
@@ -68,9 +65,9 @@ var panesui = function(prjdata) {
 				var build=function(data) {
 					var rev=prjdata.view.revision;
 					d.files=prjdata.revisions[rev].files;
+					d.addfile=projectfuncs(prjdata).addfile;
 					if (data!=null) {
 						d.mode=data.mode;
-						//d.file=d.files[data.fileid];
 						u.children.header.children.files.selected=data.fileid;
 					}
 				};

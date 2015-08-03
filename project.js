@@ -14,9 +14,7 @@ var project=function() {
 		freefileid: 0,
 		view:{
 			revision:0,
-			panes:{/*
-				1:{fileid:4,mode:"edit"},
-				2:{fileid:6,mode:"preview"},*/
+			panes:{
 				order:{}
 			}
 		},
@@ -25,6 +23,7 @@ var project=function() {
 			email:null
 		},
 		addfile: function(file) {
+			file=filedata(file);
 		        var fileid=data.freefileid++;
 			var revid=data.view.revision;
 			data.revisions[revid].files.add(fileid,file);
@@ -60,6 +59,19 @@ var project=function() {
 		}
 	});
 	return data;
+};
+
+var projectfuncs=function(data) {
+	var project={
+		addfile: function(file) {
+			file=filedata(file);
+			var fileid=data.freefileid++;
+			var revid=data.view.revision;
+			data.revisions[revid].files.add(fileid,file);
+			return fileid;
+		}
+	};
+	return project;
 };
 
 
@@ -133,10 +145,9 @@ var initproject=function(username,email,name,sources,complete) {
 		var parts=k.split(".");
 		var type="text";
 		if (parts.length>0) type=parts[parts.length-1];
-		var file=Maggi({name:k,type:type,data:null,cursor:{row:0,column:0}});
-		data.addfile(file);
+		var fileid=data.addfile({name:k,type:type});
 		$.get( k, null, function(rawdata) {
-			file.data=rawdata;
+			files[fileid].data=rawdata;
 			nfloaded++;
 			if (nfloaded==sources.length) filesloaded();
 		},"text");

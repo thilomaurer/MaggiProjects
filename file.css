@@ -1,19 +1,19 @@
 
-.file > * {
+.listitem > * {
 	padding:4px;
 }
 
-.file > #type {
+.listitem > #type {
 	vertical-align: bottom;
 	width:24px;
 }
 
-.file > #type > img {
+.listitem > #type > img {
 	display:block;
 	width:100%;
 }
 
-.file > #details.icon {
+.listitem > #details.icon {
 	padding:4px;
 	width:24px;
 	height:24px;
@@ -21,7 +21,7 @@
 	cursor:pointer;
 }
 
-.file > #details.icon:hover {
+.listitem > #details.icon:hover {
 	background-color:transparent;
 }
 
