@@ -56,7 +56,8 @@ var project=function() {
 		commitnbranch:function() {
 			data.commit();
 			return data.branch();
-		}
+		},
+		options:{colorscheme:true}
 	});
 	return data;
 };
@@ -78,6 +79,20 @@ var projectfuncs=function(data) {
 var projectui=function() {
 	return {
 		children:{
+			optionsicon:{type:"label",class:"options icon"},
+			options: {
+				popup:true, popuptrigger:"optionsicon",
+				children: {
+					colorscheme:{type:"checkbox",label:"Light Color Scheme",class:""},
+				},
+				builder:function(dom,data,ui) {
+					data.bind("set","colorscheme",function(k,v) {
+						var cls={"false":"mui-light","true":"mui"};
+						$('body').removeClass(cls[v]);
+						$('body').addClass(cls[!v]);
+					});
+				}
+			},
 			view: {children:{revision:{type:"text"}}},
 			revisions:{
 				type:"list",
@@ -100,7 +115,7 @@ var projectui=function() {
 				dom.text(data.revisions[rev].name);
 			}};
 			ui.children.add("name",name);
-			ui.add("order",["name","view","revisions","commitnbranch"]);
+			ui.add("order",["optionsicon","options","name","view","revisions","commitnbranch"]);
 			
 			revsethandler=function(k,v) {
 				if (k=="selected") { ui.children.revisions.visible=false; data.view.revision=v; }

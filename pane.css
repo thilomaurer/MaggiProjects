@@ -80,11 +80,11 @@
 	background-image:url(icons/trash.svg);
 }
 
-.pane #detach.icon {
+.icon.detach {
 	background-image: url(icons/detach.svg);
 }
 
-.pane #options.icon {
+.icon.options {
 	background-image: url(icons/options.svg);
 	float:right;
 }

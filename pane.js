@@ -73,7 +73,7 @@ var paneuiheader = function() {
 				selected:null,
 			},
 			mode:{type:"select",choices:{edit:{label:"edit"},preview:{label:"preview"}}},
-			options:{type:"label",class:"icon"},
+			options:{type:"label",class:"options icon"},
 			actions: {
 				popup:true, popuptrigger:"options",
 				children: {
@@ -85,7 +85,7 @@ var paneuiheader = function() {
 			preview_actions:{
 				data:{},
 				children:{
-					detach:{type:"label",class:"icon"}
+					detach:{type:"label",class:"detach icon"}
 				}
 			}
 		},
