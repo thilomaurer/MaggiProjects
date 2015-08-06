@@ -74,7 +74,7 @@ var fileeditui=function() {
 
 	return {
 		children:{
-			type: {type:"select",choices:{"text/javascipt":{label:"JS"},"text/html":{label:"HTML"},"text/css":{label:"CSS"},"text":{label:"TXT"}},class:"fillhorizontal"},
+			type: {type:"select",choices:{"text/javascript":{label:"JS"},"text/html":{label:"HTML"},"text/css":{label:"CSS"},"text":{label:"TXT"}},class:"fillhorizontal"},
 			name: {type:"input",placeholder:"filename"},
 			cursor: {
 				children: {

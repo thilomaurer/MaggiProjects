@@ -6,13 +6,17 @@
 .project > #name:hover {
 	background: #ddd;
 }
-
+.project #revision {
+	padding:5px;
+	border-radius: 5px;
+	margin-right:5px;
+}
 .project #revision:before {
 	content: "revision ";
 }
 
 .project #revision:hover {
-	background: #ddd;
+	background-color: hsla(0, 0%, 85%, 1);
 }
 
 .project #revisions.list .selected {
@@ -25,7 +29,6 @@
 
 .project > * {
 	display:inline-block;
-	margin-right:10px;
 }
 
 .project > .icon {
@@ -45,15 +48,6 @@
 .prj > #view {
 	height:100%;
 }
-/*
-.prj.selected {
-	height:0px;
-}
-
-.prj {
-	transition: height 200ms ease-in;
-}
-*/
 #panes > * {
 	table-layout:fixed;
 }

@@ -86,11 +86,12 @@ var projectui=function() {
 					colorscheme:{type:"checkbox",label:"Light Color Scheme",class:""},
 				},
 				builder:function(dom,data,ui) {
-					data.bind("set","colorscheme",function(k,v) {
+					var bindings=[[data,"set","colorscheme",function(k,v) {
 						var cls={"false":"mui-light","true":"mui"};
 						$('body').removeClass(cls[v]);
 						$('body').addClass(cls[!v]);
-					});
+					}]];
+					return installBindings(bindings);
 				}
 			},
 			view: {children:{revision:{type:"text"}}},
@@ -171,10 +172,11 @@ var initproject=function(username,email,name,sources,complete) {
 
 	var filesloaded = function() {
 		data.commitnbranch();
-		data.view.panes.add(0,{fileid:0,mode:"edit"});
-		data.view.panes.add(1,{fileid:1,mode:"edit"});
-		data.view.panes.add(2,{fileid:0,mode:"preview"});
-		data.view.panes.order=["0","1","2"];
+		complete(data);
+	}
+	if (sources.length==0) {
+		data.addfile({name:"main.js",type:mime["js"]});
+		data.commitnbranch();
 		complete(data);
 	}
 };
