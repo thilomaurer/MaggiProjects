@@ -3,6 +3,7 @@ var app = require('http').createServer(httpHandler),
     fs = require('fs'),
     mime = require('mime'),
     Maggi = require('Maggi.js'),
+    mkdirp = require('mkdirp'),
     port = process.argv[2] || 8000,
     log = {HTTP:false};
 
@@ -24,36 +25,67 @@ function httpHandler(req, res) {
 
 var allconnections=[];
 
-
-Maggi.db=function(fn) {
+Maggi.db=function(dbname) {
 	var db;
-	var fp=__dirname + "/" + fn;
+	var dbfp=__dirname + "/" + dbname;
+	var dbdir=dbfp + ".fs";
 	var enc="utf8";
-	var saving=false;
-	var save_again=false;
+	var saving={};
+	var save_again={};
 	var save=function() {
-		save_again=saving;
-		if (saving) return;
-		saving=true;
-		fs.writeFile(fp, JSON.stringify(db), enc, function(err) {
-			saving=false;
+		save_again[dbfp]=saving[dbfp];
+		if (saving[dbfp]) return;
+		saving[dbfp]=true;
+		fs.writeFile(dbfp, JSON.stringify(db), enc, function(err) {
+			saving[dbfp]=false;
 			if (err) console.log(JSON.stringify(err));
-			if (save_again) save();
+			if (save_again[dbfp]) save();
 		}); 
 	};
 	try {
-		db=fs.readFileSync(fp, enc);
+		db=fs.readFileSync(dbfp, enc);
 		db=JSON.parse(db);
 	} catch(e) {
 		db={data:{},rev:1};
 	}
 	db=Maggi(db);
 	db.bind("set","rev",save);
+
+	var savefile=function(dir,fn,v) {
+		var fp=dir+"/"+fn;
+		if (Maggi.sync.log) console.log("writing "+fp);
+		mkdirp(dir,function(err) {
+			if (err) console.error("Error creating dir "+dir+", Message: " +JSON.stringify(err))
+			else fs.writeFile(fp, v, enc, function(err) {
+				if (err) console.log("Error writing file "+fp+", Message "+JSON.stringify(err));
+			});
+		});
+	}
+
+	var saveFS=function(k,v) {
+		if (v instanceof Object) {
+			for (var k1 in v) 
+				saveFS(k.concat(k1),v[k1]);
+			return;
+		}
+		var fn=k;
+		var dir=dbdir;
+		if (k instanceof Array) { 
+			fn=k.pop(); 
+			dir=dir+"/"+k.join("/"); 
+		}
+		savefile(dir,fn,v);
+	};
+
+	
+	db.bind("set",saveFS);
 	return db;
 };
 
 var db=Maggi.db("data");
 Maggi.sync.log=true;
+
+
 
 io.sockets.on('connection', function(socket) {
 	console.log("connected "+socket.id);
