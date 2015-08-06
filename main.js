@@ -29,7 +29,13 @@ var main = function() {
 				}
 			}
 		);*/
-		initproject("Thilo Maurer","tm@thilomaurer.de","Maggi.UI.IDE",[],
+		initproject("Thilo Maurer","tm@thilomaurer.de","Maggi.UI.IDE",[
+			"jquery-2.0.3.js",
+			"Maggi.js",
+			"Maggi.UI.js",
+			"Maggi.UI.css",
+			"Maggi.UI.input.css",
+			"Maggi.UI.select.css"],
 			function(project) {
 				project.view.panes.add(0,{fileid:0,mode:"edit"});
 				project.view.panes.order=["0"];
