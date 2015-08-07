@@ -159,10 +159,12 @@ var initproject=function(username,email,name,sources,complete) {
 	var nfloaded=0;
 	var mime={js:"text/javascript",html:"text/html",css:"text/css",txt:"text"};
 	$.each(sources, function(idx,k) {
+		var fn=k;
+		if (k instanceof Array) {fn=k[0]; k=k[1];}
 		var parts=k.split(".");
 		var type="txt";
 		if (parts.length>0) type=parts[parts.length-1];
-		var fileid=data.addfile({name:k,type:mime[type]});
+		var fileid=data.addfile({name:fn,type:mime[type]});
 		$.get( k, null, function(rawdata) {
 			files[fileid].data=rawdata;
 			nfloaded++;

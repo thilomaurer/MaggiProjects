@@ -7,9 +7,15 @@ var app = require('http').createServer(httpHandler),
     port = process.argv[2] || 8000,
     log = {HTTP:false};
 
+
 function httpHandler(req, res) {
 	var fn=req.url;
 	if (log.HTTP) console.log("GET " + fn);
+	var dir="projects";
+	if (fn.indexOf("/"+dir+"/")==0) {
+		req.url=req.url.substring(dir.length+1);
+		return projectsHttpHandler(req,res);
+	}
 	if (fn=="/") fn="/index.html";
 	var fp=__dirname + fn;
 	fs.readFile(fp, function(err, data) {
@@ -83,7 +89,7 @@ var writefile=function(fp,data,enc) {
 	save();
 }
 
-
+/*
 db.data.projects.bind(["set","add"],function(k,v) {
 	if (k.length==6&&k[5]=="data"&&k[1]=="revisions"&&k[3]=="files") {
 		var p=k[0];
@@ -97,6 +103,43 @@ db.data.projects.bind(["set","add"],function(k,v) {
 		writefile(fp, v, enc);
 	}
 });
+*/
+String.prototype.endsWith = function(suffix) {
+    return this.indexOf(suffix, this.length - suffix.length) !== -1;
+};
+
+
+function projectsHttpHandler(req,res) {
+	var fn=decodeURIComponent(req.url);
+	var k=fn.split("/"); k.shift();
+	console.log(JSON.stringify(k));
+	var prjname=k.shift();
+	//console.log(prjid);
+	var prjs=db.data.projects;
+	var prj=null;
+	for (var prjid in prjs) {
+		var prj=prjs[prjid];
+		var revid=prj.view.revision;
+		var rev=prj.revisions[revid];
+		if (rev.name==prjname) {
+			var files=rev.files;
+			if (k[k.length-1]=="") k[k.length-1]="index.html";
+			var fn=k.join("/");
+			for (var k in files) {
+				var file=files[k];
+				if (file.name==fn) {
+					res.writeHead(200, {"Content-Type": file.type});
+					res.end(file.data);
+					return;
+				}
+			}
+
+		}
+	}
+	res.writeHead(500);
+	return res.end('Error loading '+req.url);
+}
+
 
 io.sockets.on('connection', function(socket) {
 	console.log("connected "+socket.id);
