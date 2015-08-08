@@ -107,7 +107,8 @@ var projectui=function() {
 				select:"single",
 				selected:null
 			},
-			commitnbranch: {type:"function",label:"commit revision",class:"button"}
+			commitnbranch: {type:"function",label:"commit revision",class:"button"},
+			run: {type:"label",label:"Run",class:"button"}
 		},
 		class:"project",
 		builder:function(dom,data,ui) {
@@ -116,7 +117,7 @@ var projectui=function() {
 				dom.text(data.revisions[rev].name);
 			}};
 			ui.children.add("name",name);
-			ui.add("order",["optionsicon","options","name","view","revisions","commitnbranch"]);
+			ui.add("order",["optionsicon","options","name","view","revisions","commitnbranch","run"]);
 			
 			revsethandler=function(k,v) {
 				if (k=="selected") { ui.children.revisions.visible=false; data.view.revision=v; }

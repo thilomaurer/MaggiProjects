@@ -68,6 +68,7 @@ Maggi.sync.log=true;
 
 
 var writefile=function(fp,data,enc) {
+	if (enc==null) enc="utf8";
 	var saving=false;
 	var save_again=false;
 	var save=function() {
@@ -75,7 +76,6 @@ var writefile=function(fp,data,enc) {
 		if (saving) return;
 		saving=true;
 		var dir=fp.substring(0,fp.lastIndexOf("/"));
-		console.log(fp);
 		var done=function(err) {
 			saving=false;
 			if (err) console.log(JSON.stringify(err));
@@ -89,21 +89,32 @@ var writefile=function(fp,data,enc) {
 	save();
 }
 
-/*
-db.data.projects.bind(["set","add"],function(k,v) {
-	if (k.length==6&&k[5]=="data"&&k[1]=="revisions"&&k[3]=="files") {
-		var p=k[0];
-		var r=k[2];
-		var f=k[4];
+var exportRevision=function(revision) {
+	for (var k in revision.files) {
+		var file=revision.files[k];
+		var fp=__dirname + "/project/" + revision.name + "/" +file.name;
+		writefile(fp, file.data);
+	}
+};
+
+db.bind(["set","add"],function(k,v) {
+	if (
+		k.length==8&&
+		k[0]=="data"&&
+		k[1]=="projects"&&
+		k[3]=="revisions"&&
+		k[5]=="files"&&
+		k[7]=="data"
+	) {
+		var p=k[2];
+		var r=k[4];
+		var f=k[6];
 		var project=db.data.projects[p];
 		var revision=project.revisions[r];
-		var file=revision.files[f];
-		var fp=__dirname + "/project/" + revision.name + "/" +file.name;
-		var enc="utf8";
-		writefile(fp, v, enc);
+		exportRevision(revision);
 	}
 });
-*/
+
 String.prototype.endsWith = function(suffix) {
     return this.indexOf(suffix, this.length - suffix.length) !== -1;
 };
@@ -114,7 +125,6 @@ function projectsHttpHandler(req,res) {
 	var k=fn.split("/"); k.shift();
 	console.log(JSON.stringify(k));
 	var prjname=k.shift();
-	//console.log(prjid);
 	var prjs=db.data.projects;
 	var prj=null;
 	for (var prjid in prjs) {
