@@ -6,4 +6,4 @@ fi
 if [ "$1" == "reset" ]; then
 	echo "{}" > data
 fi
-$nodejs ./ide-server.js
+$nodejs ./ide-server.js 8000

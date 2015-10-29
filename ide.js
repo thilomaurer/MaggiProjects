@@ -27,7 +27,7 @@ var prj = function(dom,prjdata,setdata,oui,datachange) {
 	ui=ui();
 
 	return Maggi.UI(dom,data,ui);
-}
+};
 
 var panesui = function(prjdata) {
 	var panes=null;
@@ -87,8 +87,8 @@ var panesui = function(prjdata) {
 			data.bind("set","order",function(k,v) {ui.order=v;});
 			ui.order=data.order;
 		}
-	}
-}
+	};
+};
 
 var ide = function(dom,data,setdata,oui,datachange) {
 	
@@ -97,31 +97,33 @@ var ide = function(dom,data,setdata,oui,datachange) {
 	var ui = {
 		children: {
 			projects: {
+			    wrapchildren:true,
+			    class:"tablerows",
 				//type:"list",
 				childdefault:{type:"user",user:prj},
-				//select:"single",
-				//selected:null,
+				select:"single",
+				selected:null,
 			}
 		},
 		class:"ide mui-light"
 	};
 	Maggi.UI(dom,data,ui);
 	return {data:data,ui:ui};
-}
+};
 
 
 var orderRemove=function(o,k) {
 	var order=toArray(o);
 	order.splice(order.indexOf(k),1);
 	return order;
-}
+};
 
 var orderInsert=function(o,k,i) {
 	var order=toArray(o);
 	order.splice(order.indexOf(k)+1,0,i);
 	return order;
-}
+};
 
 var toArray = function(o) {
 	return Object.keys(o).sort().map(function(k) { return o[k]; });
-}
+};

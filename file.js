@@ -1,5 +1,5 @@
 var filedata=function(o) {
-	var fd={name:null,type:null,data:null,cursor:{row:0,column:0}};
+	var fd={name:null,type:null,data:null,cursor:{row:0,column:0},scope:"client"};
 	$.extend(fd,o);
 	return Maggi(fd);
 };
@@ -30,6 +30,15 @@ var fileui=function() {
 	ui.editvisible=false;
 	ui=Maggi(ui);
 	ui.builder=function(dom,data,ui) {
+	    
+	    var repairfile=function(data) {
+    	    var bp=filedata();
+    	    for (var k in bp) {
+    	        if (data[k]==null) data.add(k,bp[k]);
+    	    }
+	    };
+	    repairfile(data);
+	    
 		dom.ui.details.click(function() {
 			ui.editvisible=true;
 			return false;
@@ -57,6 +66,10 @@ var fileeditui=function() {
 			    "image/svg+xml":{label:"SVG"}
 		    
 			},class:"fillhorizontal"},
+			scope: {type:"select",choices:{
+			    "client":{label:"Client"},
+			    "server":{label:"Server"}
+			},class:"fillhorizontal"}, 
 			name: {type:"input",placeholder:"filename"},
 			cursor: {
 				children: {

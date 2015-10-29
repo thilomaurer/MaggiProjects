@@ -35,7 +35,7 @@ var main = function() {
 			);
 		}
 		if (c==32) {
-			initproject("Thilo Maurer","tm@thilomaurer.de","Maggi.UI.IDE",[
+			initproject("Thilo Maurer","tm@thilomaurer.de","New Empty Project",[
 				"jquery-2.0.3.js",
 				"Maggi.js",
 				"Maggi.UI.js",
@@ -47,7 +47,7 @@ var main = function() {
 					project.view.panes.order=["0"];
 					if (m.data.projects[0]==null) {
 						m.data.projects.add(0,project);
-						m.ui.children.projects.selected=0;
+						m.ui.children.projects.selected="0";
 					}
 				}
 			);

@@ -63,7 +63,7 @@ Maggi.db=function(dbname,bindfs) {
 	return db;
 };
 
-var db=Maggi.db("data",true);
+var db=Maggi.db("data",false);
 Maggi.sync.log=true;
 
 
