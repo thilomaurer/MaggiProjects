@@ -21,7 +21,7 @@ var prj = function(dom,prjdata,setdata,oui,datachange) {
 					}
 				}
 			},
-			class:"prj tablerows"
+			class:"prj tablerows expand"
 		};
 	};
 	ui=ui();
@@ -34,7 +34,7 @@ var panesui = function(prjdata) {
 	return {
 		wrapchildren:true,
 		wrap:true,
-		class:"tablecolumns",
+		class:"tablecolumns expand",
 		order:{},
 		childdefault:{
 			type:"user",
@@ -98,7 +98,7 @@ var ide = function(dom,data,setdata,oui,datachange) {
 		children: {
 			projects: {
 			    wrapchildren:true,
-			    class:"tablerows",
+			    class:"tablerows expand",
 				//type:"list",
 				childdefault:{type:"user",user:prj},
 				select:"single",

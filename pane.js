@@ -71,6 +71,7 @@ var paneuiheader = function() {
 				order:[],
 				builder:buildFilesEdit,
 				selected:null,
+				class:"scroll"
 			},
 			mode:{type:"select",choices:{edit:{label:"edit"},preview:{label:"preview"}}},
 			options:{type:"label",class:"options icon"},
@@ -124,7 +125,7 @@ var paneuiheader = function() {
 			return installBindings(handlers);
 		}
 	});
-}
+};
 
 var installBindings=function(handlers) {
 	$.each(handlers,function(idx,v) {
@@ -154,7 +155,7 @@ var paneui = function() {
 			edit:{type:"editor"}
 		},
 		order:["header","edit"],
-		class:"pane tablerows",
+		class:"pane tablerows expand",
 		builder: function(dom,data,ui) {
 			ui.children.header.add("data",data);
 			var updateMode = function(k,v) {
@@ -171,4 +172,22 @@ var paneui = function() {
 			return installBindings(handlers);
 		}
 	};
-}
+};
+
+var pane=function(m,dom) {
+    m.data=panedata();
+    m.data.files.add("0",filedata({name:"file.css",type:"text/css",data:""}));
+    m.data.files.add("1",filedata({name:"file.js",type:"text/javascript",data:""}));
+    m.data.files.add("2",filedata({name:"file.html",type:"text/html",data:"fsdfsdf"}));
+    for (i=3;i<35;i++){
+        m.data.files.add(i,filedata({name:"file"+i+".html",type:"text/html",data:"fsdfsdf"}));
+    }
+    //m.ui=paneuiheader();
+    //m.ui.children.files.selected="0";  
+    m.ui=paneui();
+    m.ui.children.header.children.files.selected="0";
+    dom.addClass("mui");
+
+};
+
+

@@ -8,37 +8,40 @@
 	height:100%;
 }
 
-.pane #file {
+.paneheader #file {
 	display:inline-block;
 }
-.pane #mode {
+.paneheader #mode {
 	display:inline-table;
 }
 
-.pane #actions .button {
+.paneheader #actions .button {
 	margin:5px;
 }
 
-.pane #editor_actions,
-.pane #preview_actions {
+.paneheader #editor_actions,
+.paneheader #preview_actions {
 	float:right;
 }
 
-.pane .paneheader > * {
+.paneheader > * {
 	margin:1px;
 }
 
-.pane .paneheader .icon {
+.paneheader .icon {
 	height: 20px;
 	width: 20px;
 	padding: 6px;
 	border-radius:5px;
 }
 
+.mui.paneheader > .listitem:hover,
 .mui .paneheader > .listitem:hover {
 	background-color:hsla(224, 8%, 42%, 1);
 	border-radius:5px;
 }
+
+.mui-light.paneheader > .listitem:hover,
 .mui-light .paneheader > .listitem:hover {
 	background-color:hsla(0, 0%, 85%, 1);
 	border-radius:5px;

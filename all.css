@@ -31,7 +31,18 @@ table {
 .tablecolumns,
 .tablegrid {
 	display:table;
+}
+
+.expand {
 	width:100%;
+	height:100%;
+}
+
+.expand-hrz {
+	width:100%;
+}
+
+.expand-vrt {
 	height:100%;
 }
 

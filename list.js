@@ -4,7 +4,7 @@ var listui=function() {
 		childdefault:listitemui,
 		select:"single",
 		selected:"",
-		class:"selectable tablegrid",
+		class:"selectable tablegrid expand-hrz",
 		builder:function(dom,data,ui) {
 			var empty=(data===null);
 			if (empty) empty=(Object.keys(data).length===0);
@@ -36,4 +36,4 @@ var list=function(dom) {
     m.data={lst:{a:{type:"text",name:"item a"},b:{type:"text/html",name:"item b"}}};
     m.ui={children:{lst:listui()}};
     //m.ui.class="mui";
-}
+};

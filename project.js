@@ -144,8 +144,7 @@ var projectui_info=function() {
 			Maggi.UI(dom,d,{children:{name:{type:"text"}/*,date:{type:"text"}*/}});
 		}
 	};
-}
-
+};
 
 
 var initproject=function(username,email,name,sources,complete) {

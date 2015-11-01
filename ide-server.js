@@ -7,7 +7,6 @@ var app = require('http').createServer(httpHandler),
     port = process.argv[2] || 8000,
     log = {HTTP:false};
 
-
 function httpHandler(req, res) {
 	var fn=req.url;
 	if (log.HTTP) console.log("GET " + fn);
@@ -38,13 +37,19 @@ Maggi.db=function(dbname,bindfs) {
 	var enc="utf8";
 	try {
 		db=fs.readFileSync(dbfp, enc);
+	} catch(e) {
+	    console.log("Initializing new Maggi.db '"+dbname+"'");
+	    db='{"data":{},"rev":1}';
+	}
+	try {
 		db=JSON.parse(db);
 	} catch(e) {
-		db={data:{},rev:1};
+		console.log("Error parsing Maggi.db '"+dbname+"': "+e);
+		process.exit(1);
 	}
 	db=Maggi(db);
 	db.bind("set","rev",function() {
-		writefile(dbfp, JSON.stringify(db), enc);
+		writefile(dbfp, JSON.stringify(db, null, '\t'), enc);
 	});
 
 	var saveFS=function(k,v) {
@@ -65,7 +70,6 @@ Maggi.db=function(dbname,bindfs) {
 
 var db=Maggi.db("data",false);
 Maggi.sync.log=true;
-
 
 var writefile=function(fp,data,enc) {
 	if (enc==null) enc="utf8";
@@ -119,7 +123,6 @@ String.prototype.endsWith = function(suffix) {
     return this.indexOf(suffix, this.length - suffix.length) !== -1;
 };
 
-
 function projectsHttpHandler(req,res) {
 	var fn=decodeURIComponent(req.url);
 	var k=fn.split("/"); k.shift();
@@ -146,10 +149,9 @@ function projectsHttpHandler(req,res) {
 
 		}
 	}
-	res.writeHead(500);
+	res.writeHead(404);
 	return res.end('Error loading '+req.url);
 }
-
 
 io.sockets.on('connection', function(socket) {
 	console.log("connected "+socket.id);

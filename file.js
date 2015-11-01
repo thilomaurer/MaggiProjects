@@ -4,26 +4,6 @@ var filedata=function(o) {
 	return Maggi(fd);
 };
 
-var filesui=function() { 
-	var ui=listui();
-	ui.childdefault=fileui;
-	ui.builder=function(dom,data,ui) {
-		ui.children.bind("set",function(k,v) {
-			if (k[1]=="editvisible"&&v===true) {
-				k=k[0];
-				makeFileEditor($('body'),data[k],function(newdata) {
-					data[k]=newdata;
-				},function() { 
-					data.remove(k); 
-				},function() { 
-					ui.children[k].editvisible=false; 
-				});
-			}
-		});
-	};
-	return ui;
-};
-
 var fileui=function() {
 	var ui=listitemui();
 	ui.children.details={type:"label", class:"icon info", label:"\u00A0"};
@@ -102,8 +82,8 @@ var makeFileEditor=function(dom,file,setfile,onRemove,onClose) {
 		data:file,
 		upload:null
 	});
-	var validfile=function(k,v) {
-		return data.data.name!=="";
+	var validfile=function(file) {
+		return file.name!=="";
 	};
 	var ui=Maggi({
 		type:"object",
@@ -116,16 +96,18 @@ var makeFileEditor=function(dom,file,setfile,onRemove,onClose) {
 			delete:{type:"function",class:"left button red",label:"Delete File"},
 		},
 		builder: function(dom,data,ui) {
-			dom.parent().addClass("mui-light");
-			data.bind("set","upload",function(k,v) {
-				data.data={name:v.name,type:v.mimeType,data:v.data,cursor:{row:0,column:0}};
-				setfile(data.data);
-			});
-			var validate=function() {
-				ui.children.close.enabled=validfile(data.file);
-			};
-			data.bind("set","data",validate);
-			validate();
+            dom.parent().addClass("mui-light");
+            data.bind("set","upload",function(k,v) {
+                    data.data={name:v.name,type:v.mimeType,data:v.data,cursor:{row:0,column:0}};
+                    setfile(data.data);
+            });
+            var validate=function(k) {
+                    if (k=="data"||k[0]=="data")
+                            ui.children.close.enabled=validfile(data.data);
+            };
+            data.bind("set","data",validate);
+            data.bind("set",validate);
+            validate("data");
 		}
 	});
 	var removeOverlay=Maggi.UI.overlay(dom,data,ui);
@@ -162,10 +144,7 @@ var fileinput=function(dom,data,setdata,ui) {
 	};
 };
 
-
-var file=function(dom) {
-    var m=Maggi.UI_devel(dom);
+var file=function(m,dom) {
     m.data=filedata({name:"test.name",type:"text"});
     m.ui=fileui();
-
-}
+};
