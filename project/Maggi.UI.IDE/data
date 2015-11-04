@@ -111,8 +111,8 @@
 								"type": "text/javascript",
 								"data": "/*!\n * Maggi.js JavaScript Library \n * https://home.thilomaurer.de/Maggi.js\n *\n * Copyright (C) 2014-05-22 Thilo Maurer\n * All Rights Reserved.\n * \n */\n\nvar Maggi=function(other) {\n\tvar d={},p={},events={};\n\n\tif (!(other instanceof Date)) if (!(other instanceof Function)) if (other instanceof Object) if (other._hasMaggi) return other;\n\n\tvar trigger = function(e,key,value,oldv) {\n\t\tvar fns=events[e];\n\t\tif (fns==null) return;\n\t\tfor (var i=0; i<fns.length; i++) {\n\t\t\tvar f=fns[i];\n\t\t\tif (!f.keys||(f.keys.indexOf(key)>-1)) {\n\t\t\t\tif (Maggi.log==true) \n\t\t\t\t\tconsole.log(\"trigger \"+e+\" for \"+JSON.stringify(key));\n\t\t\t\tf.fn(key,value,oldv,e);\n\t\t\t}\n\t\t}\n\t}\n\n\tfunc = {\n\t\tadd: function(key,value) {\n\t\t\tvar get = function() {\n\t\t\t\t\tvar v=d[key];\n\t\t\t\t\ttrigger(\"get\",key,v);\n\t\t\t\t\treturn v; \n\t\t\t};\n\t\t\tvar set = function(v) {\n\t\t\t\tif (!(v instanceof Date)) if (!(v instanceof Function)) if (v instanceof Object) if (v._hasMaggi!=true) v=Maggi(v);\n\t\t\t\tvar oldv=d[key];\n\t\t\t\tif (v==oldv) return;\n\t\t\t\tuninstallBubble(oldv);\n\t\t\t\tinstallBubble(v);\n\t\t\t\td[key]=v;\n\t\t\t\ttrigger(\"set\",key,v,oldv);\n\t\t\t}\n\t\t\tvar bubbleEvents=[\"set\",\"remove\",\"add\"];\n\t\t\tvar bubble=function(e,k,v,oldv) {\n\t\t\t\tvar bubblekey;\n\t\t\t\tif (k instanceof Array)\n\t\t\t\t\tbubblekey=k.slice(0);\n\t\t\t\telse \n\t\t\t\t\tbubblekey=[k];\n\n\t\t\t\tbubblekey.unshift(key);\n\t\t\t\ttrigger(e,bubblekey,v,oldv);\n\t\t\t};\n\t\t\tvar bubbleFuncs={};\n\t\t\tbubbleEvents.forEach(function(e) {\n\t\t\t\tbubbleFuncs[e]=function(k,v,oldv) { bubble(e,k,v,oldv) };\n\t\t\t});\n\t\t\tvar installBubble=function(value) {\n\t\t\t\t//propage child events to parent\n\t\t\t\tif (value&&value._hasMaggi) {\n\t\t\t\t\tbubbleEvents.forEach(function(e) {\n\t\t\t\t\t\tvalue.bind(e,bubbleFuncs[e]);\n\t\t\t\t\t});\n\t\t\t\t}\n\t\t\t}\n\t\t\tvar uninstallBubble=function(value) {\n\t\t\t\tif (value&&value._hasMaggi) {\n\t\t\t\t\tbubbleEvents.forEach(function(e) {\n\t\t\t\t\t\tvalue.unbind(e,bubbleFuncs[e]);\n\t\t\t\t\t});\n\t\t\t\t}\n\t\t\t}\n\t\t\tif (p.hasOwnProperty(key)) { \n\t\t\t\t//console.log('Maggi: set by add for property \"'+key+'\" of '+JSON.stringify(p)+'.');\n\t\t\t\tset(value);\n\t\t\t\treturn;\n\t\t\t} else {\n\t\t\t\tif (!(value instanceof Date)) if (!(value instanceof Function)) if (value instanceof Object) if (value._hasMaggi!=true) value=Maggi(value);\n\t\t\t\td[key]=value;\n\t\t\t\tvar prop={get: get, set: set, enumerable: true, configurable: true};\n\t\t\t\tObject.defineProperty(p,key,prop);\n\t\t\t\tinstallBubble(value);\n\t\t\t\ttrigger(\"add\",key,value);\n\t\t\t}\n\t\t},\n\t\tremove: function(key) {\n\t\t\tif (!d.hasOwnProperty(key)) return;\n\t\t\tvar value=d[key];\n\t\t\tdelete p[key];\n\t\t\tdelete d[key];\n\t\t\ttrigger(\"remove\",key,value); //fire remove last time\n\t\t\tp.unbind(key);               //before removing all bindings for key\n\t\t},\n\t\tbind: function() {\n\t\t\tvar ts,ks,fn;\n\t\t\tvar arg=arguments;\n\t\t\tvar n=arg.length;\n\t\t\tvar makeArray = function(idx) {\n\t\t\t\tvar a=arg[idx];\n\t\t\t\tif (a instanceof Array) return a;\n\t\t\t\treturn [a];\n\t\t\t}\n\t\t\tif (n>=3) {\n\t\t\t\tts=makeArray(0);\t\n\t\t\t\tks=makeArray(1);\t\n\t\t\t\tfn=makeArray(2);\t\n\t\t\t}\n\t\t\tif (n==2) {\n\t\t\t\tts=makeArray(0);\t\n\t\t\t\tks=null;\t\n\t\t\t\tfn=makeArray(1);\t\n\t\t\t}\n\t\t\tif (n==1) {\n\t\t\t\tts=[\"set\"];\t\n\t\t\t\tks=null;\t\n\t\t\t\tfn=makeArray(0);\t\n\t\t\t}\n\t\t\tfor (var ik in ts) {\n\t\t\t\tvar k=ts[ik];\n\t\t\t\tif (events[k]==null) events[k]=[];\n\t\t\t\tfor (var i in fn) {\n\t\t\t\t\tevents[k].push({fn:fn[i],keys:ks});\n\t\t\t\t}\n\t\t\t}\n\t\t},\n\t\tunbind: function(ks,fn) {\n\t\t\tif (typeof ks === 'function') { fn=ks; ks=[\"set\"]; }\n\t\t\tif (typeof ks === \"string\") ks=[ks];\n\t\t\tif (fn==null) {\n\t\t\t\t//remove all bindings for each keys in ks\n\t\t\t\tfor (var ik in ks) {\n\t\t\t\t\tvar k=ks[ik];\n\t\t\t\t\tevents[k]=[];\n\t\t\t\t}\n\t\t\t\treturn;\n\t\t\t}\n\t\t\tvar indexOf=function(A,propname,value) {\n\t\t\t\tif (!A) return -1;\n\t\t\t\tfor (var idx=0;idx<A.length;idx++) {\n\t\t\t\t\tvar v=A[idx];\n\t\t\t\t\tif (v.hasOwnProperty(propname))\n\t\t\t\t\t\tif (v[propname]==value) return idx;\n\t\t\t\t}\n\t\t\t\treturn -1;\n\t\t\t};\n\t\t\tif (!(fn instanceof Array)) fn=[fn];\n\t\t\tfor (var ik in ks) {\n\t\t\t\tvar k=ks[ik];\n\t\t\t\tif (events[k]) for (var i in fn) { \n\t\t\t\t\t//var idx=events[k].indexOf(fn[i]);\n\t\t\t\t\tvar idx=indexOf(events[k],\"fn\",fn[i]);\n\t\t\t\t\tif (idx>=0) events[k].splice(idx,1);\n\t\t\t\t}\n\t\t\t}\n\t\t},\n\t\tset: function(kv) {\n\t\t\tfor (var i = 0; i<kv.length; i++) {\n\t\t\t\tvar k=kv[i][0];\n\t\t\t\tvar v=kv[i][1];\n\t\t\t\td[k]=v;\n\t\t\t\ttrigger(\"set\",k,v);\n\t\t\t}\n\t\t},\n\t\ttrigger: trigger,\n\t\t_hasMaggi: true\n\t};\n\n\tvar myeach=function(o,action) {\n\t\tif (o)\n\t\t\tfor (var k in o) \n\t\t\t\taction(k,o[k]);\n\t};\n\tmyeach(func,function(key,value) {\n\t\tObject.defineProperty(p,key,{value:value, enumerable:false, writeable:false, configurable:false});\n\t});\n\tmyeach(other,p.add);\n\n\treturn p;\n};\n\nMaggi.apply = function(data,d) {\n\tvar e=d.e; var k=d.k; var v=d.v;\n\tif (Maggi.apply.log) console.log(\"Maggi.apply: e=\"+e+\", k=\"+k);\n\tif (k==null) {\n\t\tfor (var k in v) \n\t\t\tdata.add(k,v[k]);\n\t} else if (k instanceof Array) {\n\t\tvar k0=k.shift();\n\t\tvar d0=data[k0];\n\t\tif (d0==null) {\n\t\t\tvar o;\n\t\t\tvar oo=v;\n\t\t\tfor (var i=k.length-1;i>=0;i--) {\n\t\t\t\to={}; o[k[i]]=oo;\n\t\t\t\too=o;\n\t\t\t}\n\t\t\tdata.add(k0,oo);\n\t\t} else {\n\t\t\tif (k.length==1) d.k=k[0];\n\t\t\tMaggi.apply(d0,d);\n\t\t}\n\t} else {\n\t\tif (e==\"set\")\n\t\t\tdata[k]=v;\n\t\tif (e==\"remove\")\n\t\t\tdata.remove(k);\n\t\tif (e==\"add\")\n\t\t\tdata.add(k,v);\n\t}\n};\n\nvar log=function(tag,socket,d) {\n\tif (Maggi.sync.log!=true) return\n\tvar text=tag + \" client=\" + socket.id;\n\tif (d!=null) text += \" \" + JSON.stringify(d,function(k,v) {if (k==\"v\") return v.length; else return v;});\n\tconsole.log(text);\n};\n\nMaggi.sync = function(socket,db,client) {\n\tvar applying=false;\n\tvar emit=function(d) { log(\"Maggi send\",socket,d); socket.emit(\"Maggi\",JSON.stringify(d)); };\n\tvar handler=function(k,v,oldv,e) {\n\t\tif (applying) return;\n\t\tdb.rev+=1;\n\t\temit({f:\"delta\",e:e,k:k,v:v,rev:db.rev});\n\t};\n\tvar apply=function(d) {\n\t\tapplying=true;\n\t\tMaggi.apply(db.data,d);\n\t\tdb.rev=d.rev;\n\t\tapplying=false; \n\t}\n\tdb.data.bind([\"set\",\"add\",\"remove\"],handler);\n\tsocket.on('Maggi', function(json) {\n\t\tvar d=JSON.parse(json);\n\t\tlog(\"Maggi recv\", socket, d);\n\t\tif (d.f==\"delta\") {\n\t\t\tif (d.rev==db.rev+1) {\n\t\t\t\tapply(d);\n\t\t\t} else {\n\t\t\t\temit({f:\"error\",id:\"old_rev\", cur_rev:db.rev, req_rev:d.rev});\n\t\t\t}\n\t\t}\n\t\tif (d.f==\"request\") \n\t\t\temit({f:\"response\",e:\"add\",k:null,v:db.data,rev:db.rev});\n\t\tif (d.f==\"response\") \n\t\t\tapply(d);\n\t\tif (d.f==\"error\") \n\t\t\tif (client&&d.id==\"old_rev\") emit({f:\"request\"});\n\n\t});\n\tsocket.on('disconnect',function() {\n\t\tdb.data.unbind(handler);\n\t\tconsole.log(\"disconnected \" + socket.id);\n\t});\n\tif (client) emit({f:\"request\"});\n};\n\nMaggi.serve = function(socket,db) {\n\tlog(\"Maggi.serve\",socket);\n\tMaggi.sync(socket,db,false);\n};\n\nMaggi.client = function(socket,data) {\n\tvar db={data:data,rev:0};\n\tMaggi.sync(socket,db,true);\n};\n\nif (typeof module !== 'undefined')\n\tmodule.exports = Maggi;\n",
 								"cursor": {
-									"row": 0,
-									"column": 0
+									"row": 35,
+									"column": 112
 								},
 								"scope": "client"
 							},
@@ -164,15 +164,15 @@
 					"revision": 2,
 					"panes": {
 						"0": {
-							"fileid": 0,
+							"fileid": "1",
 							"mode": "edit"
 						},
 						"2": {
-							"fileid": "5",
+							"fileid": "4",
 							"mode": "edit"
 						},
 						"9": {
-							"fileid": 0,
+							"fileid": "3",
 							"mode": "edit"
 						},
 						"order": {
@@ -357,7 +357,7 @@
 							"mode": "edit"
 						},
 						"1": {
-							"fileid": 0,
+							"fileid": "1",
 							"mode": "edit"
 						},
 						"2": {
@@ -381,5 +381,5 @@
 			}
 		}
 	},
-	"rev": 83
+	"rev": 91
 }
