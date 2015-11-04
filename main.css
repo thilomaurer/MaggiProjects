@@ -1,0 +1,105 @@
+
+body, h1, h2, h3, h4 {
+	margin: 0;
+	padding: 0;
+	cursor: default;
+}
+
+@font-face {
+	font-family: 'Open Sans';
+	font-style: normal;
+	font-weight: 400;
+	src: local('Open Sans'), local('OpenSans'), url(cJZKeOuBrn4kERxqtaUH3T8E0i7KZn-EPnyo3HZu7kw.woff) format('woff'), url(https://themes.googleusercontent.com/static/fonts/opensans/v8/cJZKeOuBrn4kERxqtaUH3T8E0i7KZn-EPnyo3HZu7kw.woff) format('woff');
+}
+
+html {
+	height:100%;
+	width:100%;
+}
+
+body {
+	font-family: 'Open Sans', sans-serif;
+}
+
+table {
+	border-collapse: collapse;
+	border-spacing:0px;
+}
+
+.table,
+.tablerows,
+.tablecolumns,
+.tablegrid {
+	display:table;
+}
+
+.expand {
+	width:100%;
+	height:100%;
+}
+
+.expand-hrz {
+	width:100%;
+}
+
+.expand-vrt {
+	height:100%;
+}
+
+.flexrows {
+    display: flex;
+    flex-flow: column;
+}
+
+.flexpand > * {
+    flex:1 1 auto;
+}
+
+.flexanimate > * {	
+	transition:flex 0.2s ease-out;
+	flex:1 1 0;
+	overflow:hidden;
+}
+
+.flexanimate > .closing {
+	flex:0.000001 0 0;
+}
+
+.rows {
+    display: flex;
+    flex-flow: column;
+}
+
+.rows > * {
+    flex:1 1 0;
+}
+
+.cols {
+    display: flex;
+    flex-flow: row;
+}
+
+.cols > * {
+    flex:1 1 0;
+}
+
+.flexcolumns {
+    display: flex;
+    flex-flow: row;
+}
+
+.tablecolumns > * {
+	display:table-cell;
+}
+
+.tablerows > * {
+	display:table-row;
+}
+
+.tablegrid > * {
+	display:table-row;
+}
+
+.tablegrid > * > * {
+	display:table-cell;
+}

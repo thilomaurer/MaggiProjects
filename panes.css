@@ -1,0 +1,12 @@
+.mui-light.panes > *,
+.mui-light .panes > * {
+	border-left: 1px solid black;
+}
+.mui.panes > *,
+.mui .panes > * {
+	border-left: 1px solid white;
+}
+
+.panes > *:first-child {
+	border-left: none;
+}

@@ -42,8 +42,8 @@ var buildFilesEdit = function(dom,data,ui) {
 		builder:function(dom,int_data,int_ui) {
 			int_ui.children.actions.bind("set","selected",function(k,v) {
 				if (v=="adder") {
-					var k=ui.addfile({name:""});
-					int_ui.children.files.children[k].editvisible=true;
+					var fk=ui.addfile({name:""});
+					int_ui.children.files.children[fk].editvisible=true;
 				}
 				int_ui.children.actions.selected=null;
 			});
@@ -151,11 +151,11 @@ var paneui = function() {
 	return {
 		children:{
 			header:paneuiheader(),
-			preview:{type:"iframe"},
-			edit:{type:"editor"}
+			preview:{type:"iframe", class:"flexrows"},
+			edit:{type:"editor", class:"flexrows"}
 		},
 		order:["header","edit"],
-		class:"pane tablerows expand",
+		class:"pane flexrows",
 		builder: function(dom,data,ui) {
 			ui.children.header.add("data",data);
 			var updateMode = function(k,v) {
@@ -176,18 +176,14 @@ var paneui = function() {
 
 var pane=function(m,dom) {
     m.data=panedata();
-    m.data.files.add("0",filedata({name:"file.css",type:"text/css",data:""}));
+    m.data.files.add("0",filedata({name:"file.css",type:"text/css",data:"a\na\na\na\na"}));
     m.data.files.add("1",filedata({name:"file.js",type:"text/javascript",data:""}));
     m.data.files.add("2",filedata({name:"file.html",type:"text/html",data:"fsdfsdf"}));
-    for (i=3;i<35;i++){
+    for (i=3;i<50;i++)
         m.data.files.add(i,filedata({name:"file"+i+".html",type:"text/html",data:"fsdfsdf"}));
-    }
-    //m.ui=paneuiheader();
-    //m.ui.children.files.selected="0";  
     m.ui=paneui();
     m.ui.children.header.children.files.selected="0";
-    dom.addClass("mui");
-
+    dom.addClass("mui-light");
 };
 
 

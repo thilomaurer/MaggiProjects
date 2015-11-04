@@ -1,0 +1,43 @@
+.project > #name {
+	font-size:24px;
+	padding:8px;
+}
+
+.project > #name:hover {
+	background: #ddd;
+}
+.project #revision {
+	padding:5px;
+	border-radius: 5px;
+}
+.project #revision:before {
+	content: "revision ";
+}
+
+.project #revision:hover {
+	background-color: hsla(0, 0%, 85%, 1);
+}
+
+.project #revisions.list .selected {
+	background: #ccf;
+}
+
+.project #revisions.list #revision {
+	padding: 5px;
+}
+
+.project > * {
+	display:inline-block;
+	margin-right:5px;
+}
+
+.project > .icon {
+	height: 20px;
+	width: 20px;
+	padding: 6px;
+	border-radius:5px;
+}
+
+.project_info #name {
+	font-size:20px;
+}

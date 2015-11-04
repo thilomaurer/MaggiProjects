@@ -1,11 +1,24 @@
 .pane > #preview,
 .pane > #edit {
-	height: 100%;
+	/*height: 100%;*/
+	/*align-self:stretch*/
+}
+
+.pane > #header {
+    flex:0 0 auto;
+}
+
+.pane > #preview,
+.pane > #edit {
+    flex:1 1 auto;
 }
 
 .iframe > iframe {
-	width:100%;
-	height:100%;
+	flex:1 1 auto;
+}
+
+.paneheader {
+    white-space:nowrap;
 }
 
 .paneheader #file {

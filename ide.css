@@ -1,76 +1,7 @@
-.project > #name {
-	font-size:24px;
-	padding:8px;
-}
-
-.project > #name:hover {
-	background: #ddd;
-}
-.project #revision {
-	padding:5px;
-	border-radius: 5px;
-}
-.project #revision:before {
-	content: "revision ";
-}
-
-.project #revision:hover {
-	background-color: hsla(0, 0%, 85%, 1);
-}
-
-.project #revisions.list .selected {
-	background: #ccf;
-}
-
-.project #revisions.list #revision {
-	padding: 5px;
-}
-
-.project > * {
-	display:inline-block;
-	margin-right:5px;
-}
-
-.project > .icon {
-	height: 20px;
-	width: 20px;
-	padding: 6px;
-	border-radius:5px;
-}
-
-.project_info #name {
-	font-size:20px;
-}
-
-.ide,
-#projects,
-#panes,
-.prj > #view {
+.ide {
 	height:100%;
 }
-#panes > * {
-	table-layout:fixed;
-}
 
-#panes > * > .wrap {	
-	transition:width 0.2s ease-out;
-	overflow:hidden;
-	width:100%;
+.prj > #project {
+    flex:0 0 auto;
 }
-
-#panes > * > .wrap.closepane {
-	width:0%;
-}
-
-.mui-light #panes > * > * {
-	border-left: 1px solid black;
-}
-
-.mui #panes > * > * {
-	border-left: 1px solid white;
-}
-
-#panes > * > *:first-child {
-	border-left: none;
-}
-

@@ -111,6 +111,7 @@ var projectui=function() {
 			run: {type:"label",label:"Run",class:"button"}
 		},
 		class:"project",
+		state:"closed",
 		builder:function(dom,data,ui) {
 			var name={type:"label",builder:function(dom) { 
 				var rev=data.view.revision;
@@ -118,17 +119,23 @@ var projectui=function() {
 			}};
 			ui.children.add("name",name);
 			ui.add("order",["optionsicon","options","name","view","revisions","commitnbranch","run"]);
-			
+			dom.ui.name.click(function() {
+			    var v=(ui.state=="open");
+			    if (v) ui.state="closed"; else ui.state="open";
+			    console.log(ui.state);
+			    ui.children.view.add("visible",v);
+			});
+
 			revsethandler=function(k,v) {
 				if (k=="selected") { ui.children.revisions.visible=false; data.view.revision=v; }
 			};		
 			ui.children.revisions.bind(revsethandler);
 			return function() {
 				ui.children.revisions.unbind(revsethandler);
-			}
+			};
 		}
 	};
-}
+};
 
 var projectui_info=function() {
 	return {
@@ -175,7 +182,7 @@ var initproject=function(username,email,name,sources,complete) {
 	var filesloaded = function() {
 		data.commitnbranch();
 		complete(data);
-	}
+	};
 	if (sources.length==0) {
 		data.addfile({name:"main.js",type:mime["js"]});
 		data.commitnbranch();
