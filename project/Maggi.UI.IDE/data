@@ -177,7 +177,7 @@
 					"email": "username@domain"
 				},
 				"options": {
-					"colorscheme": true
+					"colorscheme": false
 				}
 			},
 			"1": {
@@ -361,5 +361,5 @@
 			}
 		}
 	},
-	"rev": 3
+	"rev": 16
 }
