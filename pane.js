@@ -93,6 +93,7 @@ var paneuiheader = function() {
 		order: ["options","editor_actions","preview_actions","file","files","mode","actions","editor","preview"],
 		class:"paneheader",
 		builder:function(dom,data,ui) {
+			if (data==null) return;
 			ui.children.files.addfile=data.addfile;
 			var updateSelected=function(k,v) {
 				data.file=data.files[v];
@@ -133,8 +134,10 @@ var installBindings=function(handlers) {
 		var e=v[1];
 		var k=v[2];
 		var f=v[3];
-		o.bind(e,k,f);
-		f(k,o[k]);
+		if (o!=null) {
+			o.bind(e,k,f);
+			f(k,o[k]);
+		} else console.log("bind to null ignored");
 	});
 	return function() {
 		$.each(handlers,function(idx,v) {
@@ -142,7 +145,9 @@ var installBindings=function(handlers) {
 			var e=v[1];
 			var k=v[2];
 			var f=v[3];
-			o.unbind(e,k,f);
+			if (o!=null) {
+				o.unbind(e,k,f);
+			} else console.log("unbind from null ignored");
 		});
 	};
 };
@@ -175,15 +180,15 @@ var paneui = function() {
 };
 
 var pane=function(m,dom) {
-    m.data=panedata();
-    m.data.files.add("0",filedata({name:"file.css",type:"text/css",data:"a\na\na\na\na"}));
-    m.data.files.add("1",filedata({name:"file.js",type:"text/javascript",data:""}));
-    m.data.files.add("2",filedata({name:"file.html",type:"text/html",data:"fsdfsdf"}));
-    for (i=3;i<50;i++)
-        m.data.files.add(i,filedata({name:"file"+i+".html",type:"text/html",data:"fsdfsdf"}));
-    m.ui=paneui();
-    m.ui.children.header.children.files.selected="0";
-    dom.addClass("mui-light");
+	m.data=panedata();
+	m.data.files.add("0",filedata({name:"file.css",type:"text/css",data:"a\na\na\na\na"}));
+	m.data.files.add("1",filedata({name:"file.js",type:"text/javascript",data:""}));
+	m.data.files.add("2",filedata({name:"file.html",type:"text/html",data:"fsdfsdf"}));
+	for (i=3;i<50;i++)
+		m.data.files.add(i,filedata({name:"file"+i+".html",type:"text/html",data:"fsdfsdf"}));
+	m.ui=paneui();
+	m.ui.children.header.children.files.selected="0";
+	dom.addClass("mui-light expand");
 };
 
 

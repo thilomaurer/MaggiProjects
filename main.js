@@ -3,12 +3,15 @@ var main = function() {
 	//Maggi.log=true;
 	var hostname = window.location.host.split(":")[0];
 	var socket = io.connect('http://'+hostname);
-	var m=ide($('body'));
+	var dom=$('body');
+	var m=Maggi.UI_devel(dom);
+	ide_init(m);
+
 	Maggi.client(socket,m.data);
 	$('body').keypress(function(e) {
 		var c=e.keyCode;
 		if (c==67) {
-		    sampleprojects.pwcalc(function(project) {
+			sampleprojects.pwcalc(function(project) {
 				if (m.data.projects[0]==null) {
 					m.data.projects.add(0,project);
 					m.ui.children.projects.selected=0;
@@ -16,7 +19,7 @@ var main = function() {
 			});
 		}
 		if (c==32) {
-		    sampleprojects.Maggi(function(project) {
+			sampleprojects.Maggi(function(project) {
 				if (m.data.projects[0]==null) {
 					m.data.projects.add(0,project);
 					m.data.projects.add(1,project);

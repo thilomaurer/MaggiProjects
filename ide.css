@@ -3,5 +3,76 @@
 }
 
 .prj > #project {
-    flex:0 0 auto;
+	flex:0 0 auto;
+}
+
+.ide .prj .project > #connector:hover {
+	background: #ddd;
+}
+
+.prj.unselected .project > #connector {
+	width:0px;
+	padding:0px;
+}
+
+.prj .project > #connector {
+	font-size:24px;
+	width:14px;
+	padding:8px 5px 8px 5px;
+	transition:width 350ms ease;
+}
+
+.prj {
+	flex:1 1 auto;
+}
+
+.prj.unselected {
+	flex:0.000000001 1 auto;
+}
+
+.prj.unselected:hover {
+	background: #ddd;
+}
+
+.ide > #header {
+	flex: 0.00001 0 135px;
+	background: linear-gradient(#ddd, white);
+	display: flex;
+	flex-flow: row;
+	justify-content: center;
+}
+
+.ide > #header .label {
+	font-size: 40px;
+	padding: 40px;
+	text-align: center;
+	align-self: flex-end;
+}
+
+.ide .projects > #filler {
+	flex:1 0 0;
+}
+
+.ide.prjselected > #header .visibilityanimate,
+.prj.unselected .visibilityanimate
+{
+	visibility: hidden;
+	opacity: 0;
+	transition: opacity 350ms ease, visibility 0s linear 350ms;
+}
+
+.ide > #projects {
+	flex:0.0000001 0 auto;
+}
+.ide > #filler {
+	flex:1 0 auto;
+}
+
+.ide.prjselected > #projects {
+	flex:1 0 auto;
+}
+
+.ide.prjselected > #header,
+.ide.prjselected > #filler {
+	flex:0.0000001 0 0px;
 }

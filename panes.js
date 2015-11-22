@@ -1,8 +1,8 @@
 var panes=function(m,dom) {
-    sampleprojects.pwcalc(function(project) {
-        m.data=project.view.panes;
-        m.ui=panesui(project);
-        dom.addClass("mui-light expand");
+	sampleprojects.pwcalc(function(project) {
+		m.data=project.view.panes;
+		m.ui=panesui(project);
+		dom.addClass("mui-light expand");
 	});
 };
 

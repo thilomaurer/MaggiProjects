@@ -24,7 +24,7 @@ var project=function() {
 		},
 		addfile: function(file) {
 			file=filedata(file);
-		        var fileid=data.freefileid++;
+			var fileid=data.freefileid++;
 			var revid=data.view.revision;
 			data.revisions[revid].files.add(fileid,file);
 			return fileid;
@@ -79,13 +79,14 @@ var projectfuncs=function(data) {
 var projectui=function() {
 	return {
 		children:{
-			optionsicon:{type:"label",class:"options icon"},
+			optionsicon:{type:"label",class:"options icon visibilityanimate"},
 			options: {
 				popup:true, popuptrigger:"optionsicon",
 				children: {
 					colorscheme:{type:"checkbox",label:"Light Color Scheme",class:""},
 				},
 				builder:function(dom,data,ui) {
+					if (data==null) return;
 					var bindings=[[data,"set","colorscheme",function(k,v) {
 						var cls={"false":"mui-light","true":"mui"};
 						$('body').removeClass(cls[v]);
@@ -94,7 +95,7 @@ var projectui=function() {
 					return installBindings(bindings);
 				}
 			},
-			view: {children:{revision:{type:"text"}}},
+			view: {children:{revision:{type:"text"}},class:"visibilityanimate"},
 			revisions:{
 				type:"list",
 				popup:true,
@@ -105,27 +106,30 @@ var projectui=function() {
 					}
 				},
 				select:"single",
-				selected:null
+				selected:null,
+				class:"visibilityanimate"
 			},
-			commitnbranch: {type:"function",label:"commit revision",class:"button"},
-			run: {type:"label",label:"Run",class:"button"}
+			commitnbranch: {type:"function",label:"commit revision",class:"button visibilityanimate"},
+			run: {type:"label",label:"Run",class:"button visibilityanimate"}
 		},
 		class:"project",
-		state:"closed",
+		//state:"open",
 		builder:function(dom,data,ui) {
+			if (data==null) return;
 			var name={type:"label",builder:function(dom) { 
 				var rev=data.view.revision;
 				dom.text(data.revisions[rev].name);
 			}};
 			ui.children.add("name",name);
 			ui.add("order",["optionsicon","options","name","view","revisions","commitnbranch","run"]);
+			/*
 			dom.ui.name.click(function() {
 			    var v=(ui.state=="open");
 			    if (v) ui.state="closed"; else ui.state="open";
 			    console.log(ui.state);
 			    ui.children.view.add("visible",v);
 			});
-
+*/
 			revsethandler=function(k,v) {
 				if (k=="selected") { ui.children.revisions.visible=false; data.view.revision=v; }
 			};		
