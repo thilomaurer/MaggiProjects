@@ -95,3 +95,12 @@ var toArray = function(o) {
 	if (o==null) return [];
 	return Object.keys(o).sort().map(function(k) { return o[k]; });
 };
+
+var remap = function(o,key) {
+	var r={};
+	for (var k in o) {
+		var name=o[k][key];
+		r[name]=o[k];
+	}
+	return r;
+}
