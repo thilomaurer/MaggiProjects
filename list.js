@@ -4,7 +4,7 @@ var listui=function() {
 		childdefault:listitemui,
 		select:"single",
 		selected:"",
-		class:"selectable tablegrid expand-hrz",
+		class:"tablelist selectable tablegrid expand-hrz",
 		builder:function(dom,data,ui) {
 			var empty=(data===null);
 			if (empty) empty=(Object.keys(data).length===0);
@@ -17,13 +17,13 @@ var listitemui=function() {
 	return {
 		children:{
 			type: {type:"image",urls:{
-	            "image/svg+xml":"icons/svg.svg",
-	            "text/javascript":"icons/js.svg",
-	            "text/html":"icons/html5.svg",
-	            "text/css":"icons/css3.svg",
-	            "text":"icons/text.svg",
-	            plus:"icons/plus.svg"}
-			    
+				"application/json":"icons/json.svg",
+				"image/svg+xml":"icons/svg.svg",
+				"text/javascript":"icons/js.svg",
+				"text/html":"icons/html5.svg",
+				"text/css":"icons/css3.svg",
+				"text":"icons/text.svg",
+				plus:"icons/plus.svg"}
 			},
 			name: {type:"text"},
 		},
@@ -32,8 +32,8 @@ var listitemui=function() {
 };
 
 var list=function(dom) {
-    var m=Maggi.UI_devel(dom);
-    m.data={lst:{a:{type:"text",name:"item a"},b:{type:"text/html",name:"item b"}}};
-    m.ui={children:{lst:listui()}};
-    //m.ui.class="mui";
+	var m=Maggi.UI_devel(dom);
+	m.data={lst:{a:{type:"text",name:"item a"},b:{type:"text/html",name:"item b"}}};
+	m.ui={children:{lst:listui()}};
+	//m.ui.class="mui";
 };

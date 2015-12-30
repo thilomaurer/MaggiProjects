@@ -5,12 +5,12 @@
 }
 
 .pane > #header {
-    flex:0 0 auto;
+	flex:0 0 auto;
 }
 
 .pane > #preview,
 .pane > #edit {
-    flex:1 1 auto;
+	flex:1 1 auto;
 }
 
 .iframe > iframe {
@@ -23,9 +23,6 @@
 
 .paneheader #file {
 	display:inline-block;
-}
-.paneheader #mode {
-	display:inline-table;
 }
 
 .paneheader #actions .button {

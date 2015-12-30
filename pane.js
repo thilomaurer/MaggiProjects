@@ -5,6 +5,7 @@ var panedata=function() {
 		file:f,
 		files:files,
 		mode:"edit",
+		readonly:false,
 		edit:{file:f},
 		actions: {},
 		preview: {
@@ -73,7 +74,7 @@ var paneuiheader = function() {
 				selected:null,
 				class:"scroll"
 			},
-			mode:{type:"select",choices:{edit:{label:"edit"},preview:{label:"preview"}}},
+			mode:{type:"select",choices:{edit:{label:"edit"},preview:{label:"preview"}},visible:true},
 			options:{type:"label",class:"options icon"},
 			actions: {
 				popup:true, popuptrigger:"options",
@@ -95,7 +96,8 @@ var paneuiheader = function() {
 		builder:function(dom,data,ui) {
 			if (data==null) return;
 			ui.children.files.addfile=data.addfile;
-			var updateSelected=function(k,v) {
+			var updateFile=function() {
+				var v=ui.children.files.selected;
 				data.file=data.files[v];
 			};
 			dom.ui.actions.ui.closepane.click(function() {
@@ -115,13 +117,24 @@ var paneuiheader = function() {
 				if (p) { 
 					var dc=ui.children.preview_actions.children.detach;
 					data.preview.bind("set","detach",function(k,v) {
-						if (v) dc.class="icon activated"; else dc.class="icon";
+						if (v) dc.class="detach icon activated"; else dc.class="detach icon";
 					});
 				}
 			};
+			var updateModeVis = function(k,v) {
+				//ui.children.mode.visible=(v.type=="text/javascript");
+			};
+			var updateRO = function(k,v) {
+				var editlabel="edit";
+				if (v==true) editlabel="view";
+				ui.children.mode={type:"select",choices:{edit:{label:editlabel},preview:{label:"preview"}},visible:true};
+			};
 			var handlers=[
 				[data,"set", "mode", updateMode],
-				[ui.children.files,"set","selected",updateSelected]
+				[ui.children.files,"set","selected",updateFile],
+				[data,"set","files",updateFile],
+				[data,"set","file",updateModeVis],
+				[data,"set","readonly",updateRO]
 			];
 			return installBindings(handlers);
 		}
@@ -157,7 +170,7 @@ var paneui = function() {
 		children:{
 			header:paneuiheader(),
 			preview:{type:"iframe", class:"flexrows"},
-			edit:{type:"editor", class:"flexrows"}
+			edit:{type:"editor", class:"flexrows",readonly:false,settings:{}}
 		},
 		order:["header","edit"],
 		class:"pane flexrows",
@@ -166,13 +179,17 @@ var paneui = function() {
 			var updateMode = function(k,v) {
 				ui.order=["header",v];
 			};
+			var updateRO = function(k,v) {
+				ui.children.edit.readonly=v;
+			};
 			var updateFile = function(k,v) {
-				data.preview.file=v; 
+				data.preview.file=v;
 				data.edit.file=v;
 			};
 			var handlers=[
 				[data,"set", "file", updateFile],
-				[data,"set", "mode", updateMode]
+				[data,"set", "mode", updateMode],
+				[data,"set", "readonly", updateRO]
 			];
 			return installBindings(handlers);
 		}

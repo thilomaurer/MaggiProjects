@@ -10,19 +10,19 @@ var fileui=function() {
 	ui.editvisible=false;
 	ui=Maggi(ui);
 	ui.builder=function(dom,data,ui) {
-	    
-	    var repairfile=function(data) {
-    	    var bp=filedata();
-    	    for (var k in bp) {
-    	        if (data[k]==null) data.add(k,bp[k]);
-    	    }
-	    };
-	    repairfile(data);
-	    
-		dom.ui.details.click(function() {
+
+		var repairfile=function(data) {
+			var bp=filedata();
+			for (var k in bp) {
+				if (data!=null) if (data[k]==null) data.add(k,bp[k]);
+			}
+		};
+		repairfile(data);
+		var click=function() {
 			ui.editvisible=true;
 			return false;
-		});
+		};
+		ui.children.details.add("onClick",click);
 	};
 	return ui;
 };
@@ -39,16 +39,16 @@ var fileeditui=function() {
 	return {
 		children:{
 			type: {type:"select",choices:{
-			    "text/javascript":{label:"JS"},
-			    "text/html":{label:"HTML"},
-			    "text/css":{label:"CSS"},
-			    "text":{label:"TXT"},
-			    "image/svg+xml":{label:"SVG"}
-		    
+				"text/javascript":{label:"JS"},
+				"text/html":{label:"HTML"},
+				"text/css":{label:"CSS"},
+				"text":{label:"TXT"},
+				"image/svg+xml":{label:"SVG"},
+				"application/json":{label:"JSON"}
 			},class:"fillhorizontal"},
 			scope: {type:"select",choices:{
-			    "client":{label:"Client"},
-			    "server":{label:"Server"}
+				"client":{label:"Client"},
+				"server":{label:"Server"}
 			},class:"fillhorizontal"}, 
 			name: {type:"input",placeholder:"filename"},
 			cursor: {

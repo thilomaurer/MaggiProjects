@@ -26,6 +26,13 @@
 	flex:1 1 auto;
 }
 
+.mui-light .prj.unselected:hover {
+	background-color: hsla(0, 0%, 85%, 1);
+}
+
+.mui .prj.unselected:hover {
+	background-color: hsla(224, 8%, 42%, 1);
+}
 .prj.unselected {
 	flex:0.000000001 1 auto;
 }
@@ -36,7 +43,7 @@
 
 .ide > #header {
 	flex: 0.00001 0 135px;
-	background: linear-gradient(#ddd, white);
+	background: linear-gradient(hsla(0, 0%, 0%, 0.2), transparent);
 	display: flex;
 	flex-flow: row;
 	justify-content: center;
@@ -49,9 +56,10 @@
 	align-self: flex-end;
 }
 
-.ide .projects > #filler {
-	flex:1 0 0;
-}
+
+.ide #projects > #newproject {
+	font-size:24px;
+	padding:8px;}
 
 .ide.prjselected > #header .visibilityanimate,
 .prj.unselected .visibilityanimate

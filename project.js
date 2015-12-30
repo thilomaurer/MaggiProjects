@@ -1,15 +1,51 @@
-var project=function() {
+var projectdata=function(o) {
+
+	var revision=function() {
+		var data=Maggi({
+			revision:0,
+			started:new Date(),
+			completed:null,
+			committer:null,
+			committed:false,
+			parentrevision:null,
+			message:null,
+			files:[]
+		});
+		data.add("commit",function() {
+			commit(data.revision);
+			branch(data.revision);
+		});
+		data.add("branch",function() {
+			branch(data.revision);
+		});
+		return data;
+	};
+
+	var branch = function(fromid) {
+		var fromrev=data.revisions[fromid];
+		if (fromrev==null) return;
+		var newid=Object.keys(data.revisions).length;
+		var newrev=revision();
+		newrev.revision=newid;
+		newrev.parentrevision=fromid;
+		newrev.files=JSON.parse(JSON.stringify(fromrev.files))
+		data.revisions.add(newid,newrev);
+		data.view.revision=newid;
+		return newid;
+	};
+
+	var commit = function(id) {
+		var rev=data.revisions[id];
+		if (rev==null) return;
+		if (rev.committed) { alert("Error: Revision "+id+" already committed earlier."); return; }
+		rev.completed=new Date();
+		rev.committer=data.options.user.username;
+		rev.committed=true;
+	};
+
 	var data=Maggi({
 		revisions:{
-			0:{
-				revision:0,
-				name:null,
-				started:new Date(),
-				completed:null,
-				committer:null,
-				parentrevision:null,
-				files:[]
-			}
+			0:revision()
 		},
 		freefileid: 0,
 		view:{
@@ -18,10 +54,6 @@ var project=function() {
 				order:{}
 			}
 		},
-		user: {
-			name:null,
-			email:null
-		},
 		addfile: function(file) {
 			file=filedata(file);
 			var fileid=data.freefileid++;
@@ -29,36 +61,45 @@ var project=function() {
 			data.revisions[revid].files.add(fileid,file);
 			return fileid;
 		},
-		branch: function(fromid) {
-			if (fromid==null) fromid=data.view.revision;
-			var fromrev=data.revisions[fromid];
-			var newid=Object.keys(data.revisions).length;
-			var newrev={
-				revision:newid,
-				name:fromrev.name,
-				started:new Date(),
-				completed:null,
-				committer:null,
-				parentrevision:fromid,
-				files:JSON.parse(JSON.stringify(fromrev.files))
-			};
-			data.revisions.add(newid,newrev);
-			data.view.revision=newid;
-			return newid;
-		},
-		commit: function(id) {
-			if (id==null) id=data.view.revision;
-			var rev=data.revisions[id];
-			if (rev.completed) { alert("Error: Revision "+id+" already committed earlier."); return; }
-			rev.completed=new Date();
-			rev.committer=data.user;
-		},
-		commitnbranch:function() {
-			data.commit();
-			return data.branch();
-		},
-		options:{colorscheme:true}
+		options:{
+			colorscheme:"auto",
+			user: {
+				username:null,
+				name:null,
+				email:null,
+			},
+			editor: {
+				gutter:{
+					showGutter:true,
+					fixedWidthGutter:true,
+					highlightGutterLine:true,
+					showLineNumbers:true,
+				},
+				ui: {
+					animatedScroll:false,
+					hScrollBarAlwaysVisible:false,
+					vScrollBarAlwaysVisible:false,
+					showPrintMargin:false,
+					printMarginColumn:80,
+					fadeFoldWidgets:false,
+					showFoldWidgets:true,
+					scrollPastEnd: true,
+					highlightActiveLine: true,
+					highlightSelectedWord: true,
+				},
+				editing:{
+					showInvisibles:false,
+					displayIndentGuides:true,
+					useSoftTabs:false,
+					tabSize:4,
+					cursorStyle:"ace",
+					selectionStyle:"line",
+					keyboard:"gui"
+				}
+			}
+		}
 	});
+	if (o) Maggi.merge(data,o);
 	return data;
 };
 
@@ -75,61 +116,253 @@ var projectfuncs=function(data) {
 	return project;
 };
 
+var buildRevisionsView = function(dom,data,ui) {
+	var int_data=Maggi({
+		revisions:data,
+	});
+	var int_ui=Maggi({
+		visible:false,
+		children: {
+			revisionsLabel:{type:"label",label:"REVISIONS", class:"listlabel"},
+			revisions: revisionsui(),
+		}
+	});
+	ui.bind("set","selected",function(k,v) {
+		int_ui.children.revisions.selected=v;	
+	})
+	int_ui.children.revisions.selected=ui.selected;
+	int_ui.children.revisions.bind("set","selected",function(k,v) {
+		ui.visible=false;
+		ui.selected=v;
+	});
+	return Maggi.UI(dom,int_data,int_ui);
+};
+
+var revisionui=function() {
+	return {
+		class:"revision",
+		order:["branch","revision","parentrevision","committer","completed","message","commit"],
+		children:{
+			revision:{type:"text", format:"Revision #%d"},
+			parentrevision:{type:"text", format:"changes #%d"},
+			committer:{type:"text", format:"Author: %s"},
+			completed:{type:"text"},
+			message:{type:"text"},
+			branch:{type:"function", label:"branch from here",class:"button gray",visible:true},
+			commit:{type:"function", label:"commit revision",class:"button red",enabled:false,visible:true}
+		},
+		builder:function(dom,data,ui) {
+			var mess=function() {
+				var commitable=(data.message!=""&&data.message!=null);
+				ui.children.commit.enabled=commitable;
+			};
+			var comm=function() {
+				ui.children.message={true:"text",false:{type:"input",placeholder:"commit-message"}}[data.committed];
+				ui.children.commit.visible=!data.committed;
+				ui.children.branch.visible=data.committed;
+			};
+			return installBindings([
+				[data,"set","message",mess],
+				[data,"set","committed",comm]
+			]);
+		}
+	};
+};
+
+var revisionsui=function() {
+	return {
+		type:"list",
+		childdefault:revisionui,
+		class:"simplelist selectable",
+		select:"single",
+		selected:"null"
+	};
+}
+
+Maggi.UI.labelwrap=function(dom,data,setdata,ui,onDataChange) {
+
+	var int_ui={class:"cols labelwrap",children:{
+		label:{type:"label",label:ui.label},
+		data:ui.d
+	}};
+	var int_data=Maggi({data:data});
+	int_data.bind("set","data",function(k,v) {
+		setdata(v);
+	});
+	Maggi.UI(dom,int_data,int_ui);
+};
 
 var projectui=function() {
 	return {
 		children:{
 			optionsicon:{type:"label",class:"options icon visibilityanimate"},
 			options: {
-				popup:true, popuptrigger:"optionsicon",
+				popup:true, 
+				popuptrigger:"optionsicon",
+				class:"scroll",
 				children: {
-					colorscheme:{type:"checkbox",label:"Light Color Scheme",class:""},
+					colorscheme:{
+						type:"labelwrap",
+						label:"Color Scheme",
+						d:{type:"select",
+							choices:{
+								"auto":{label:"auto"},
+								"light":{label:"light"},
+								"dark":{label:"dark"},
+							}
+						}
+					},
+					userlabel:{type:"label",label:"USER"},
+					user:{
+						children:{
+							name:{type:"input",class:"first",placeholder:"Full Name"},
+							username:{type:"input",class:"first",placeholder:"username"},
+							email:{type:"input",kind:"email",placeholder:"email"}
+						}
+					},
+					editor:{
+						children:{
+							editinglabel:{type:"label",label:"EDITING"},
+							editing:{class:"simplelist",children:{
+								showInvisibles:{type:"checkbox",label:"Show Invisibles",class:"toggle",labelposition:"before"},
+								displayIndentGuides:{type:"checkbox",label:"Display Indent Guides",class:"toggle",labelposition:"before"},
+								useSoftTabs:{type:"checkbox",label:"Use Soft Tabs",class:"toggle",labelposition:"before"},
+								tabSize:{
+									type:"labelwrap",
+									label:"Tab Size",
+									d:{type:"input",placeholder:"tab size"},
+								},
+								selectionStyle:{
+									type:"labelwrap",
+									label:"Selection Style",
+									d:{type:"select",
+										choices:{
+											text:{label:"text"},
+											line:{label:"line"}
+										}
+									}
+								},
+								cursorStyle:{
+									type:"labelwrap",
+									label:"Cursor Style",
+									d:{type:"select",
+										choices:{
+											ace:{label:"ace"},
+											slim:{label:"slim"},
+											smooth:{label:"smooth"},
+											wide:{label:"wide"}
+										}
+									}
+								},
+								keyboard:{
+									type:"labelwrap",
+									label:"Input Style",
+									d:{type:"select",
+										choices:{
+											gui:{label:"GUI"},
+											vim:{label:"VIM"},
+											emacs:{label:"Emacs"}
+										}
+									}
+								}
+							}},
+							gutterlabel:{type:"label",label:"GUTTER"},
+							gutter:{class:"simplelist",children:{
+								showGutter:{type:"checkbox",label:"Show Gutter",class:"toggle",labelposition:"before"},
+								fixedWidthGutter:{type:"checkbox",label:"Fixed Gutter Width",class:"toggle",labelposition:"before"},
+								showLineNumbers:{type:"checkbox",label:"Show Line Numbers",class:"toggle",labelposition:"before"},
+								highlightGutterLine:{type:"checkbox",label:"Highlight Gutter Line",class:"toggle",labelposition:"before"},
+							}},
+							uilabel:{type:"label",label:"USER INTERFACE"},
+							ui:{class:"simplelist",children:{
+								animatedScroll:{type:"checkbox",label:"Animate Scrolling",class:"toggle",labelposition:"before"},
+								showPrintMargin:{type:"checkbox",label:"Show Print Margin",class:"toggle",labelposition:"before"},
+								printMarginColumn:{
+									type:"labelwrap",
+									label:"Print Margin",
+									d:{type:"input",placeholder:"column"}
+								},
+								showFoldWidgets:{type:"checkbox",label:"Show Fold Widgets",class:"toggle",labelposition:"before"},
+								fadeFoldWidgets:{type:"checkbox",label:"Fade Fold Widgets",class:"toggle",labelposition:"before"},
+								scrollPastEnd:{type:"checkbox",label:"Scroll Past End",class:"toggle",labelposition:"before"},
+								hScrollBarAlwaysVisible:{type:"checkbox",label:"Persistent HScroll",class:"toggle",labelposition:"before"},
+								vScrollBarAlwaysVisible:{type:"checkbox",label:"Persistent VScroll",class:"toggle",labelposition:"before"},
+								highlightActiveLine:{type:"checkbox",label:"Highlight Active Line",class:"toggle",labelposition:"before"},
+								highlightSelectedWord:{type:"checkbox",label:"Hightlight Selected Word",class:"toggle",labelposition:"before"},
+							}}
+						}
+					},
 				},
 				builder:function(dom,data,ui) {
 					if (data==null) return;
-					var bindings=[[data,"set","colorscheme",function(k,v) {
-						var cls={"false":"mui-light","true":"mui"};
-						$('body').removeClass(cls[v]);
-						$('body').addClass(cls[!v]);
+					var bindings=[[data,"set","colorscheme",function(k,v,oldv) {
+						if (v=="auto") {
+							var h=new Date().getHours()
+							if (h>6&&h<17) v="light"; else v="dark";
+						}
+						var cls={"light":"mui-light","dark":"mui"};
+						$('body').removeClass("mui-light");
+						$('body').removeClass("mui");
+						$('body').addClass(cls[v]);
 					}]];
 					return installBindings(bindings);
 				}
 			},
 			view: {children:{revision:{type:"text"}},class:"visibilityanimate"},
 			revisions:{
-				type:"list",
 				popup:true,
 				popuptrigger:"view",
-				childdefault:{
-					children:{
-						revision:{type:"text"}
-					}
-				},
-				select:"single",
+				children:{},
 				selected:null,
-				class:"visibilityanimate"
-			},
-			commitnbranch: {type:"function",label:"commit revision",class:"button visibilityanimate"},
-			run: {type:"label",label:"Run",class:"button visibilityanimate"}
+				builder:buildRevisionsView,
+				class:"scroll"
+			}
 		},
 		class:"project",
-		//state:"open",
 		builder:function(dom,data,ui) {
 			if (data==null) return;
-			var name={type:"label",builder:function(dom) { 
-				var rev=data.view.revision;
-				dom.text(data.revisions[rev].name);
-			}};
-			ui.children.add("name",name);
-			ui.add("order",["optionsicon","options","name","view","revisions","commitnbranch","run"]);
-			/*
-			dom.ui.name.click(function() {
-			    var v=(ui.state=="open");
-			    if (v) ui.state="closed"; else ui.state="open";
-			    console.log(ui.state);
-			    ui.children.view.add("visible",v);
-			});
-*/
+			var prjjson={
+				data:null,
+				children:{
+					icon:"image",
+					name:"text"
+				},
+				builder:function(dom,x,ui) {
+					if (ui.data!=null) return;
+					var rev=data.view.revision;
+					var k=childwithkv(data.revisions[rev].files,"name","project.json");
+					var update=function() {
+						var d;
+						try {
+							d=JSON.parse(k.data);
+						} catch(e) {
+							console.log(e);
+						}
+						if (d==null) return;
+						var i=d.icon;
+						if (i&&(i.startsWith("http://")||i.startsWith("https://"))) {
+						} else {
+							var files=data.revisions[rev].files;
+							for (var fidx in files) {
+								name=files[fidx].name;
+								if (name==i) {
+									var src="data:"+files[fidx].type+";utf8,"+files[fidx].data;
+									d.icon=src;
+								}
+							}
+						}
+						ui.add("data",d);
+					};
+					if (k!=null) {
+						k.bind("set","data",update);
+						update();
+					}
+				}
+				
+			};
+			ui.children.add("prjjson",prjjson);			
+			ui.add("order",["optionsicon","options","prjjson","view","revisions"]);
+			ui.children.revisions.selected=data.view.revision;
 			revsethandler=function(k,v) {
 				if (k=="selected") { ui.children.revisions.visible=false; data.view.revision=v; }
 			};		
@@ -141,34 +374,32 @@ var projectui=function() {
 	};
 };
 
-var projectui_info=function() {
-	return {
-		children:{
-			//name: {type:"text"},
-			//view: {children:{revision:{type:"text"}}},
-		},
-		class:"project_info",
-		builder:function(dom,data,ui) {
-			var rev=data.view.revision;
-			var name=data.revisions[rev].name;
-			var d=Maggi({name:name,date:new Date()});
-			Maggi.UI(dom,d,{children:{name:{type:"text"}/*,date:{type:"text"}*/}});
-		}
-	};
+var childwithkv = function(o,key,name) {
+	for (var k in o) 
+		if (name==o[k][key]) return o[k];
+	return null;
 };
 
+var initproject=function(user,metadata,sources,complete) {
 
-var initproject=function(username,email,name,sources,complete) {
-	var data=project();
+	var mime={
+		js:"text/javascript",
+		html:"text/html",
+		css:"text/css",
+		txt:"text",
+		json:"application/json",
+		svg:"image/svg+xml"
+	};
+
+	var data=projectdata();
 	var rev=0;
-	data.user.name=username;
-	data.user.email=email;
-	data.revisions[rev].name=name;
-	rev=data.commitnbranch();
+	data.options.user=user;
+
+	data.addfile({name:"project.json",type:mime["json"],data:JSON.stringify(metadata,null,"\t")});
 
 	var files=data.revisions[rev].files;
+	data.revisions[rev].message="start of project";
 	var nfloaded=0;
-	var mime={js:"text/javascript",html:"text/html",css:"text/css",txt:"text"};
 	$.each(sources, function(idx,k) {
 		var fn=k;
 		if (k instanceof Array) {fn=k[0]; k=k[1];}
@@ -182,15 +413,22 @@ var initproject=function(username,email,name,sources,complete) {
 			if (nfloaded==sources.length) filesloaded();
 		},"text");
 	});
+	
 
 	var filesloaded = function() {
-		data.commitnbranch();
+		data.revisions[rev].commit();
 		complete(data);
 	};
 	if (sources.length==0) {
 		data.addfile({name:"main.js",type:mime["js"]});
-		data.commitnbranch();
-		complete(data);
+		filesloaded();
 	}
 };
 
+var project=function(m,dom) {
+	sampleprojects.pwcalc(function(project) {
+		m.data=project;
+		m.ui=projectui;
+		dom.addClass("expand");
+	});
+};

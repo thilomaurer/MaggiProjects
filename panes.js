@@ -36,10 +36,12 @@ var panesui = function(prjdata) {
 				d.bind("insertpane",function(k,v) {
 					for (var i in panes) if (panes[i]===data) ins(i);
 				});
-	
 				var build=function(data) {
-					var rev=prjdata.view.revision;
-					d.files=prjdata.revisions[rev].files;
+					u.children.edit.settings=prjdata.options.editor;
+					var revid=prjdata.view.revision;
+					var rev=prjdata.revisions[revid];
+					d.files=rev.files;
+					d.readonly=rev.committed;
 					d.addfile=projectfuncs(prjdata).addfile;
 					if (data!=null) {
 						d.mode=data.mode;
@@ -49,6 +51,9 @@ var panesui = function(prjdata) {
 					u.children.header.children.files.bind("set","selected",function(k,v) {data.fileid=v;});
 				};
 				build(data);
+				prjdata.view.bind("set","revision",function(k,v) {
+					build(data);
+				});
 				onDataChange(build);
 				dom.addClass("closing");
 				setTimeout(function() { 
