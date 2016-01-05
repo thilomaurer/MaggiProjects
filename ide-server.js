@@ -91,13 +91,15 @@ var writefile=function(fp,data,enc) {
 		}); 
 	};
 	save();
-}
+};
 
 var exportRevision=function(revision) {
 	for (var k in revision.files) {
 		var file=revision.files[k];
 		var fp=__dirname + "/project/" + revision.name + "/" +file.name;
-		writefile(fp, file.data);
+		console.log(fp);
+		console.log(file.enc);
+		writefile(fp, file.data, file.enc);
 	}
 };
 

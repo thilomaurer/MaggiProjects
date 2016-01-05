@@ -303,7 +303,7 @@ var projectui=function() {
 					return installBindings(bindings);
 				}
 			},
-			view: {children:{revision:{type:"text"}},class:"visibilityanimate"},
+			view: {children:{revision:{type:"text"}},class:"visibilityanimate hoverhighlight"},
 			revisions:{
 				popup:true,
 				popuptrigger:"view",
@@ -345,6 +345,7 @@ var projectui=function() {
 					icon:"image",
 					name:"text"
 				},
+				class:"prjjson hoverhighlight",
 				builder:function(dom,x,ui) {
 					if (ui.data!=null) return;
 					var rev=data.view.revision;
@@ -438,7 +439,9 @@ var initproject=function(user,metadata,sources,complete) {
 	
 
 	var filesloaded = function() {
-		data.revisions[rev].commit();
+	    var r=data.revisions[rev];
+	    projectfuncs(data).commit(r)();
+//		data.revisions[rev].commit();
 		complete(data);
 	};
 	if (sources.length==0) {

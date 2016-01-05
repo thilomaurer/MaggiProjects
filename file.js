@@ -1,5 +1,5 @@
 var filedata=function(o) {
-	var fd={name:null,type:null,data:null,cursor:{row:0,column:0},scope:"client"};
+	var fd={name:null,type:null,enc:null,data:null,cursor:{row:0,column:0},scope:"client"};
 	$.extend(fd,o);
 	return Maggi(fd);
 };
@@ -10,7 +10,6 @@ var fileui=function() {
 	ui.editvisible=false;
 	ui=Maggi(ui);
 	ui.builder=function(dom,data,ui) {
-
 		var repairfile=function(data) {
 			var bp=filedata();
 			for (var k in bp) {
@@ -98,7 +97,7 @@ var makeFileEditor=function(dom,file,setfile,onRemove,onClose) {
 		builder: function(dom,data,ui) {
             dom.parent().addClass("mui-light");
             data.bind("set","upload",function(k,v) {
-                    data.data={name:v.name,type:v.mimeType,data:v.data,cursor:{row:0,column:0}};
+                    data.data={name:v.name,type:v.mimeType,enc:v.enc,data:v.data,cursor:{row:0,column:0}};
                     setfile(data.data);
             });
             var validate=function(k) {
@@ -130,15 +129,35 @@ var fileinput=function(dom,data,setdata,ui) {
             dom.ui.i.change(function(evt) {
                 var f=evt.target.files[0];
                 var reader = new FileReader();
-                reader.onload = function(e) {
-                    setdata({
-                        name:f.name,
-                        mimeType:f.type,
-                        size:f.size,
-                        data:reader.result
-                    });
-                };
-                reader.readAsText(f);
+                var binary=(f.type=="image/jpeg");
+                if (binary) {
+                    reader.onload = function(e) {
+                        var d=reader.result;
+            		    var idx1=d.indexOf(";");
+            		    var idx2=d.indexOf(",");
+            		    var enc=d.substring(idx1+1,idx2);
+            		    var data=d.substring(idx2+1);
+                        setdata({
+                            name:f.name,
+                            mimeType:f.type,
+                            size:f.size,
+                            enc:enc,
+                            data:data
+                        });
+                    };
+                    reader.readAsDataURL(f);
+                } else {
+                    reader.onload = function(e) {
+                        setdata({
+                            name:f.name,
+                            mimeType:f.type,
+                            size:f.size,
+                            enc:"utf8",
+                            data:reader.result
+                        });
+                    };
+                    reader.readAsText(f);
+                }
 		    });
 		}
 	};

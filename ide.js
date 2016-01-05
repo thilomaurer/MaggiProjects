@@ -1,24 +1,29 @@
 var ideui = function() {
 	return {
 		children: {
-			header:{type:"label",label:"Maggi.UI.IDE Projects",wrap:true,class:"visibilityanimate"},
+			header:{
+			    data:{
+			        title:"Maggi.UI.IDE Projects",
+			        newproject:{icon:"icons/plus.svg",name:"Create new Project..."}
+			    },
+			    children:{
+					newproject:{
+					    children:{icon:"image", name:"text"},
+					    class:"visibilityanimate prjjson hoverhighlight"
+					},
+		            title:{type:"text",class:"visibilityanimate"}
+	            },
+	            class:"cols"
+            },
 			projects: {
 				class:"flexrows flexanimate",
 				childdefault:prjui,
 				selected:null,
-				children:{
-					newproject:{
-						type:"label",
-						label:"Create new Project...",
-						class:"prj",
-					}
-				},
 				builder:function(dom,data,ui) {
 					var u=function() {
 					    if (ui.selected==null) dom.addClass("noneselected"); else dom.removeClass("noneselected");
 						$.each(dom.ui,function(k,v) {
 							var dui=dom.ui[k];
-							if (k=="newproject") { dui.addClass("unselected"); return;}
 							if (ui.selected==k) {
 								dui.removeClass("unselected");
 							} else {
@@ -43,28 +48,28 @@ var ideui = function() {
 							type:"label",
 							label:"<",
 							onClick:blc,
-							class:"visibilityanimate"
+							class:"visibilityanimate hoverhighlight"
 						};
 						ui.children[k].connector=connector;
 						u();
 					};
 					ui.children.bind("add",install);
 					$.each(ui.children,install);
-					ui.children.newproject.add("onClick",function() {
-						sampleprojects.Maggi(function(project) {
-							var id;
-							do 
-								id=Math.random().toString(36).substr(2, 10);
-							while (data[id]!=null);
-							data.add(id,project);
-						});
-					});
 				}
 			},
 			filler:{type:"label",label:""}
 		},
 		class:"ide rows flexanimate mui-light",
 		builder:function(dom,data,ui) {
+			ui.children.header.children.newproject.add("onClick",function() {
+				sampleprojects.Maggi(function(project) {
+					var id;
+					do 
+						id=Math.random().toString(36).substr(2, 10);
+					while (data[id]!=null);
+					data.projects.add(id,project);
+				});
+			});
 			ui.children.projects.bind("set","selected",function(k,v) {
 				if (v!=null) {
 					dom.addClass("prjselected");

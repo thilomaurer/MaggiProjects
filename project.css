@@ -1,24 +1,23 @@
-.project #prjjson > * {
+.prjjson > * {
 	display:inline-block;
 }
 
-.project #prjjson > #icon > img{
+.prjjson > #icon > img {
 	height:40px;
 	vertical-align:-11px;
 }
 
-.project #prjjson > #name{
+.prjjson > #name {
 	font-size:24px;
 	padding:4px;
 }
 
-
-.project #prjjson {
+.prjjson {
 	border-radius: 5px;
 	padding:5px;
 }
 
-.project #view > #revision {
+.project #view {
 	padding:5px;
 	border-radius: 5px;
 }
@@ -27,28 +26,12 @@
 	content: "revision ";
 }
 
-.mui-light .project #prjjson:hover,
-.mui-light .project #view > #revision:hover {
-	background-color: hsla(0, 0%, 85%, 1);
-}
-
-.mui .project #prjjson:hover,
-.mui .project #view > #revision:hover {
-	background-color: hsla(224, 8%, 42%, 1);
-}
-
 .project #view > #revisions.list .selected {
 	background: #ccf;
 }
 
 .project > * {
 	display:inline-block;
-}
-
-.project > #view,
-.project > .button {
-	margin-left:3px;
-	margin-right:3px;
 }
 
 .project > .icon {
@@ -94,7 +77,4 @@
 .labelwrap > #label {
 	flex: 0 0 auto;
 	padding-right:10px;
-
 }
-
-

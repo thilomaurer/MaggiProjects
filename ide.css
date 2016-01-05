@@ -7,8 +7,8 @@
 }
 
 .prj.unselected .project > #connector {
-	width:0px;
-	padding:0px;
+	width:0;
+	padding:0;
 }
 
 .prj .project > #connector {
@@ -21,12 +21,13 @@
 .prj {
 	flex:1 1 auto;
 }
-.mui-light .prj .project > #connector:hover,
+
+.mui-light .hoverhighlight:hover,
 .mui-light .prj.unselected:hover {
 	background-color: hsla(0, 0%, 85%, 1);
 }
 
-.mui .prj .project > #connector:hover,
+.mui .hoverhighlight:hover,
 .mui .prj.unselected:hover {
 	background-color: hsla(224, 8%, 42%, 1);
 }
@@ -48,20 +49,20 @@
 	background: linear-gradient(hsla(0, 0%, 0%, 0.2), transparent);
 	display: flex;
 	flex-flow: row;
-	justify-content: center;
 }
 
-.ide > #header .label {
+.ide > #header #title {
 	font-size: 40px;
 	padding: 40px;
 	text-align: center;
-	align-self: flex-end;
 }
 
+.ide > #header > #newproject {
+	flex: 0 0 auto;
+}
 
-.ide #projects > #newproject {
-	font-size:24px;
-	padding-left:8px;
+.ide > #header > * {
+	align-self: flex-end;
 }
 
 .ide.prjselected > #header .visibilityanimate,
