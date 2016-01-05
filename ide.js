@@ -15,6 +15,7 @@ var ideui = function() {
 				},
 				builder:function(dom,data,ui) {
 					var u=function() {
+					    if (ui.selected==null) dom.addClass("noneselected"); else dom.removeClass("noneselected");
 						$.each(dom.ui,function(k,v) {
 							var dui=dom.ui[k];
 							if (k=="newproject") { dui.addClass("unselected"); return;}
@@ -35,9 +36,8 @@ var ideui = function() {
 					var install=function(k) {
 						if (k instanceof Array) return;
 						if (k=="newproject") return;
-						var blc=function(event) {
+						var blc=function() {
 							ui.selected=null;
-							event.stopPropagation();
 						};
 						var connector={
 							type:"label",
@@ -55,7 +55,7 @@ var ideui = function() {
 							var id;
 							do 
 								id=Math.random().toString(36).substr(2, 10);
-							while (data[id]!=null)
+							while (data[id]!=null);
 							data.add(id,project);
 						});
 					});
@@ -94,7 +94,7 @@ var ide_init = function(m,dom) {
 			pp=projectdata(p);
 			v[i]=pp;
 		}
-	});
+	});	
 	m.ui=ideui;
 };
 

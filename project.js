@@ -1,48 +1,18 @@
+var revision=function() {
+	var data=Maggi({
+		revision:0,
+		started:new Date(),
+		completed:null,
+		committer:null,
+		committed:false,
+		parentrevision:null,
+		message:null,
+		files:[]
+	});
+	return data;
+};
+
 var projectdata=function(o) {
-
-	var revision=function() {
-		var data=Maggi({
-			revision:0,
-			started:new Date(),
-			completed:null,
-			committer:null,
-			committed:false,
-			parentrevision:null,
-			message:null,
-			files:[]
-		});
-		data.add("commit",function() {
-			commit(data.revision);
-			branch(data.revision);
-		});
-		data.add("branch",function() {
-			branch(data.revision);
-		});
-		return data;
-	};
-
-	var branch = function(fromid) {
-		var fromrev=data.revisions[fromid];
-		if (fromrev==null) return;
-		var newid=Object.keys(data.revisions).length;
-		var newrev=revision();
-		newrev.revision=newid;
-		newrev.parentrevision=fromid;
-		newrev.files=JSON.parse(JSON.stringify(fromrev.files))
-		data.revisions.add(newid,newrev);
-		data.view.revision=newid;
-		return newid;
-	};
-
-	var commit = function(id) {
-		var rev=data.revisions[id];
-		if (rev==null) return;
-		if (rev.committed) { alert("Error: Revision "+id+" already committed earlier."); return; }
-		rev.completed=new Date();
-		rev.committer=data.options.user.username;
-		rev.committed=true;
-	};
-
 	var data=Maggi({
 		revisions:{
 			0:revision()
@@ -111,7 +81,30 @@ var projectfuncs=function(data) {
 			var revid=data.view.revision;
 			data.revisions[revid].files.add(fileid,file);
 			return fileid;
-		}
+		},
+        branch: function(rev) {
+            return function() {	        
+                if (rev==null) return;
+                var newid=Object.keys(data.revisions).length;
+                var newrev=revision();
+                newrev.revision=newid;
+                newrev.parentrevision=rev.revision;
+                newrev.files=JSON.parse(JSON.stringify(rev.files));
+                data.revisions.add(newid,newrev);
+                console.log(newid);
+                data.view.revision=newid;
+                return newid;
+            };
+        },
+        commit: function(rev) {
+            return function() {
+                if (rev==null) return;
+                if (rev.committed) { alert("Error: Revision "+id+" already committed earlier."); return; }
+                rev.completed=new Date();
+                rev.committer=data.options.user.username;
+                rev.committed=true;
+            };
+    	}
 	};
 	return project;
 };
@@ -129,7 +122,7 @@ var buildRevisionsView = function(dom,data,ui) {
 	});
 	ui.bind("set","selected",function(k,v) {
 		int_ui.children.revisions.selected=v;	
-	})
+	});
 	int_ui.children.revisions.selected=ui.selected;
 	int_ui.children.revisions.bind("set","selected",function(k,v) {
 		ui.visible=false;
@@ -138,7 +131,7 @@ var buildRevisionsView = function(dom,data,ui) {
 	return Maggi.UI(dom,int_data,int_ui);
 };
 
-var revisionui=function() {
+var revisionui=function(prjdata) {
 	return {
 		class:"revision",
 		order:["branch","revision","parentrevision","committer","completed","message","commit"],
@@ -148,10 +141,12 @@ var revisionui=function() {
 			committer:{type:"text", format:"Author: %s"},
 			completed:{type:"text"},
 			message:{type:"text"},
-			branch:{type:"function", label:"branch from here",class:"button gray",visible:true},
-			commit:{type:"function", label:"commit revision",class:"button red",enabled:false,visible:true}
+			branch:{type:"label", label:"branch from here",class:"button gray",visible:true,onClick:null},
+			commit:{type:"label", label:"commit revision",class:"button red",enabled:false,visible:true,onClick:null}
 		},
 		builder:function(dom,data,ui) {
+		    ui.children.branch.onClick=projectfuncs(prjdata).branch(data);
+		    ui.children.commit.onClick=projectfuncs(prjdata).commit(data);
 			var mess=function() {
 				var commitable=(data.message!=""&&data.message!=null);
 				ui.children.commit.enabled=commitable;
@@ -169,15 +164,15 @@ var revisionui=function() {
 	};
 };
 
-var revisionsui=function() {
+var revisionsui=function(prjdata) {
 	return {
 		type:"list",
-		childdefault:revisionui,
+		childdefault:function() { return revisionui(prjdata); },
 		class:"simplelist selectable",
 		select:"single",
 		selected:"null"
 	};
-}
+};
 
 Maggi.UI.labelwrap=function(dom,data,setdata,ui,onDataChange) {
 
@@ -197,7 +192,7 @@ var projectui=function() {
 		children:{
 			optionsicon:{type:"label",class:"options icon visibilityanimate"},
 			options: {
-				popup:true, 
+				popup:true,
 				popuptrigger:"optionsicon",
 				class:"scroll",
 				children: {
@@ -297,7 +292,7 @@ var projectui=function() {
 					if (data==null) return;
 					var bindings=[[data,"set","colorscheme",function(k,v,oldv) {
 						if (v=="auto") {
-							var h=new Date().getHours()
+							var h=new Date().getHours();
 							if (h>6&&h<17) v="light"; else v="dark";
 						}
 						var cls={"light":"mui-light","dark":"mui"};
@@ -314,13 +309,36 @@ var projectui=function() {
 				popuptrigger:"view",
 				children:{},
 				selected:null,
-				builder:buildRevisionsView,
+				builder:null,
 				class:"scroll"
 			}
 		},
 		class:"project",
 		builder:function(dom,data,ui) {
 			if (data==null) return;
+            var buildRevisionsView = function(dom,d,ui) {
+            	var int_data=Maggi({
+            		revisions:d,
+            	});
+            	var int_ui=Maggi({
+            		visible:false,
+            		children: {
+            			revisionsLabel:{type:"label",label:"REVISIONS", class:"listlabel"},
+            			revisions: revisionsui(data),
+            		}
+            	});
+            	ui.bind("set","selected",function(k,v) {
+            		int_ui.children.revisions.selected=v;	
+            	});
+            	int_ui.children.revisions.selected=ui.selected;
+            	int_ui.children.revisions.bind("set","selected",function(k,v) {
+            		ui.visible=false;
+            		ui.selected=v;
+            	});
+            	return Maggi.UI(dom,int_data,int_ui);
+            };
+
+			ui.children.revisions.builder=buildRevisionsView;
 			var prjjson={
 				data:null,
 				children:{
@@ -353,20 +371,24 @@ var projectui=function() {
 						}
 						ui.add("data",d);
 					};
-					if (k!=null) {
-						k.bind("set","data",update);
-						update();
+					if (k!=null) {					
+					    k.bind("set","data",update);
+					    update();
 					}
 				}
 				
 			};
 			ui.children.add("prjjson",prjjson);			
 			ui.add("order",["optionsicon","options","prjjson","view","revisions"]);
-			ui.children.revisions.selected=data.view.revision;
-			revsethandler=function(k,v) {
-				if (k=="selected") { ui.children.revisions.visible=false; data.view.revision=v; }
-			};		
-			ui.children.revisions.bind(revsethandler);
+			
+			var setrevision=function(k,v) { 
+			    ui.children.revisions.selected=v; };
+			data.view.bind("set","revision",setrevision);
+
+			var revsethandler=function(k,v) { 
+			    data.view.revision=v; };		
+			ui.children.revisions.bind("set","selected",revsethandler);
+
 			return function() {
 				ui.children.revisions.unbind(revsethandler);
 			};
