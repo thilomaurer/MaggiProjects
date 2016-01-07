@@ -129,8 +129,16 @@ var fileinput=function(dom,data,setdata,ui) {
             dom.ui.i.change(function(evt) {
                 var f=evt.target.files[0];
                 var reader = new FileReader();
-                var binary=(f.type=="image/jpeg");
-                if (binary) {
+                var texttypes=[
+                    "text/javascript",
+                    "text/html",
+                    "text/css",
+                    "text",
+                    "image/svg+xml",
+                    "application/json"
+                ];
+                var text=(texttypes.indexOf(f.type)>=0);
+                if (!text) {
                     reader.onload = function(e) {
                         var d=reader.result;
             		    var idx1=d.indexOf(";");
