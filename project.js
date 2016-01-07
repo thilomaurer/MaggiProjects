@@ -190,6 +190,7 @@ Maggi.UI.labelwrap=function(dom,data,setdata,ui,onDataChange) {
 var projectui=function() {
 	return {
 		children:{
+		    connector:null,
 			optionsicon:{type:"label",class:"options icon visibilityanimate"},
 			options: {
 				popup:true,
@@ -303,6 +304,22 @@ var projectui=function() {
 					return installBindings(bindings);
 				}
 			},
+		    prjjson:{
+				data:null,
+				children:{
+					icon:"image",
+					name:"text"
+				},
+				class:"prjjson hoverhighlight"
+		    },
+            prjjson_actions:{
+			    data:{},
+				popup:true,
+				popuptrigger:"prjjson",
+				children: {
+				    actions:null
+				}
+			},			
 			view: {children:{revision:{type:"text"}},class:"visibilityanimate hoverhighlight"},
 			revisions:{
 				popup:true,
@@ -313,6 +330,7 @@ var projectui=function() {
 				class:"scroll"
 			}
 		},
+		order:["connector","optionsicon","options","prjjson","prjjson_actions","view","revisions"],
 		class:"project",
 		builder:function(dom,data,ui) {
 			if (data==null) return;
@@ -339,60 +357,49 @@ var projectui=function() {
             };
 
 			ui.children.revisions.builder=buildRevisionsView;
-			var prjjson={
-				data:null,
-				children:{
-					icon:"image",
-					name:"text"
-				},
-				class:"prjjson hoverhighlight",
-				builder:function(dom,x,ui) {
-					if (ui.data!=null) return;
-					var rev=data.view.revision;
-					var k=childwithkv(data.revisions[rev].files,"name","project.json");
-					var update=function() {
-						var d;
-						try {
-							d=JSON.parse(k.data);
-						} catch(e) {
-							console.log(e);
-						}
-						if (d==null) return;
-						var i=d.icon;
-						if (i&&(i.startsWith("http://")||i.startsWith("https://"))) {
-						} else {
-							var files=data.revisions[rev].files;
-							for (var fidx in files) {
-								name=files[fidx].name;
-								if (name==i) {
-									var src="data:"+files[fidx].type+";utf8,"+files[fidx].data;
-									d.icon=src;
-								}
+
+			(function() {
+			    var u=ui.children.prjjson;
+				if (u.data!=null) return;
+				var rev=data.view.revision;
+				var k=childwithkv(data.revisions[rev].files,"name","project.json");
+				var update=function() {
+					var d;
+					try {
+						d=JSON.parse(k.data);
+					} catch(e) {
+						console.log(e);
+					}
+					if (d==null) return;
+					var i=d.icon;
+					if (i&&(i.startsWith("http://")||i.startsWith("https://"))) {
+					} else {
+						var files=data.revisions[rev].files;
+						for (var fidx in files) {
+							name=files[fidx].name;
+							if (name==i) {
+								var src="data:"+files[fidx].type+";utf8,"+files[fidx].data;
+								d.icon=src;
 							}
 						}
-						ui.add("data",d);
-					};
-					if (k!=null) {					
-					    k.bind("set","data",update);
-					    update();
 					}
+					u.add("data",d);
+				};
+				if (k!=null) {					
+				    k.bind("set","data",update);
+				    update();
 				}
+			})();
 				
-			};
-			ui.children.add("prjjson",prjjson);			
-			ui.add("order",["optionsicon","options","prjjson","view","revisions"]);
+
+			var setrevision=function(k,v) { ui.children.revisions.selected=v; };
+			var revsethandler=function(k,v) { data.view.revision=v; };		
+			var handlers=[
+			    [data.view,"set","revision",setrevision],
+			    [ui.children.revisions,"set","selected",revsethandler]
+			];
 			
-			var setrevision=function(k,v) { 
-			    ui.children.revisions.selected=v; };
-			data.view.bind("set","revision",setrevision);
-
-			var revsethandler=function(k,v) { 
-			    data.view.revision=v; };		
-			ui.children.revisions.bind("set","selected",revsethandler);
-
-			return function() {
-				ui.children.revisions.unbind(revsethandler);
-			};
+			return installBindings(handlers);
 		}
 	};
 };

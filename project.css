@@ -43,6 +43,10 @@
 	margin-top: 9px;
 }
 
+.prj.unselected > .project > #prjjson {
+    pointer-events: none;
+}
+
 .project_info #name {
 	font-size:20px;
 }

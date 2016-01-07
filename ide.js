@@ -40,17 +40,28 @@ var ideui = function() {
 					ui.bind("set","selected",u);
 					var install=function(k) {
 						if (k instanceof Array) return;
-						if (k=="newproject") return;
-						var blc=function() {
-							ui.selected=null;
-						};
-						var connector={
+						ui.children[k].connector={
 							type:"label",
 							label:"<",
-							onClick:blc,
+							onClick:function() { ui.selected=null; },
 							class:"visibilityanimate hoverhighlight"
 						};
-						ui.children[k].connector=connector;
+                        ui.children[k].actions={
+                            data:{},
+                            children: {
+                                deleteproject:{
+                                    type:"label",
+                                    label:"delete project",
+                                    class:"button red",
+                                    onClick:function() {
+                                        if (confirm("Really delete this project?")) {
+                                            ui.selected=null;
+                                            data.remove(k);
+                                        }
+                                    }
+                                },
+                            }
+                        };						
 						u();
 					};
 					ui.children.bind("add",install);

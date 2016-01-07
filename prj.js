@@ -18,6 +18,7 @@ var prjui=function() {
 			}
 		},
 		connector:null,
+		actions:null,
 		class:"prj rows",
 		builder:function(dom,data,ui) {
 			if (ui.data!=null) return;
@@ -27,9 +28,11 @@ var prjui=function() {
 			});
 			ui.children.view.children.panes=panesui(data);
 			ui.bind("set","connector",function(k,v) {
-				ui.children.project.children.add("connector",ui.connector);
-				ui.children.project.order=orderInsert(ui.children.project.order,"","connector");
-			})
+			    ui.children.project.children.connector=ui.connector;
+			});
+			ui.bind("set","actions",function(k,v) {
+				ui.children.project.children.prjjson_actions.children.actions=ui.actions;
+			});
 		}
 	};
 };
