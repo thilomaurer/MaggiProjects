@@ -37,7 +37,7 @@ var fileeditui=function() {
 
 	return {
 		children:{
-			type: {type:"select",choices:{
+			type: {type:"text",choices:{
 				"text/javascript":{label:"JS"},
 				"text/html":{label:"HTML"},
 				"text/css":{label:"CSS"},

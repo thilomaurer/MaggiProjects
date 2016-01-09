@@ -94,13 +94,26 @@ var writefile=function(fp,data,enc) {
 };
 
 var exportRevision=function(revision) {
-	for (var k in revision.files) {
-		var file=revision.files[k];
-		var fp=__dirname + "/project/" + revision.name + "/" +file.name;
-		console.log(fp);
-		console.log(file.enc);
-		writefile(fp, file.data, file.enc);
-	}
+        var childwithkv = function(o,key,name) {
+                for (var k in o)
+                        if (name==o[k][key]) return o[k];
+                return null;
+        };
+        var k=childwithkv(revision.files,"name","project.json");
+        var d=null;
+        try {
+                d=JSON.parse(k.data);
+        } catch(e) {
+                console.log(e);
+        }
+        if (d==null) return;
+        var revname=d.name;
+
+        for (var k in revision.files) {
+                var file=revision.files[k];
+                var fp=__dirname + "/project/" + revname + "/" +file.name;
+                writefile(fp, file.data, file.enc);
+        }
 };
 
 db.bind(["set","add"],function(k,v) {

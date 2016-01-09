@@ -43,11 +43,17 @@ var panesui = function(prjdata) {
 					d.files=rev.files;
 					d.readonly=rev.committed;
 					d.addfile=projectfuncs(prjdata).addfile;
+					//ui.addfile.enabled=!v; 
 					if (data!=null) {
 						d.mode=data.mode;
 						u.children.header.children.files.selected=data.fileid;
 					}
 					d.bind("set","mode",function(k,v) {data.mode=v;});
+					rev.bind("set","committed",function(k,v) {
+					    d.readonly=v; 
+					    /*ui.addfile.enabled=!v;*/
+					    
+					});
 					u.children.header.children.files.bind("set","selected",function(k,v) {data.fileid=v;});
 				};
 				build(data);
