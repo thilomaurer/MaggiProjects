@@ -172,6 +172,10 @@ var fileinput=function(dom,data,setdata,ui) {
 };
 
 var file=function(m,dom) {
-    m.data=filedata({name:"test.name",type:"text"});
+    m.data=filedata({name:"test.name",type:"text/css"});
     m.ui=fileui();
+    m.ui.add("enabled",true);
+    m.ui.enabled=false;
+    m.ui.class="mui-light";
+    
 };

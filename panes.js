@@ -36,25 +36,37 @@ var panesui = function(prjdata) {
 				d.bind("insertpane",function(k,v) {
 					for (var i in panes) if (panes[i]===data) ins(i);
 				});
+				var backbuild=null;
 				var build=function(data) {
+				    if (backbuild) backbuild();
 					u.children.edit.settings=prjdata.options.editor;
 					var revid=prjdata.view.revision;
 					var rev=prjdata.revisions[revid];
 					d.files=rev.files;
-					d.readonly=rev.committed;
-					d.addfile=projectfuncs(prjdata).addfile;
-					//ui.addfile.enabled=!v; 
+
+                    var setcommitted=function(k,v) {
+					    d.readonly=v; 
+                        if (v==true) d.addfile=null; else d.addfile=projectfuncs(prjdata).addfile;
+                    };
+
 					if (data!=null) {
 						d.mode=data.mode;
 						u.children.header.children.files.selected=data.fileid;
 					}
-					d.bind("set","mode",function(k,v) {data.mode=v;});
-					rev.bind("set","committed",function(k,v) {
-					    d.readonly=v; 
-					    /*ui.addfile.enabled=!v;*/
+					//d.bind("set","mode",function(k,v) {data.mode=v;});
+					//rev.bind("set","committed",setcommitted);
+					//setcommitted("committed",rev.committed);
+					
+					//u.children.header.children.files.bind("set","selected",function(k,v) {data.fileid=v;});
+					
+					var handlers=[
+					    [u.children.header.children.files,"set","selected",function(k,v) {data.fileid=v;}],
+					    [rev,"set","committed",setcommitted],
+					    [d,"set","mode",function(k,v) {data.mode=v;}],
 					    
-					});
-					u.children.header.children.files.bind("set","selected",function(k,v) {data.fileid=v;});
+					];
+					
+					backbuild=installBindings(handlers);
 				};
 				build(data);
 				prjdata.view.bind("set","revision",function(k,v) {

@@ -4,6 +4,7 @@ var panedata=function() {
 	var p=Maggi({
 		file:f,
 		files:files,
+		addfile:null,
 		mode:"edit",
 		readonly:false,
 		edit:{file:f},
@@ -41,22 +42,35 @@ var buildFilesEdit = function(dom,data,ui) {
 			files: filesui(),
 		},
 		builder:function(dom,int_data,int_ui) {
-			int_ui.children.actions.bind("set","selected",function(k,v) {
+            int_ui.children.actions.children.adder.add("enabled",true);
+            int_ui.children.actions.children.adder.enabled=false;
+            ui.add("addfile",null);
+
+			var setaddfile=function(k,v) {
+			    int_ui.children.actions.children.adder.enabled=(v!=null);
+			};
+			var setselectedaction=function(k,v) {
 				if (v=="adder") {
-					var fk=ui.addfile({name:""});
-					int_ui.children.files.children[fk].editvisible=true;
+					var filekey=ui.addfile({name:""});
+					int_ui.children.files.children[filekey].editvisible=true;
 				}
 				int_ui.children.actions.selected=null;
-			});
-			int_ui.children.files.bind("set",function(k,v) {
+			};
+			var setselectedfile=function(k,v) {
 				var openfile = function(file) {
 					if (file.type!="directory") {
 						ui.selected=v;
 						ui.visible=false;
 					}
 				};
-				if (k=="selected") openfile(v);
-			});
+				if (v!=null) openfile(v);
+			};
+			var handlers=[
+			    [ui,"set","addfile",setaddfile],
+			    [int_ui.children.actions,"set","selected",setselectedaction],
+			    [int_ui.children.files,"set","selected",setselectedfile]
+			];
+			return installBindings(handlers);
 		}
 	};
 	return Maggi.UI(dom,int_data,int_ui);
@@ -95,7 +109,9 @@ var paneuiheader = function() {
 		class:"paneheader",
 		builder:function(dom,data,ui) {
 			if (data==null) return;
-			ui.children.files.addfile=data.addfile;
+			var setaddfile=function(k,v) {
+			    ui.children.files.addfile=data.addfile;
+			};
 			var updateFile=function() {
 				var v=ui.children.files.selected;
 				data.file=data.files[v];
@@ -134,7 +150,8 @@ var paneuiheader = function() {
 				[ui.children.files,"set","selected",updateFile],
 				[data,"set","files",updateFile],
 				[data,"set","file",updateModeVis],
-				[data,"set","readonly",updateRO]
+				[data,"set","readonly",updateRO],
+				[data,"set","addfile",setaddfile]
 			];
 			return installBindings(handlers);
 		}
@@ -159,7 +176,7 @@ var installBindings=function(handlers) {
 			var k=v[2];
 			var f=v[3];
 			if (o!=null) {
-				o.unbind(e,k,f);
+				o.unbind(e,f); //TODO: (e,k,f);
 			} else console.log("unbind from null ignored");
 		});
 	};

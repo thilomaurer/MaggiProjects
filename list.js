@@ -3,7 +3,7 @@ var listui=function() {
 		type:"list",
 		childdefault:listitemui,
 		select:"single",
-		selected:"",
+		selected:null,
 		class:"tablelist selectable tablegrid expand-hrz",
 		builder:function(dom,data,ui) {
 			var empty=(data===null);

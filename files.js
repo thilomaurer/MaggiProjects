@@ -25,4 +25,8 @@ var files=function(m,dom) {
             c:filedata({name:"file-C",type:"text/html"}),
     };
     m.ui=filesui();
+    m.ui.class+=" tablelist";
+    m.ui.children.b.add("enabled",true);
+    m.ui.children.b.enabled=false;
+    $('html').addClass("mui-light");
 };
