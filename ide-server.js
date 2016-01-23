@@ -50,6 +50,7 @@ Maggi.db=function(dbname,bindfs) {
 	db=Maggi(db);
 	db.bind("set","rev",function() {
 		writefile(dbfp, JSON.stringify(db, null, '\t'), enc);
+		writefile(dbfp+"."+db.rev, JSON.stringify(db, null, '\t'), enc);
 	});
 
 	var saveFS=function(k,v) {

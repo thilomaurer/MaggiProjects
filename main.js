@@ -8,6 +8,7 @@ var main = function() {
 	ide_init(m);
 
 	Maggi.client(socket,m.data);
+	/*
 	$('body').keypress(function(e) {
 		var c=e.keyCode;
 		if (c==32) {
@@ -24,7 +25,7 @@ var main = function() {
 				}
 			});
 		}
-	});
+	});*/
 };
 
 var sampleprojects={};

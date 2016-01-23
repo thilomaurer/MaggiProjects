@@ -37,7 +37,7 @@ var fileeditui=function() {
 
 	return {
 		children:{
-			type: {type:"text",choices:{
+			type: {type:"select",choices:{
 				"text/javascript":{label:"JS"},
 				"text/html":{label:"HTML"},
 				"text/css":{label:"CSS"},
@@ -71,8 +71,8 @@ var fileeditui=function() {
 var makeFileEditor=function(dom,file,setfile,onRemove,onClose) {
 	var data=Maggi({
 		delete:function() { 
-			onRemove();
 			data.close();
+			onRemove();
 		},
 		close:function() { 
 			removeOverlay();
