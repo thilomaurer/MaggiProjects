@@ -47,10 +47,11 @@ Maggi.db=function(dbname,bindfs) {
 		console.log("Error parsing Maggi.db '"+dbname+"': "+e);
 		process.exit(1);
 	}
+	var stringify=function() { return JSON.stringify(db, null, '\t'); };
 	db=Maggi(db);
 	db.bind("set","rev",function() {
-		writefile(dbfp, JSON.stringify(db, null, '\t'), enc);
-		writefile(dbfp+"."+db.rev, JSON.stringify(db, null, '\t'), enc);
+		writefile(dbfp, stringify, enc);
+		//writefile(dbfp+"."+db.rev, JSON.stringify(db, null, '\t'), enc);
 	});
 
 	var saveFS=function(k,v) {
@@ -72,26 +73,34 @@ Maggi.db=function(dbname,bindfs) {
 var db=Maggi.db("data",false);
 Maggi.sync.log=true;
 
+var write_s={}
+
 var writefile=function(fp,data,enc) {
 	if (enc==null) enc="utf8";
-	var saving=false;
-	var save_again=false;
-	var save=function() {
-		save_again=saving;
-		if (saving) return;
-		saving=true;
-		var dir=fp.substring(0,fp.lastIndexOf("/"));
+	if (write_s[fp]==null) 
+		write_s[fp]={fp:fp,data:data,enc:enc,saving:false,save_again:false};
+	else { write_s[fp].data=data; write_s[fp].enc=enc; write_s[fp].save_again=true; }
+
+	var save=function(x) {
+		var dir=x.fp.substring(0,x.fp.lastIndexOf("/"));
+		x.save_again=x.saving;
+		if (x.saving) return;
+		x.saving=true;
 		var done=function(err) {
-			saving=false;
+			x.saving=false;
 			if (err) console.log(JSON.stringify(err));
-			if (save_again) save();
+			if (x.save_again) save(x);
 		};
 		mkdirp(dir,function(err) {
 			if (err) done(err);
-			else fs.writeFile(fp, data, enc, done);
+			else {
+				var d=x.data;
+				if (typeof d === "function") d=d();
+				fs.writeFile(x.fp, d, x.enc, done);
+			}
 		}); 
 	};
-	save();
+	save(write_s[fp]);
 };
 
 var exportRevision=function(revision) {
