@@ -20,6 +20,7 @@ var listitemui=function() {
 				"application/json":"icons/json.svg",
 				"image/svg+xml":"icons/svg.svg",
 				"text/javascript":"icons/js.svg",
+				"application/javascript":"icons/js.svg",
 				"text/html":"icons/html5.svg",
 				"text/css":"icons/css3.svg",
 				"text":"icons/text.svg",

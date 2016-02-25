@@ -38,7 +38,7 @@ var fileeditui=function() {
 	return {
 		children:{
 			type: {type:"select",choices:{
-				"text/javascript":{label:"JS"},
+				"application/javascript":{label:"JS"},
 				"text/html":{label:"HTML"},
 				"text/css":{label:"CSS"},
 				"text":{label:"TXT"},
@@ -130,7 +130,7 @@ var fileinput=function(dom,data,setdata,ui) {
                 var f=evt.target.files[0];
                 var reader = new FileReader();
                 var texttypes=[
-                    "text/javascript",
+                    "application/javascript",
                     "text/html",
                     "text/css",
                     "text",
