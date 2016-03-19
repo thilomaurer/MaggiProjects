@@ -159,8 +159,14 @@ function projectsHttpHandler(req,res) {
 		var prj=prjs[prjid];
 		var revid=prj.view.revision;
 		var rev=prj.revisions[revid];
-		if (rev.name==prjname) {
-			var files=rev.files;
+		var files=rev.files;
+		var prjfile=files[0];
+		var projectname=null;
+		if (prjfile.name=="project.json") {
+			var project=JSON.parse(prjfile.data);
+			projectname=project.name;
+		}
+		if (projectname==prjname) {
 			if (k[k.length-1]=="") k[k.length-1]="index.html";
 			var fn=k.join("/");
 			for (var k in files) {
