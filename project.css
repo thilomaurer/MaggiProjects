@@ -34,6 +34,11 @@
 	display:inline-block;
 }
 
+.project #revisions #revisions.simplelist {
+    display:flex;
+    flex-direction:column-reverse;
+}
+
 .project > .icon {
 	height: 20px;
 	width: 20px;

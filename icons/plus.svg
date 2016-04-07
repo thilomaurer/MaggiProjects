@@ -52,7 +52,7 @@
        spacingy="8"
        empspacing="4" /></sodipodi:namedview><g
      id="g3"
-     transform="translate(-128,-128)"><path
+     transform="translate(-128,-128)"><path fill="red"
        d="m 384,265 -120,0 0,119 -17,0 0,-119 -119,0 0,-17 119,0 0,-120 17,0 0,120 120,0 0,17 z"
        id="path5"
        inkscape:connector-curvature="0" /></g></svg>

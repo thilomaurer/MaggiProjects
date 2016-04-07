@@ -379,30 +379,52 @@
 								"name": "test.js",
 								"type": "text/javascript",
 								"enc": null,
-								"data": "var test=function(m,dom) {\n    m.data=test.data;\n    m.ui=test.ui;\n};\naaaaaaaaa\ntest.data={a:\"dasdasde\",b:\"initial\"};\ntest.ui={\n    childdefault:\"text\",\n    children:{\n        a:{parts:[\"input\"]},\n        b:{class:\"xxx\",parts:[\"enabled\",\"class\",\"visible\",\"onClick\",\"text\"]}\n    },\n    onClick:function(m) {alert(JSON.stringify(m));},\n    class:\"null\",\n    parts:[\"enabled\",\"class\",\"visible\",\"onClick\",\"children\"],\n    bindings:{\n        seta: [\"data\",\"set\",\"a\",function(m,k,v,ov,e,dom) {\n            m.data.b=v;\n        }]\n    }\n};\n\nvar uis={};\n\nuis.input={\n    builder(m,dom) {\n        var ui=m.ui;\n        var data=m.data;\n        var autolength=function(o,v) {\n    \t\tif (ui.autosize) {\n    \t\t\tif (v==null) v=\"\";\n    \t\t\tv=v.toString();\n    \t\t\tvar l=v.length;\n    \t\t\tif (l==0) o.addClass(\"empty\"); else o.removeClass(\"empty\");\n    \t\t\to.attr(\"size\",l);\n    \t\t}\n    \t};\n    \tdom.empty();\n    \tvar prefix=$(\"<span>\",{id:\"prefix\"}).appendTo(dom);\n    \tvar postfix=$(\"<span>\",{id:\"postfix\"}).appendTo(dom);\n    \tvar midfix=$(\"<span>\",{id:\"midfix\"}).appendTo(dom);\n    \t\n    \tvar updatePrefix=function() {\n    \t\tprefix.text(ui.prefix);\n    \t};\n    \tui.bind(\"set\",\"prefix\",updatePrefix);\n    \tupdatePrefix();\n    \t\n    \tvar updatePostfix=function() {\n    \t\tpostfix.text(ui.postfix);\n    \t};\n    \tui.bind(\"set\",\"postfix\",updatePostfix);\n    \tupdatePostfix();\n    \n    \tvar i=$('<input/>', { type: ui.kind, placeholder:ui.placeholder }).appendTo(midfix)\n    \t  .on(\"input\",function(event) { \n    \t\tautolength(i,this.value);\n    \t\tm.data=this.value;\n    \t\tevent.stopPropagation();\n    \t}).on(\"keypress\",function(event) { \n    \t\tif (event.keyCode == '13') { if (ui.onReturnKey) ui.onReturnKey(this.value); }\n    \t\tevent.stopPropagation();\n    \t}).keydown(function(event) {\n    \t\tevent.stopPropagation();\n    \t}).focus(function() {\n    \t\tdom.addClass('focused');\n    \t}).blur(function() {\n    \t\tdom.removeClass('focused');\n    \t});\n    \tui.bind(\"set\",\"placeholder\",i.attr);\n    \tvar datachange=function(data) {\n    \t\tif (ui.kind==\"file\") return;\n    \t\tvar newvalue=data&&data.toString();\n    \t\tif (i[0].value!=newvalue) i[0].value=newvalue;\n    \t\tautolength(i,newvalue);\n    \t};\n    \tm.bind(\"set\",\"data\",function(k,v) { datachange(v); });\n    \tdatachange(data);\n    \tdom.click(function(event) {i.focus(); event.stopPropagation();});\n    \treturn function() {\n    \t\tui.unbind(\"set\",i.attr);\n    \t};\n    }\n};\n\nuis.children={\n    parameter:{},\n    bindings:{\n        e:[\"ui\",\"set\",\"children\",function(m,k,v,ov,e,dom) {\n            var inner={};\n            console.log(inner);\n            var add=function(k) {\n                var z={};\n                z.m=Maggi({data:m.data[k],ui:v[k]});\n                z.dom=$(\"<div>\").appendTo(dom);\n                z.m.bind(\"set\",\"data\",function(key,v) {\n                   m.data[k]=v;\n                });\n                z.backbuild=Maggi.UI(z.m,z.dom);\n                inner[k]=z;\n            };\n            var setd=function(k) {\n                inner[k].m.data=m.data[k];\n            };\n            var setu=function(k) {\n                inner[k].m.ui=m.ui.children[k];\n            };            \n            $.each(v,add);\n            v.bind(\"add\",add);\n            m.data.bind(\"set\",setd);\n            v.bind(\"set\",setu);\n        }]\n    }\n};\n\nuis.enabled={\n    parameter:true,\n    bindings:{\n        e: [\"ui\",\"set\",\"enabled\",function(m,k,v,ov,e,dom) {\n            var cls=\"disabled\";\n            if (v===false) dom.addClass(cls); else dom.removeClass(cls); \n        }]\n    }\n};\n\nuis.class={\n    parameter:\"\",\n    bindings:{\n        e: [\"ui\",\"set\",\"class\",function(m,k,v,ov,e,dom) {\n            dom.removeClass(ov); dom.addClass(v);\n        }]\n    }\n};\n\nuis.visible={\n    parameter:\"\",\n    bindings:{\n        e: [\"ui\",\"set\",\"visible\",function(m,k,v,ov,e,dom) {\n            var cls=\"invisible\";\n            if (v===false) dom.addClass(cls); else dom.removeClass(cls); \n        }]\n    }\n};\n\nuis.text={\n    /*bindings:{\n        e: [\"data\",\"set\"]\n    },*/\n    builder(m,dom) {\n        m.bind(\"set\",\"data\",function(k,v) {dom.text(v);});\n        dom.text(m.data);\n        return function() {\n            //m.unbind(\"set\",)\n        };\n    }\n};\n\nuis.onClick={\n    parameter:null,\n    bindings:{\n        e: [\"ui\",\"set\",\"visible\",function(m,k,v,ov,e,dom) {\n            var cls=\"invisible\";\n            if (v===false) dom.addClass(cls); else dom.removeClass(cls); \n        }]\n    },\n    builder(m,dom) {\n    \tvar onClick=function(e) {\n    \t    var ui=m.ui;\n    \t    var handled=(ui.onClick!=null&&(ui.enabled!=false));\n    \t    if (handled) ui.onClick(m,dom);\n    \t    return !handled;\n    \t};\n        dom.on(\"click\",onClick);\n    \treturn function() {\n    \t        dom.off(\"click\",onClick);\n    \t};\n    }\n};\n",
+								"data": "var test=function(m,dom) {\n    m.data=test.data;\n    m.ui=test.ui;\n    $(\"html\").addClass(\"mui\");\n};\n\ntest.data={a:\"fsfsdfsdfsdffsdflf\",b:\"initial\"};\ntest.ui={\n    childdefault:\"text\",\n    children:{\n        a:{parts:[\"input\"]},\n        b:{class:\"xxx\",parts:[\"enabled\",\"class\",\"visible\",\"onClick\",\"text\"]}\n    },\n    onClick:function(m) {alert(JSON.stringify(m));},\n    class:\"null\",\n    parts:[\"enabled\",\"class\",\"visible\",\"onClick\",\"children\"],\n    bindings:{\n        seta: [\"data\",\"set\",\"a\",function(m,k,v,ov,e,dom) {\n            m.data.b=v;\n        }]\n    }\n};\n\nvar uis={};\n\nuis.input={\n    builder(m,dom) {\n        var ui=m.ui;\n        var data=m.data;\n        var autolength=function(o,v) {\n    \t\tif (ui.autosize) {\n    \t\t\tif (v==null) v=\"\";\n    \t\t\tv=v.toString();\n    \t\t\tvar l=v.length;\n    \t\t\tif (l==0) o.addClass(\"empty\"); else o.removeClass(\"empty\");\n    \t\t\to.attr(\"size\",l);\n    \t\t}\n    \t};\n    \tdom.empty();\n    \tvar prefix=$(\"<span>\",{id:\"prefix\"}).appendTo(dom);\n    \tvar postfix=$(\"<span>\",{id:\"postfix\"}).appendTo(dom);\n    \tvar midfix=$(\"<span>\",{id:\"midfix\"}).appendTo(dom);\n    \t\n    \tvar updatePrefix=function() {\n    \t\tprefix.text(ui.prefix);\n    \t};\n    \tui.bind(\"set\",\"prefix\",updatePrefix);\n    \tupdatePrefix();\n    \t\n    \tvar updatePostfix=function() {\n    \t\tpostfix.text(ui.postfix);\n    \t};\n    \tui.bind(\"set\",\"postfix\",updatePostfix);\n    \tupdatePostfix();\n    \n    \tvar i=$('<input/>', { type: ui.kind, placeholder:ui.placeholder }).appendTo(midfix)\n    \t  .on(\"input\",function(event) { \n    \t\tautolength(i,this.value);\n    \t\tm.data=this.value;\n    \t\tevent.stopPropagation();\n    \t}).on(\"keypress\",function(event) { \n    \t\tif (event.keyCode == '13') { if (ui.onReturnKey) ui.onReturnKey(this.value); }\n    \t\tevent.stopPropagation();\n    \t}).keydown(function(event) {\n    \t\tevent.stopPropagation();\n    \t}).focus(function() {\n    \t\tdom.addClass('focused');\n    \t}).blur(function() {\n    \t\tdom.removeClass('focused');\n    \t});\n    \tui.bind(\"set\",\"placeholder\",i.attr);\n    \tvar datachange=function(data) {\n    \t\tif (ui.kind==\"file\") return;\n    \t\tvar newvalue=data&&data.toString();\n    \t\tif (i[0].value!=newvalue) i[0].value=newvalue;\n    \t\tautolength(i,newvalue);\n    \t};\n    \tm.bind(\"set\",\"data\",function(k,v) { datachange(v); });\n    \tdatachange(data);\n    \tdom.click(function(event) {i.focus(); event.stopPropagation();});\n    \treturn function() {\n    \t\tui.unbind(\"set\",i.attr);\n    \t};\n    }\n};\n\nuis.children={\n    parameter:{},\n    bindings:{\n        e:[\"ui\",\"set\",\"children\",function(m,k,v,ov,e,dom) {\n            var inner={};\n            console.log(inner);\n            var add=function(k) {\n                var z={};\n                z.m=Maggi({data:m.data[k],ui:v[k]});\n                z.dom=$(\"<div>\").appendTo(dom);\n                z.m.bind(\"set\",\"data\",function(key,v) {\n                   m.data[k]=v;\n                });\n                z.backbuild=Maggi.UI(z.m,z.dom);\n                inner[k]=z;\n            };\n            var setd=function(k) {\n                inner[k].m.data=m.data[k];\n            };\n            var setu=function(k) {\n                inner[k].m.ui=m.ui.children[k];\n            };            \n            $.each(v,add);\n            v.bind(\"add\",add);\n            m.data.bind(\"set\",setd);\n            v.bind(\"set\",setu);\n        }]\n    }\n};\n\nuis.enabled={\n    parameter:true,\n    bindings:{\n        e: [\"ui\",\"set\",\"enabled\",function(m,k,v,ov,e,dom) {\n            var cls=\"disabled\";\n            if (v===false) dom.addClass(cls); else dom.removeClass(cls); \n        }]\n    }\n};\n\nuis.class={\n    parameter:\"\",\n    bindings:{\n        e: [\"ui\",\"set\",\"class\",function(m,k,v,ov,e,dom) {\n            dom.removeClass(ov); dom.addClass(v);\n        }]\n    }\n};\n\nuis.visible={\n    parameter:\"\",\n    bindings:{\n        e: [\"ui\",\"set\",\"visible\",function(m,k,v,ov,e,dom) {\n            var cls=\"invisible\";\n            if (v===false) dom.addClass(cls); else dom.removeClass(cls); \n        }]\n    }\n};\n\nuis.text={\n    /*bindings:{\n        e: [\"data\",\"set\"]\n    },*/\n    builder(m,dom) {\n        m.bind(\"set\",\"data\",function(k,v) {dom.text(v);});\n        dom.text(m.data);\n        return function() {\n            //m.unbind(\"set\",)\n        };\n    }\n};\n\nuis.onClick={\n    parameter:null,\n    bindings:{\n        e: [\"ui\",\"set\",\"visible\",function(m,k,v,ov,e,dom) {\n            var cls=\"invisible\";\n            if (v===false) dom.addClass(cls); else dom.removeClass(cls); \n        }]\n    },\n    builder(m,dom) {\n    \tvar onClick=function(e) {\n    \t    var ui=m.ui;\n    \t    var handled=(ui.onClick!=null&&(ui.enabled!=false));\n    \t    if (handled) ui.onClick(m,dom);\n    \t    return !handled;\n    \t};\n        dom.on(\"click\",onClick);\n    \treturn function() {\n    \t        dom.off(\"click\",onClick);\n    \t};\n    }\n};\n",
 								"cursor": {
-									"row": 4,
-									"column": 8
+									"row": 6,
+									"column": 26
+								},
+								"scope": "client"
+							},
+							"9": {
+								"name": "fsdfds",
+								"type": "text",
+								"enc": null,
+								"data": null,
+								"cursor": {
+									"row": 0,
+									"column": 0
+								},
+								"scope": "client"
+							},
+							"10": {
+								"name": "test.css",
+								"type": "text/css",
+								"enc": null,
+								"data": ".xxx {\n    color:red;\n}\n",
+								"cursor": {
+									"row": 1,
+									"column": 12
 								},
 								"scope": "client"
 							}
 						}
 					}
 				},
-				"freefileid": 9,
+				"freefileid": 11,
 				"view": {
-					"revision": 3,
+					"revision": "3",
 					"panes": {
 						"0": {
 							"fileid": "7",
 							"mode": "edit"
 						},
 						"1": {
-							"fileid": "3",
+							"fileid": 10,
 							"mode": "edit"
 						},
 						"2": {
-							"fileid": 7,
+							"fileid": "7",
 							"mode": "preview"
 						},
 						"order": {
@@ -452,5 +474,5 @@
 			}
 		}
 	},
-	"rev": 11393
+	"rev": 11962
 }

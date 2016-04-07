@@ -11,6 +11,7 @@ var panedata=function() {
 		actions: {},
 		preview: {
 			detach: false,
+			reload:0,
 			file: null,
 			files: files
 		}
@@ -88,7 +89,8 @@ var paneuiheader = function() {
 				selected:null,
 				class:"scroll"
 			},
-			mode:{type:"select",choices:{edit:{label:"edit"},preview:{label:"preview"}},visible:true},
+			//mode:{type:"select",choices:{edit:{label:"edit"},preview:{label:"preview"}},visible:true},
+			play:{type:"label",class:"play icon"},
 			options:{type:"label",class:"options icon"},
 			actions: {
 				popup:true, popuptrigger:"options",
@@ -101,11 +103,13 @@ var paneuiheader = function() {
 			preview_actions:{
 				data:{},
 				children:{
+				    reload:{type:"label",class:"reload icon"},
 					detach:{type:"label",class:"detach icon"}
 				}
-			}
+			},
+			spacer:{type:"label"}
 		},
-		order: ["options","editor_actions","preview_actions","file","files","mode","actions","editor","preview"],
+		order: ["file","files","mode","spacer","play","editor_actions","preview_actions","options","actions"],
 		class:"paneheader",
 		builder:function(dom,data,ui) {
 			if (data==null) return;
@@ -122,8 +126,16 @@ var paneuiheader = function() {
 			dom.ui.actions.ui.insertpane.click(function() {
 				ui.children.actions.visible=false;
 			});
+			dom.ui.play.click(function() {
+			    var m="edit";
+			    if (data.mode==m) m="preview";
+				data.mode=m;
+			});
 			dom.ui.preview_actions.ui.detach.click(function() {
 				data.preview.detach=!data.preview.detach;
+			});
+			dom.ui.preview_actions.ui.reload.click(function() {
+				data.preview.reload+=1;
 			});
 			var updateMode = function(k,v) {
 				var p=(v=="preview");
@@ -136,6 +148,8 @@ var paneuiheader = function() {
 						if (v) dc.class="detach icon activated"; else dc.class="detach icon";
 					});
 				}
+				var dp=ui.children.play;
+				if (p) dp.class="play icon activated"; else dp.class="play icon";
 			};
 			var updateModeVis = function(k,v) {
 				//ui.children.mode.visible=(v.type=="text/javascript");

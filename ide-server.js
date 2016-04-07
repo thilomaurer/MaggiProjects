@@ -15,6 +15,10 @@ function httpHandler(req, res) {
 		req.url=req.url.substring(dir.length+1);
 		return projectsHttpHandler(req,res);
 	}
+	if (fn.indexOf("/proxy?")==0) {
+		req.url=req.url.substring(1);
+		return proxyHttpHandler(req,res);
+	}
 	if (fn=="/") fn="/index.html";
 	var fp=__dirname + fn;
 	fs.readFile(fp, function(err, data) {
@@ -147,6 +151,30 @@ db.bind(["set","add"],function(k,v) {
 String.prototype.endsWith = function(suffix) {
     return this.indexOf(suffix, this.length - suffix.length) !== -1;
 };
+
+function proxyHttpHandler(client_req,client_res) {
+	var url = require('url');
+
+	var url_parts = url.parse(client_req.url, true);
+	var options = url.parse(url_parts.query.url,true);
+	console.log("PROXYING: "+url_parts.query.url);
+	//console.log(JSON.stringify(options));
+	var http;
+	if (options.protocol=="http:") {
+		http = require('http');
+	}
+	if (options.protocol=="https:") {
+		http = require('https');
+	}
+	var proxy = http.request(options, function (res) {
+		//console.log('STATUS: ' + res.statusCode);
+		//console.log('HEADERS: ' + JSON.stringify(res.headers));
+		res.pipe(client_res, { end: true });
+	});
+
+	client_req.pipe(proxy, { end: true });
+
+}
 
 function projectsHttpHandler(req,res) {
 	var fn=decodeURIComponent(req.url);
