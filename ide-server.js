@@ -1,11 +1,14 @@
-var app = require('http').createServer(httpHandler),
+var http = require('http'),
+    https = require('https'),
+    app = http.createServer(httpHandler),
     io = require('socket.io').listen(app),
     fs = require('fs'),
     mime = require('mime'),
     Maggi = require('Maggi.js'),
     mkdirp = require('mkdirp'),
     port = process.argv[2] || 8000,
-    log = {HTTP:false};
+    log = {HTTP:false},
+    url = require('url');
 
 function httpHandler(req, res) {
 	var fn=req.url;
@@ -122,8 +125,11 @@ var exportRevision=function(revision) {
         }
         if (d==null) return;
         var revname=d.name;
-
-        for (var k in revision.files) {
+    	if (revname==="") {
+    		console.warn("unable to export project revision with empty name");
+    		return;
+    	}
+        for (k in revision.files) {
                 var file=revision.files[k];
                 var fp=__dirname + "/project/" + revname + "/" +file.name;
                 writefile(fp, file.data, file.enc);
@@ -152,24 +158,45 @@ String.prototype.endsWith = function(suffix) {
     return this.indexOf(suffix, this.length - suffix.length) !== -1;
 };
 
-function proxyHttpHandler(client_req,client_res) {
-	var url = require('url');
 
-	var url_parts = url.parse(client_req.url, true);
-	var options = url.parse(url_parts.query.url,true);
-	console.log("PROXYING: "+url_parts.query.url);
-	//console.log(JSON.stringify(options));
-	var http;
-	if (options.protocol=="http:") {
-		http = require('http');
+var proxyCounter=0;
+var proxyInProgress=0;
+function proxyHttpHandler(client_req,client_res) {
+
+	var url_parts,options;
+	try {
+		url_parts = url.parse(client_req.url, true);
+		options = url.parse(url_parts.query.url,true);
+	} catch(e) {
+		console.warn(e);
+		client_res.writeHead(400);
+		client_res.end('Malformatted URL: '+client_req.url);
+		return;
 	}
-	if (options.protocol=="https:") {
-		http = require('https');
+	proxyCounter+=1;
+	proxyInProgress+=1;
+	var pc=proxyCounter;
+	console.log("PROXYING",pc,url_parts.query.url);
+	var httpx=http;
+	if (options.protocol=="http:") httpx=http;
+	if (options.protocol=="https:") httpx=https;
+	if (httpx==null) {
+		client_res.writeHead(400);
+		client_res.end('Malformatted URL: '+client_req.url);
+		return;
 	}
-	var proxy = http.request(options, function (res) {
+
+	var start=new Date().getTime();
+	var proxy = httpx.request(options, function (res) {
 		//console.log('STATUS: ' + res.statusCode);
 		//console.log('HEADERS: ' + JSON.stringify(res.headers));
+		proxyInProgress-=1;
+		var end=new Date().getTime();
+		console.log("PROXYING",pc,"took",end-start,";",proxyInProgress,"outstanding");
 		res.pipe(client_res, { end: true });
+	});
+	proxy.on('error', function (err) {
+	    console.log(err);
 	});
 
 	client_req.pipe(proxy, { end: true });
