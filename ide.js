@@ -1,19 +1,19 @@
 var ideui = function() {
 	return {
 		children: {
-			header:{
-			    data:{
-			        title:"Maggi.UI.IDE Projects",
-			        newproject:{icon:"icons/plus.svg",name:"Create new Project..."}
-			    },
-			    children:{
+            header:{
+                data:{
+                    title:"Maggi.UI.IDE Projects",
+                    newproject:{icon:"icons/plus.svg",name:"Create new Project..."}
+                },
+                children:{
 					newproject:{
 					    children:{icon:"image", name:"text"},
 					    class:"visibilityanimate prjjson hoverhighlight"
 					},
-		            title:{type:"text",class:"visibilityanimate"}
-	            },
-	            class:"cols"
+                   title:{type:"text",class:"visibilityanimate"}
+                },
+                class:"cols"
             },
 			projects: {
 				class:"flexrows flexanimate",
@@ -68,7 +68,28 @@ var ideui = function() {
 					$.each(ui.children,install);
 				}
 			},
-			filler:{type:"label",label:""}
+			filler:{type:"label",label:""},
+			connecting:{
+				visible:true,
+				builder(dom,d,u) {
+					var data=Maggi({label:"Connecting..."});
+					var ui={type:"overlay",ui:{
+						type:"object",
+						children:{
+							label:"text"
+						}
+					}};
+					var ui={
+						type:"object",
+						visible:u.visible,
+						children:{
+							label:"text"
+						}
+					};
+					u.bind("set","visible",function(k,v) { ui.visible=v; });
+					return Maggi.UI(dom,data,ui);
+				}
+			}
 		},
 		class:"ide rows flexanimate mui-light",
 		builder:function(dom,data,ui) {
@@ -111,7 +132,7 @@ var ide_init = function(m,dom) {
 			v[i]=pp;
 		}
 	});	
-	m.ui=ideui;
+	m.ui=ideui();
 };
 
 var orderRemove=function(o,k) {

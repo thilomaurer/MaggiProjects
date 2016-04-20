@@ -14,11 +14,11 @@ function httpHandler(req, res) {
 	var fn=req.url;
 	if (log.HTTP) console.log("GET " + fn);
 	var dir="projects";
-	if (fn.indexOf("/"+dir+"/")==0) {
+	if (fn.indexOf("/"+dir+"/")===0) {
 		req.url=req.url.substring(dir.length+1);
 		return projectsHttpHandler(req,res);
 	}
-	if (fn.indexOf("/proxy?")==0) {
+	if (fn.indexOf("/proxy?")===0) {
 		req.url=req.url.substring(1);
 		return proxyHttpHandler(req,res);
 	}
@@ -78,9 +78,8 @@ Maggi.db=function(dbname,bindfs) {
 };
 
 var db=Maggi.db("data",false);
-Maggi.sync.log=true;
 
-var write_s={}
+var write_s={};
 
 var writefile=function(fp,data,enc) {
 	if (enc==null) enc="utf8";
@@ -123,7 +122,7 @@ var exportRevision=function(revision) {
         } catch(e) {
                 console.log(e);
         }
-        if (d==null) return;
+        if (d===null) return;
         var revname=d.name;
     	if (revname==="") {
     		console.warn("unable to export project revision with empty name");
@@ -177,10 +176,10 @@ function proxyHttpHandler(client_req,client_res) {
 	proxyInProgress+=1;
 	var pc=proxyCounter;
 	console.log("PROXYING",pc,url_parts.query.url);
-	var httpx=http;
+	var httpx=null;
 	if (options.protocol=="http:") httpx=http;
 	if (options.protocol=="https:") httpx=https;
-	if (httpx==null) {
+	if (httpx===null) {
 		client_res.writeHead(400);
 		client_res.end('Malformatted URL: '+client_req.url);
 		return;
@@ -209,7 +208,6 @@ function projectsHttpHandler(req,res) {
 	console.log(JSON.stringify(k));
 	var prjname=k.shift();
 	var prjs=db.data.projects;
-	var prj=null;
 	for (var prjid in prjs) {
 		var prj=prjs[prjid];
 		var revid=prj.view.revision;

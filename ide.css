@@ -80,11 +80,30 @@
 	flex:1 0 auto;
 }
 
+.ide > #connecting.invisible {
+	display:none;
+}
+
+.ide > #connecting {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 99999;
+	display: flex;
+	font-size: 40px;
+	align-items: center;
+	justify-content: center;
+	backdrop-filter: blur(20px);
+	background: rgba(0,0,0,0.3);
+}
+
 .ide.prjselected > #projects {
 	flex:1 0 auto;
 }
 
 .ide.prjselected > #header,
 .ide.prjselected > #filler {
-	flex:0.0000001 0 0px;
+	flex:0.0000001 0 0;
 }
