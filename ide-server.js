@@ -109,19 +109,25 @@ var writefile=function(fp,data,enc) {
 	save(write_s[fp]);
 };
 
+var getRevisionManifest=function(revision) {
+	var childwithkv = function(o,key,name) {
+		for (var k in o)
+			if (name==o[k][key]) return o[k];
+		return null;
+	};
+
+    var k=childwithkv(revision.files,"name","project.json");
+    var d=null;
+    try {
+            d=JSON.parse(k.data);
+    } catch(e) {
+            console.log(e);
+    }
+	return d;
+};
+
 var exportRevision=function(revision) {
-        var childwithkv = function(o,key,name) {
-                for (var k in o)
-                        if (name==o[k][key]) return o[k];
-                return null;
-        };
-        var k=childwithkv(revision.files,"name","project.json");
-        var d=null;
-        try {
-                d=JSON.parse(k.data);
-        } catch(e) {
-                console.log(e);
-        }
+        var d=getRevisionManifest(revision);
         if (d===null) return;
         var revname=d.name;
     	if (revname==="") {
@@ -130,7 +136,7 @@ var exportRevision=function(revision) {
     	}
         for (k in revision.files) {
                 var file=revision.files[k];
-                var fp=__dirname + "/project/" + revname + "/" +file.name;
+                var fp=__dirname + "/projects/" + revname + "/" +file.name;
                 writefile(fp, file.data, file.enc);
         }
 };
@@ -195,7 +201,9 @@ function proxyHttpHandler(client_req,client_res) {
 		res.pipe(client_res, { end: true });
 	});
 	proxy.on('error', function (err) {
-	    console.log(err);
+        console.warn(err);
+        client_res.writeHead(400);
+        client_res.end('Proxy Error');
 	});
 
 	client_req.pipe(proxy, { end: true });
@@ -212,16 +220,12 @@ function projectsHttpHandler(req,res) {
 		var prj=prjs[prjid];
 		var revid=prj.view.revision;
 		var rev=prj.revisions[revid];
-		var files=rev.files;
-		var prjfile=files[0];
-		var projectname=null;
-		if (prjfile.name=="project.json") {
-			var project=JSON.parse(prjfile.data);
-			projectname=project.name;
-		}
-		if (projectname==prjname) {
+        	var project=getRevisionManifest(rev);
+		if (project===null) continue;
+		if (project.name==prjname) {
 			if (k[k.length-1]=="") k[k.length-1]="index.html";
 			var fn=k.join("/");
+			var files=rev.files;
 			for (var k in files) {
 				var file=files[k];
 				if (file.name==fn) {
@@ -230,7 +234,6 @@ function projectsHttpHandler(req,res) {
 					return;
 				}
 			}
-
 		}
 	}
 	res.writeHead(404);
