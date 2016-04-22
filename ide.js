@@ -3,15 +3,24 @@ var ideui = function() {
 		children: {
             header:{
                 data:{
-                    title:"Maggi.UI.IDE Projects",
+                    banner:{
+                        logo:"icons/Maggi.UI.IDE.svg",
+                        title:"Maggi.UI.IDE Projects",
+                    },
                     newproject:{icon:"icons/plus.svg",name:"Create new Project..."}
                 },
                 children:{
-					newproject:{
+                    newproject:{
 					    children:{icon:"image", name:"text"},
 					    class:"visibilityanimate prjjson hoverhighlight"
-					},
-                   title:{type:"text",class:"visibilityanimate"}
+                    },
+                    banner:{
+                        children:{
+                            logo:{type:"image"},
+                            title:{type:"text"}
+                        },
+					    class:"visibilityanimate"
+                    }
                 },
                 class:"cols"
             },
@@ -24,10 +33,10 @@ var ideui = function() {
 					    if (ui.selected==null) dom.addClass("noneselected"); else dom.removeClass("noneselected");
 						$.each(dom.ui,function(k,v) {
 							var dui=dom.ui[k];
-							if (ui.selected==k) {
-								dui.removeClass("unselected");
-							} else {
-								dui.addClass("unselected");
+							ui.children[k].mode={true:"active",false:"inactive"}[ui.selected==k];
+							dom.ui[k][{true:"removeClass",false:"addClass"}[ui.selected==k]]("unselected");
+							if (ui.selected!=k) {
+                                var dui=dom.ui[k];
 								var dc=function(event) {
 									ui.selected=k;
 									dui.off("click",dc);
@@ -37,7 +46,6 @@ var ideui = function() {
 							}
 						});
 					};
-					ui.bind("set","selected",u);
 					var install=function(k) {
 						if (k instanceof Array) return;
 						ui.children[k].connector={
@@ -64,8 +72,13 @@ var ideui = function() {
                         };						
 						u();
 					};
+					ui.bind("set","selected",u);
 					ui.children.bind("add",install);
 					$.each(ui.children,install);
+					return function() {
+					    ui.unbind("set",u);
+    					ui.children.unbind("add",install);
+					};
 				}
 			},
 			filler:{type:"label",label:""},

@@ -42,7 +42,7 @@ sampleprojects.Maggi=function(complete) {
 		{name:"<nobody>",username:"username",email:"username@domain.com"},
 		{name:"New Empty Project"},
 		[
-			"jquery-2.0.3.js",
+			"jquery.js",
 			"Maggi.js",
 			"Maggi.UI.js",
 			"Maggi.UI.css",
@@ -63,7 +63,7 @@ sampleprojects.pwcalc=function(complete) {
 		{name:"Password Calculator",icon:"lock.svg"},
 		[
 			["README.txt","demos/README.txt"],
-			"jquery-2.0.3.js",
+			"jquery.js",
 			"Maggi.js",
 			"Maggi.UI.js",
 			"Maggi.UI.css",

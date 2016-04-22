@@ -404,6 +404,59 @@ var projectui=function() {
 	};
 };
 
+var projectui2=function() {
+	return {
+		children:{
+		    prjjson:{
+				data:null,
+				children:{
+					icon:"image",
+					name:"text"
+				},
+				class:"prjjson hoverhighlight"
+		    }
+		},
+		class:"project2",
+		builder:function(dom,data,ui) {
+			if (data==null) return;
+
+			(function() {
+			    var u=ui.children.prjjson;
+				if (u.data!=null) return;
+				var rev=data.view.revision;
+				var k=childwithkv(data.revisions[rev].files,"name","project.json");
+				var update=function() {
+					var d;
+					try {
+						d=JSON.parse(k.data);
+					} catch(e) {
+						console.log(e);
+					}
+					if (d==null) return;
+					var i=d.icon;
+					if (i&&(i.startsWith("http://")||i.startsWith("https://"))) {
+					} else {
+						var files=data.revisions[rev].files;
+						for (var fidx in files) {
+							name=files[fidx].name;
+							if (name==i) {
+								var src="data:"+files[fidx].type+";utf8,"+files[fidx].data;
+								d.icon=src;
+							}
+						}
+					}
+					u.add("data",d);
+				};
+				if (k!=null) {					
+				    k.bind("set","data",update);
+				    update();
+				}
+			})();
+		}
+	};
+};
+
+
 var childwithkv = function(o,key,name) {
 	for (var k in o) 
 		if (name==o[k][key]) return o[k];

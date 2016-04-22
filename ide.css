@@ -51,10 +51,25 @@
 	flex-flow: row;
 }
 
-.ide > #header #title {
+.ide > #header > * {
+    flex: 0 0 auto;
+}
+
+.ide > #header > #banner {
+    display: flex;
+    align-items: center;
+    padding:30px;
+    align-self: flex-end;
+    flex: 1 1 auto;
+    justify-content: center;
+}
+
+.ide > #header > #banner > #logo img {
+    height: 70px;
+}
+
+.ide > #header > #banner > #title {
 	font-size: 40px;
-	padding: 40px;
-	text-align: center;
 }
 
 .ide > #header > #newproject {

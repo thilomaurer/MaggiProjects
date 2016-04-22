@@ -19,6 +19,7 @@ var prjui=function() {
 		},
 		connector:null,
 		actions:null,
+		mode:null,
 		class:"prj rows",
 		builder:function(dom,data,ui) {
 			if (ui.data!=null) return;
@@ -32,6 +33,10 @@ var prjui=function() {
 			});
 			ui.bind("set","actions",function(k,v) {
 				ui.children.project.children.prjjson_actions.children.actions=ui.actions;
+			});
+			ui.bind("set","mode",function(k,v) {
+			    if (v=="inactive") ui.data.view={};
+			    if (v=="active") ui.data.view=data.view;
 			});
 		}
 	};

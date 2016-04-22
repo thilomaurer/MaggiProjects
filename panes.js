@@ -8,6 +8,7 @@ var panes=function(m,dom) {
 
 var panesui = function(prjdata) {
 	var panes=null;
+	var panesdom=null;
 	return {
 		class:"panes cols flexanimate",
 		order:{},
@@ -29,6 +30,11 @@ var panesui = function(prjdata) {
 					k=k.toString();
 					panes.add(k,{fileid:panes[i].fileid,mode:"edit"});
 					panes.order=orderInsert(panes.order,i,k);
+					var idom=panesdom.ui[k];
+                    idom.addClass("closing");
+                    setTimeout(function() { 
+                        idom.removeClass("closing");
+                    },0);
 				};
 				d.bind("closepane",function(k,v) {
 					for (var i in panes) if (panes[i]===data) rem(i);
@@ -43,29 +49,19 @@ var panesui = function(prjdata) {
 					var revid=prjdata.view.revision;
 					var rev=prjdata.revisions[revid];
 					d.files=rev.files;
-
                     var setcommitted=function(k,v) {
 					    d.readonly=v; 
                         if (v==true) d.addfile=null; else d.addfile=projectfuncs(prjdata).addfile;
                     };
-
 					if (data!=null) {
 						d.mode=data.mode;
 						u.children.header.children.files.selected=data.fileid;
 					}
-					//d.bind("set","mode",function(k,v) {data.mode=v;});
-					//rev.bind("set","committed",setcommitted);
-					//setcommitted("committed",rev.committed);
-					
-					//u.children.header.children.files.bind("set","selected",function(k,v) {data.fileid=v;});
-					
 					var handlers=[
 					    [u.children.header.children.files,"set","selected",function(k,v) {data.fileid=v;}],
 					    [rev,"set","committed",setcommitted],
 					    [d,"set","mode",function(k,v) {data.mode=v;}],
-					    
 					];
-					
 					backbuild=installBindings(handlers);
 				};
 				build(data);
@@ -73,17 +69,20 @@ var panesui = function(prjdata) {
 					build(data);
 				});
 				onDataChange(build);
-				dom.addClass("closing");
-				setTimeout(function() { 
-					dom.removeClass("closing");
-				},0);
 				return Maggi.UI(dom,d,u);
 			}
 		},
 		builder:function(dom,data,ui) {
+		    panesdom=dom;
 			panes=data;
-			data.bind("set","order",function(k,v) {ui.order=v;});
-			ui.order=data.order;
+			var setorder=function(k,v) {ui.order=v;};
+			if (data) {
+			    data.bind("set","order",setorder);
+			    ui.order=data.order;
+			}
+			return function() {
+			    if (data) data.unbind("set",setorder);
+			};
 		}
 	};
 };
