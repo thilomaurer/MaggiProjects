@@ -6,15 +6,17 @@ var main = function() {
 	ide_init(m);
 
 	var ddd=new Date();
-	var ready=function() {
-		console.log("Time to ready in ms:",(new Date()).getTime()-ddd.getTime());
-		m.ui.children.connecting.visible=false;
-	};
-	var disconnect=function() {
-		m.ui.children.connecting.visible=true;
+	var events={
+	    ready: function() {
+    		console.log("Time to ready in ms:",(new Date()).getTime()-ddd.getTime());
+    		m.ui.children.connecting.visible=false;
+	    },
+	    disconnect: function() {
+		    m.ui.children.connecting.visible=true;
+	    }
 	};
 
-	Maggi.client(socket,m.data,ready,disconnect);
+	Maggi.db.client(socket,"Maggi.UI.IDE",m.data,events);
 	/*
 	$('body').keypress(function(e) {
 		var c=e.keyCode;

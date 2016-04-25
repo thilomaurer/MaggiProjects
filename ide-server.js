@@ -5,10 +5,16 @@ var http = require('http'),
     fs = require('fs'),
     mime = require('mime'),
     Maggi = require('Maggi.js'),
+    dbname = "Maggi.UI.IDE",
+    dbs = Maggi.db.server(io,dbname),
+    db = dbs[dbname],
     mkdirp = require('mkdirp'),
     port = process.argv[2] || 8000,
     log = {HTTP:false},
-    url = require('url');
+    url = require('url'),
+    writefile = require('./writefile.js');
+
+console.log("Maggi.UI IDE Server localhost:"+port);
 
 function httpHandler(req, res) {
 	var fn=req.url;
@@ -34,80 +40,6 @@ function httpHandler(req, res) {
 		res.end(data);
 	});
 }
-
-var allconnections=[];
-
-Maggi.db=function(dbname,bindfs) {
-	var db;
-	var dbfp=__dirname + "/" + dbname;
-	var dbdir=dbfp + ".fs/";
-	var enc="utf8";
-	try {
-		db=fs.readFileSync(dbfp, enc);
-	} catch(e) {
-	    console.log("Initializing new Maggi.db '"+dbname+"'");
-	    db='{"data":{},"rev":1}';
-	}
-	try {
-		db=JSON.parse(db);
-	} catch(e) {
-		console.log("Error parsing Maggi.db '"+dbname+"': "+e);
-		process.exit(1);
-	}
-	var stringify=function() { return JSON.stringify(db, null, '\t'); };
-	db=Maggi(db);
-	db.bind("set","rev",function() {
-		writefile(dbfp, stringify, enc);
-		//writefile(dbfp+"."+db.rev, JSON.stringify(db, null, '\t'), enc);
-	});
-
-	var saveFS=function(k,v) {
-		if (v instanceof Object) {
-			for (var k1 in v) 
-				saveFS(k.concat(k1),v[k1]);
-			return;
-		}
-		if (k instanceof Array) k=k.join("/");
-		var fp=dbdir+k;
-		writefile(fp,v,enc);
-	};
-
-	
-	if (bindfs) db.bind("set",saveFS);
-	return db;
-};
-
-var db=Maggi.db("data",false);
-
-var write_s={};
-
-var writefile=function(fp,data,enc) {
-	if (enc==null) enc="utf8";
-	if (write_s[fp]==null) 
-		write_s[fp]={fp:fp,data:data,enc:enc,saving:false,save_again:false};
-	else { write_s[fp].data=data; write_s[fp].enc=enc; write_s[fp].save_again=true; }
-
-	var save=function(x) {
-		var dir=x.fp.substring(0,x.fp.lastIndexOf("/"));
-		x.save_again=x.saving;
-		if (x.saving) return;
-		x.saving=true;
-		var done=function(err) {
-			x.saving=false;
-			if (err) console.log(JSON.stringify(err));
-			if (x.save_again) save(x);
-		};
-		mkdirp(dir,function(err) {
-			if (err) done(err);
-			else {
-				var d=x.data;
-				if (typeof d === "function") d=d();
-				fs.writeFile(x.fp, d, x.enc, done);
-			}
-		}); 
-	};
-	save(write_s[fp]);
-};
 
 var getRevisionManifest=function(revision) {
 	var childwithkv = function(o,key,name) {
@@ -159,11 +91,6 @@ db.bind(["set","add"],function(k,v) {
 	}
 });
 
-String.prototype.endsWith = function(suffix) {
-    return this.indexOf(suffix, this.length - suffix.length) !== -1;
-};
-
-
 var proxyCounter=0;
 var proxyInProgress=0;
 function proxyHttpHandler(client_req,client_res) {
@@ -207,7 +134,6 @@ function proxyHttpHandler(client_req,client_res) {
 	});
 
 	client_req.pipe(proxy, { end: true });
-
 }
 
 function projectsHttpHandler(req,res) {
@@ -240,11 +166,4 @@ function projectsHttpHandler(req,res) {
 	return res.end('Error loading '+req.url);
 }
 
-io.sockets.on('connection', function(socket) {
-	console.log("connected "+socket.id);
-	allconnections.push(socket);
-	Maggi.serve(socket,db);
-});
-
-console.log("Maggi.UI IDE Server localhost:"+port);
 app.listen(port);

@@ -1,1 +1,88 @@
-../Maggi.js/Maggi.UI.input.css
+.mui input,
+.mui-light input {
+	font-size:18px;
+	font-family: 'Open Sans', sans-serif;
+}
+
+.mui .input,
+.mui-light .input {
+	border: 1px solid transparent;
+	border-radius: 5px;
+	padding:5px;
+}
+.mui .input {
+	background: hsla(224, 8%, 15%, 0.5);
+	color: white;
+}
+.mui-light .input {
+	background: hsla(0, 0%, 85%, 0.5);
+	color: black;
+}
+
+.mui .input input::-webkit-input-placeholder {
+	color: hsla(0, 0%, 100%, 0.5);
+}
+
+.mui-light .input input::-webkit-input-placeholder {
+	color: hsla(0, 0%, 0%, 0.5);
+}
+
+.mui .input > #prefix,
+.mui-light .input > #prefix {
+	float:left;
+}
+
+.mui .input > #postfix,
+.mui-light .input > #postfix {
+	float:right;
+}
+
+.mui .input > #midfix,
+.mui-light .input > #midfix {
+	overflow:hidden;
+	display:block;
+}
+
+.mui .input input,
+.mui-light .input input {
+	width: 100%;
+	border-radius: 5px;
+	background: transparent;
+	color: inherit;
+	outline: none;
+	border: 0;
+}
+
+.mui .input:hover,
+.mui-light .input:hover {
+	border: 1px solid #29a1d3;
+}
+
+.mui .input.focused,
+.mui-light .input.focused {
+	border: 1px solid #29a1d3;
+	box-shadow: 0 0 0 1px #29a1d3;
+}
+
+.mui .input > div.spinner,
+.mui-light .input > div.spinner {
+	width: 20px !important;
+	height: 20px !important;
+	position: relative;
+	top: 5px;
+	margin-right: 5px;
+}
+
+.mui .input.first,
+.mui-light .input.first {
+	margin-bottom:0px;
+	border-bottom-left-radius:0px;
+	border-bottom-right-radius:0px;
+}
+
+.mui .input + .input,
+.mui-light .input + .input {
+	margin-top:1px;
+	border-top-left-radius:0px;
+	border-top-right-radius:0px;
+}

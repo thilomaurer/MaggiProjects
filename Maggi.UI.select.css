@@ -1,1 +1,57 @@
-../Maggi.js/Maggi.UI.select.css
+.mui .select,
+.mui-light .select {
+	display:inline-flex;
+	border-radius:5px;
+	vertical-align:bottom;
+	overflow:hidden;
+}
+
+.mui .select {
+	border:1px solid white;
+}
+
+.mui-light .select {
+	border:1px solid black;
+}
+
+.mui .select input,
+.mui-light .select input {
+	display:none;
+}
+
+.mui .select label,
+.mui-light .select label {
+	text-align:center;
+	flex: 1 0 auto;
+	padding:3px;
+	overflow:hidden;
+}
+
+.mui .select label {
+	color: white;
+}
+.mui-light .select label {
+	color: black;
+}
+
+.mui .select label:hover {
+	background:hsla(224, 8%, 42%, 1);
+}
+
+.mui .select input:checked + label {
+	background:white;
+	color:black;
+}
+
+.mui-light .select label:hover {
+	background:#aaa;
+}
+
+.mui-light .select input:checked + label {
+	background:black;
+	color:white;
+}
+.mui .select.fillhorizontal,
+.mui-light .select.fillhorizontal {
+	display: flex;
+}
