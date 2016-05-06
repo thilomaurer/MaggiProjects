@@ -690,7 +690,7 @@ Maggi.UI.object=function(dom,data,setdata,ui,onDataChange) {
 		backbuild_base=Maggi.UI.BaseFunctionality(dom,data,setdata,ui,onDataChange);
 
 		dom._Maggi=data;
-		if (typeof data == "object") {
+		if (data&&typeof data == "object") {
 			data.bind("set", update);
 			data.bind("add", add);
 			data.bind("remove", remove);

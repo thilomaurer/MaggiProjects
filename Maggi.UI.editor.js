@@ -102,7 +102,7 @@ Maggi.UI.editor=function(dom,data,setdata,outer_ui,onDataChange) {
 			outer_ui.unbind(ouihandler);
 			fmt.children.annot.unbind(annotsethandler);
 			editor.destroy();
-		}
+		};
 	};
 	
 	var d=Maggi({editor:"",annot:{}});

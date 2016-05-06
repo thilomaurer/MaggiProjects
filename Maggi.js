@@ -258,14 +258,15 @@ Maggi.db={};
 
 Maggi.db.load=function(dbname,bindfs) {
 	var db;
-	var dbfp=process.cwd() + "/" + dbname;
-	var dbdir=dbfp + ".fs/";
+	var basename=__dirname + "/" + dbname;
+	var dbjson=basename+".json";
+	var dbdir=basename + ".fs/";
 	var enc="utf8";
 	try {
-		db=fs.readFileSync(dbfp, enc);
+		db=fs.readFileSync(dbjson, enc);
 	} catch(e) {
 	    console.log("Initializing new Maggi.db '"+dbname+"'");
-	    db='{"data":{},"rev":1}';
+	    db='{"data":{},"rev":0}';
 	}
 	console.log("Loading Maggi.db '"+dbname+"'");
 	try {
@@ -277,8 +278,7 @@ Maggi.db.load=function(dbname,bindfs) {
 	var stringify=function() { return JSON.stringify(db, null, '\t'); };
 	db=Maggi(db);
 	db.bind("set","rev",function() {
-		writefile(dbfp, stringify, enc);
-		//writefile(dbfp+"."+db.rev, JSON.stringify(db, null, '\t'), enc);
+		writefile(dbjson, stringify, enc);
 	});
 
 	var saveFS=function(k,v) {
@@ -319,11 +319,13 @@ Maggi.db.server.path="db";
 Maggi.db.sync = function(socket,dbname,db,client,events) {
 	var applying=false;
 	var mk="Maggi.db."+dbname;
-    var dshort=function(d) {
-    	if (d===undefined) return ""; 
-    	if (d===null) return "(null)"; 
-    	return JSON.stringify(d,function(k,v) {if (k=="v") return v.length; else return v;});
-    };
+	var dshort=function(d) {
+		if (d==null) return "(null)"; 
+		var k=d.k;
+		if (k instanceof Array) k=k.join(".");
+		var l=d.v&&JSON.stringify(d.v).length;
+		return d.rev + " " + d.f + " " + d.e + " " + k + " " + l;
+	};
 	var log=function(key,d) {
         if (Maggi.db.sync.log) console.log(socket.id,key,mk,dshort(d));
 	};
@@ -332,7 +334,7 @@ Maggi.db.sync = function(socket,dbname,db,client,events) {
 	var handler=function(k,v,oldv,e) {
 		if (applying) return;
 		db.rev+=1;
-		emit({f:"delta",e:e,k:k,v:v,rev:db.rev});
+		emit({f:"delta",e:e,k:k,rev:db.rev,v:v});
 	};
 	var apply=function(d) {
 		applying=true;
@@ -373,12 +375,12 @@ Maggi.db.sync = function(socket,dbname,db,client,events) {
 
 Maggi.db.client = function(socket,dbname,data,events) {
 	var db={data:data,rev:0};
-	socket.emit("Maggi.db","Maggi.UI.IDE");
+	socket.emit("Maggi.db",dbname);
 	Maggi.db.sync(socket,dbname,db,true,events);
 };
 
 if (typeof module !== 'undefined') {
     var fs = require('fs'),
-        writefile = require('writefile.js');
+        writefile = require('./writefile.js');
 	module.exports = Maggi;
 }

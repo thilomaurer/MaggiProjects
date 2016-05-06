@@ -15,10 +15,30 @@ Maggi.UI.iframe=function(dom,s,sets,ui,onDataChange) {
 	var builddoc=function(doc) {
 		ElementOfFile={};
 		doc.open();
-		if (s.file&&s.file.scope=="client") { 
+		doc.write(jshtml);
+		var head=doc.head;
+		if (s.file&&s.file.scope=="client") {
+			//add external dependencies
+			var k=childwithkv(s.files,"name","project.json");
+			var d;
+			try {
+				d=JSON.parse(k.data);
+			} catch(e) {
+				console.log(e);
+			}
+			if (d&&d.scripts) {
+			    for (var k in d.scripts) {
+			        var f=d.scripts[k];
+			        var el=document.createElement('script');
+			        el.type="application/javascript";
+			        el.src=f;
+			        el.async=false;
+    				head.appendChild(el);
+			    }
+			}
+
+            //add projects sources
 			if (s.file.type=="text/javascript"||s.file.type=="application/javascript") {
-				doc.write(jshtml);
-				var head=doc.getElementsByTagName('head').item(0);
 				for (var idx in s.files) {
 					var file=s.files[idx];
 					if (file.scope=="client") {
@@ -26,6 +46,7 @@ Maggi.UI.iframe=function(dom,s,sets,ui,onDataChange) {
     					if (file.type=="text/javascript"||file.type=="application/javascript") {
     						el=document.createElement('script');
     						el.type=file.type;
+        			        //el.async=false;
     					}	
     					if (file.type=="text/css") {
     						el=document.createElement("style");
@@ -34,12 +55,15 @@ Maggi.UI.iframe=function(dom,s,sets,ui,onDataChange) {
     					if (el!==null) {
     						el.id=file.name;
     						el.innerHTML=file.data;
+    						//el.src="projects/"+d.name+"/"+file.name;
+    						//el.async=false;
     						head.appendChild(el);
     						ElementOfFile[file.name]=el;
     					}
 					}
 				}
 				var el=document.createElement('script');
+//		        el.async=false;
 				el.type='text/javascript';
 				//el.innerHTML="$(document).ready("+s.file.name+");";
 				var startidx=s.file.name.lastIndexOf("\/")+1;
@@ -77,7 +101,7 @@ Maggi.UI.iframe=function(dom,s,sets,ui,onDataChange) {
 								x.id=name;
 								x.type=sty.type;
 								x.innerHTML=s.files[fidx].data;
-								doc.head.insertBefore(x,sty);
+								head.insertBefore(x,sty);
 								sty.remove();
 							}
 						}
@@ -98,7 +122,7 @@ Maggi.UI.iframe=function(dom,s,sets,ui,onDataChange) {
 	    var now=new Date().getTime();
 	    var make=(maketime<=now);
 	    if (make) {
-		    if (iframe) {iframe.remove(); iframe=null;}
+		    if (iframe) { iframe[0].contentWindow.stop(); iframe.remove(); iframe=null;}
 		    if (detached) {w.close(); w=null;}
 		    if (s.detach) {
 		        w=window.open();

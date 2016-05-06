@@ -4,13 +4,13 @@ var http = require('http'),
     io = require('socket.io').listen(app),
     fs = require('fs'),
     mime = require('mime'),
-    Maggi = require('Maggi.js'),
+    Maggi = require('./Maggi.js'),
     dbname = "Maggi.UI.IDE",
     dbs = Maggi.db.server(io,dbname),
     db = dbs[dbname],
     mkdirp = require('mkdirp'),
     port = process.argv[2] || 8000,
-    log = {HTTP:false},
+    log = {HTTP:false,proxy:false},
     url = require('url'),
     writefile = require('./writefile.js');
 
@@ -108,7 +108,7 @@ function proxyHttpHandler(client_req,client_res) {
 	proxyCounter+=1;
 	proxyInProgress+=1;
 	var pc=proxyCounter;
-	console.log("PROXYING",pc,url_parts.query.url);
+	if (log.proxy) console.log("PROXYING",pc,url_parts.query.url);
 	var httpx=null;
 	if (options.protocol=="http:") httpx=http;
 	if (options.protocol=="https:") httpx=https;
@@ -124,7 +124,7 @@ function proxyHttpHandler(client_req,client_res) {
 		//console.log('HEADERS: ' + JSON.stringify(res.headers));
 		proxyInProgress-=1;
 		var end=new Date().getTime();
-		console.log("PROXYING",pc,"took",end-start,";",proxyInProgress,"outstanding");
+		if (log.proxy) console.log("PROXYING",pc,"took",end-start,";",proxyInProgress,"outstanding");
 		res.pipe(client_res, { end: true });
 	});
 	proxy.on('error', function (err) {

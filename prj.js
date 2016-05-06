@@ -25,7 +25,7 @@ var prjui=function() {
 			if (ui.data!=null) return;
 			ui.add("data",{
 				project: data,
-				view: data.view
+				view: data&&data.view
 			});
 			ui.children.view.children.panes=panesui(data);
 			ui.bind("set","connector",function(k,v) {
