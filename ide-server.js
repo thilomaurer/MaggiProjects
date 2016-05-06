@@ -12,7 +12,7 @@ var http = require('http'),
     port = process.argv[2] || 8000,
     log = {HTTP:false,proxy:false},
     url = require('url'),
-    writefile = require('./writefile.js');
+    writefile = require('./Maggi.js/writefile.js');
 
 console.log("Maggi.UI IDE Server localhost:"+port);
 
