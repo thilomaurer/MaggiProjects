@@ -1,1 +1,1 @@
-../Maggi.js/sprintf.js
+../Maggi.js-0.1/sprintf.js
