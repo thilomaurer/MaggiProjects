@@ -45,11 +45,11 @@ sampleprojects.Maggi=function(complete) {
 		{name:"New Empty Project"},
 		[
 			"jquery.js",
-			"Maggi.js",
-			"Maggi.UI.js",
-			"Maggi.UI.css",
-			"Maggi.UI.input.css",
-			"Maggi.UI.select.css"
+			"Maggi.js/Maggi.js",
+			"Maggi.js/Maggi.UI.js",
+			"Maggi.js/Maggi.UI.css",
+			"Maggi.js/Maggi.UI.input.css",
+			"Maggi.js/Maggi.UI.select.css"
 		],
 		function(project) {
 			project.view.panes.add(0,{fileid:0,mode:"edit"});
@@ -66,11 +66,11 @@ sampleprojects.pwcalc=function(complete) {
 		[
 			["README.txt","demos/README.txt"],
 			"jquery.js",
-			"Maggi.js",
-			"Maggi.UI.js",
-			"Maggi.UI.css",
-			"Maggi.UI.input.css",
-			"Maggi.UI.select.css",
+			"Maggi.js/Maggi.js",
+			"Maggi.js/Maggi.UI.js",
+			"Maggi.js/Maggi.UI.css",
+			"Maggi.js/Maggi.UI.input.css",
+			"Maggi.js/Maggi.UI.select.css",
 			["pwcalc.js","demos/pwcalc.js"],
 			["pwcalc.css","demos/pwcalc.css"],
 			["pwcalc.html","demos/pwcalc.html"],

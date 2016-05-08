@@ -1,1 +1,11 @@
-../../demos/pwcalc.css
+.pwcalc > * {
+    margin:5px;
+}
+
+#password {
+	text-align:center;
+	font-family:monospace;
+	color:lightgreen;
+	font-size:20px;
+}
+
