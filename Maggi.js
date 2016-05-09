@@ -1,1 +1,1 @@
-../Maggi.js-0.1
+node_modules/Maggi.js

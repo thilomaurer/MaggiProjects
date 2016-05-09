@@ -1,23 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<title>Maggi.IDE</title>
+		<title>Maggi.UI.IDE</title>
 		<meta charset="utf-8">
 		<meta name="author" content="Thilo Maurer, www.thilomaurer.de">
 		<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=yes">
 		<meta name="mobile-web-app-capable" content="yes">
 		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 		<meta name="apple-mobile-web-app-capable" content="yes">
-		<script src="jquery-2.0.3.js"></script>
-		<script src="mutate.events.js"></script>
-		<script src="mutate.min.js"></script>
-		<script src="sprintf.js"></script>
-		<!--<script src="moment.min.js"></script>-->
-		<script src="Maggi.js"></script>
-		<script src="Maggi.UI.js"></script>
-		<script src="Maggi.UI.editor.js"></script>
-		<script src="Maggi.UI.iframe.js"></script>
-		<script src="Maggi.UI.overlay.js"></script>
+		<script src="jquery.js"></script>
+		<script src="Maggi.js/mutate.events.js"></script>
+		<script src="Maggi.js/mutate.min.js"></script>
+		<script src="Maggi.js/sprintf.js"></script>
+		<script src="Maggi.js/Maggi.js"></script>
+		<script src="Maggi.js/Maggi.UI.js"></script>
+		<script src="Maggi.js/Maggi.UI.editor.js"></script>
+		<script src="Maggi.js/Maggi.UI.iframe.js"></script>
+		<script src="Maggi.js/Maggi.UI.overlay.js"></script>
 		<script src="ace-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
 		<script src="project.js"></script>
 		<script src="pane.js"></script>
@@ -29,19 +28,19 @@
 		<script src="files.js"></script>
 		<script src="prj.js"></script>
 		<script type='application/javascript' src="socket.io/socket.io.js"></script>
+		<link rel="stylesheet" type="text/css" href="Maggi.js/Maggi.UI.css" media="screen,projection">
+		<link rel="stylesheet" type="text/css" href="Maggi.js/Maggi.UI.editor.css" media="screen,projection">
+		<link rel="stylesheet" type="text/css" href="Maggi.js/Maggi.UI.select.css" media="screen,projection">
+		<link rel="stylesheet" type="text/css" href="Maggi.js/Maggi.UI.overlay.css" media="screen,projection">
+		<link rel="stylesheet" type="text/css" href="Maggi.js/Maggi.UI.input.css" media="screen,projection">
 		<link rel="stylesheet" type="text/css" href="main.css" media="screen,projection">
-		<link rel="stylesheet" type="text/css" href="Maggi.UI.css" media="screen,projection">
 		<link rel="stylesheet" type="text/css" href="file.css" media="screen,projection">
 		<link rel="stylesheet" type="text/css" href="ide.css" media="screen,projection">
 		<link rel="stylesheet" type="text/css" href="pane.css" media="screen,projection">
 		<link rel="stylesheet" type="text/css" href="panes.css" media="screen,projection">
 		<link rel="stylesheet" type="text/css" href="project.css" media="screen,projection">
-		<link rel="stylesheet" type="text/css" href="Maggi.UI.editor.css" media="screen,projection">
-		<link rel="stylesheet" type="text/css" href="Maggi.UI.select.css" media="screen,projection">
-		<link rel="stylesheet" type="text/css" href="Maggi.UI.overlay.css" media="screen,projection">
-		<link rel="stylesheet" type="text/css" href="Maggi.UI.input.css" media="screen,projection">
-		<link rel="icon" type="image/png" href="icons/Maggi.js.64.png">
-		<link rel="apple-touch-icon" type="image/png" href="icons/Maggi.js.128.png">
+		<link rel="icon" type="image/svg+xml" href="icons/Maggi.UI.IDE.svg">
+		<link rel="apple-touch-icon" type="image/svg+xml" href="icons/Maggi.UI.IDE.svg">
 		<script>
 			$(document).ready(function() {
 				Maggi.log=false;
