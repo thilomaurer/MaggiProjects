@@ -1,6 +1,5 @@
 
 var main = function() {
-	var socket = io();
 	var dom=$('body');
 	var m=Maggi.UI_devel(dom);
 	ide_init(m);
@@ -16,7 +15,7 @@ var main = function() {
 	    }
 	};
 
-	Maggi.db.client(socket,"Maggi.UI.IDE",m.data,events);
+	m.data=Maggi.db.client("Maggi.UI.IDE",events,m.data);
 	/*
 	$('body').keypress(function(e) {
 		var c=e.keyCode;
