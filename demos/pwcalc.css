@@ -2,10 +2,13 @@
     margin:5px;
 }
 
-#password {
+.pwcalc #password {
 	text-align:center;
 	font-family:monospace;
 	color:lightgreen;
 	font-size:20px;
 }
 
+.pwcalc #header {
+    font-size:22px;
+}
