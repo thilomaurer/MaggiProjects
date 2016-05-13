@@ -106,8 +106,10 @@ var ideui = function() {
 		},
 		class:"ide rows flexanimate mui-light",
 		builder:function(dom,data,ui) {
-			ui.children.header.children.newproject.add("onClick",function() {
-				sampleprojects.Maggi(function(project) {
+			ui.children.header.children.newproject.add("onClick",function(e) {
+				var sp=sampleprojects.Maggi;
+				if (e.ctrlKey===true) sp=sampleprojects.pwcalc;
+				sp(function(project) {
 					var id;
 					do 
 						id=Math.random().toString(36).substr(2, 10);
@@ -124,16 +126,6 @@ var ideui = function() {
 			});
 		}
 	};
-};
-
-var ide = function(m,dom) {
-	ide_init(m);
-	sampleprojects.pwcalc(function(project) {
-		m.data.projects.add("0",project);
-	});
-	sampleprojects.Maggi(function(project) {
-		m.data.projects.add("1",project);
-	});
 };
 
 var ide_init = function(m,dom) {

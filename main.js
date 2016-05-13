@@ -16,24 +16,6 @@ var main = function() {
 	};
 
 	m.data=Maggi.db.client("Maggi.UI.IDE",events,m.data);
-	/*
-	$('body').keypress(function(e) {
-		var c=e.keyCode;
-		if (c==32) {
-			sampleprojects.pwcalc(function(project) {
-				if (m.data.projects[0]==null) {
-					m.data.projects.add(0,project);
-					m.ui.children.projects.selected="0";
-				}
-			});
-			sampleprojects.Maggi(function(project) {
-				if (m.data.projects[1]==null) {
-					m.data.projects.add(1,project);
-					m.ui.children.projects.selected="1";
-				}
-			});
-		}
-	});*/
 };
 
 var sampleprojects={};
@@ -44,15 +26,17 @@ sampleprojects.Maggi=function(complete) {
 		{name:"New Empty Project"},
 		[
 			"jquery.js",
-			"Maggi.js/Maggi.js",
-			"Maggi.js/Maggi.UI.js",
-			"Maggi.js/Maggi.UI.css",
-			"Maggi.js/Maggi.UI.input.css",
-			"Maggi.js/Maggi.UI.select.css"
+			"socket.io.js",
+			["sprintf.js","Maggi.js-0.2/sprintf.js"],
+			["Maggi.js/Maggi.js","Maggi.js-0.2/Maggi.js"],
+			["Maggi.js/Maggi.UI.js","Maggi.js-0.2/Maggi.UI.js"],
+			["Maggi.js/Maggi.UI.css","Maggi.js-0.2/Maggi.UI.css"],
+			["main.js","demos/main.js"],
 		],
 		function(project) {
-			project.view.panes.add(0,{fileid:0,mode:"edit"});
-			project.view.panes.order=["0"];
+			project.view.panes.add(0,{fileid:7,mode:"edit"});
+			project.view.panes.add(1,{fileid:7,mode:"preview"});
+			project.view.panes.order=["0","1"];
 			complete(project);
 		}
 	);
@@ -63,13 +47,13 @@ sampleprojects.pwcalc=function(complete) {
 		{name:"Thilo Maurer",email:"tm@thilomaurer.de",username:"thilomaurer"},
 		{name:"Password Calculator",icon:"lock.svg"},
 		[
-			["README.txt","demos/README.txt"],
 			"jquery.js",
-			"Maggi.js/Maggi.js",
-			"Maggi.js/Maggi.UI.js",
-			"Maggi.js/Maggi.UI.css",
-			"Maggi.js/Maggi.UI.input.css",
-			"Maggi.js/Maggi.UI.select.css",
+			"socket.io.js",
+			["sprintf.js","Maggi.js-0.2/sprintf.js"],
+			["Maggi.js/Maggi.js","Maggi.js-0.2/Maggi.js"],
+			["Maggi.js/Maggi.UI.js","Maggi.js-0.2/Maggi.UI.js"],
+			["Maggi.js/Maggi.UI.css","Maggi.js-0.2/Maggi.UI.css"],
+			["README.txt","demos/README.txt"],
 			["pwcalc.js","demos/pwcalc.js"],
 			["pwcalc.css","demos/pwcalc.css"],
 			["pwcalc.html","demos/pwcalc.html"],
