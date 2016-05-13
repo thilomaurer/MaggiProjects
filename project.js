@@ -91,7 +91,6 @@ var projectfuncs=function(data) {
                 newrev.parentrevision=rev.revision;
                 newrev.files=JSON.parse(JSON.stringify(rev.files));
                 data.revisions.add(newid,newrev);
-                console.log(newid);
                 data.view.revision=newid;
                 return newid;
             };

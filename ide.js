@@ -110,6 +110,9 @@ var ideui = function() {
 				var sp=sampleprojects.Maggi;
 				if (e.ctrlKey===true) sp=sampleprojects.pwcalc;
 				sp(function(project) {
+					var rev=project.revisions[project.view.revision];
+					var branch=projectfuncs(project).branch(rev);
+					branch();
 					var id;
 					do 
 						id=Math.random().toString(36).substr(2, 10);
