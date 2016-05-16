@@ -51,6 +51,10 @@
 	flex-flow: row;
 }
 
+.ide > #header.invisible {
+	display: none;
+}
+
 .ide > #header > * {
     flex: 0 0 auto;
 }

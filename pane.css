@@ -23,6 +23,10 @@
     flex-direction:row;
 }
 
+.paneheader.invisible {
+    display:none;
+}
+
 .paneheader > * {
     flex: 0 0 auto;
 }

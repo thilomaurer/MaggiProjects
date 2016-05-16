@@ -22,7 +22,8 @@ var ideui = function() {
 					    class:"visibilityanimate"
                     }
                 },
-                class:"cols"
+                class:"cols",
+		visible:true
             },
 			projects: {
 				class:"flexrows flexanimate",
@@ -104,8 +105,16 @@ var ideui = function() {
 				}
 			}
 		},
+		offline:false,
+		showheader:true,
 		class:"ide rows flexanimate mui-light",
 		builder:function(dom,data,ui) {
+			ui.bind("set","offline",function(k,v) {
+				ui.children.connecting.visible=!v;
+			});
+			ui.bind("set","showheader",function(k,v) {
+				ui.children.header.visible=v;
+			});
 			ui.children.header.children.newproject.add("onClick",function(e) {
 				var sp=sampleprojects.Maggi;
 				if (e.ctrlKey===true) sp=sampleprojects.pwcalc;
