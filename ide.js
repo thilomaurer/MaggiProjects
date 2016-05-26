@@ -23,14 +23,14 @@ var ideui = function() {
                     }
                 },
                 class:"cols",
-		visible:true
+				visible:true
             },
-			projects: {
-				class:"flexrows flexanimate",
-				childdefault:prjui,
-				selected:null,
-				builder:function(dom,data,ui) {
-					var u=function() {
+            projects: {
+            class:"flexrows flexanimate",
+            childdefault:prjui,
+            selected:null,
+            builder:function(dom,data,ui) {
+                var u=function() {
 					    if (ui.selected==null) dom.addClass("noneselected"); else dom.removeClass("noneselected");
 						$.each(dom.ui,function(k,v) {
 							var dui=dom.ui[k];

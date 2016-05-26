@@ -7,7 +7,7 @@ var panedata=function() {
 		addfile:null,
 		mode:"edit",
 		readonly:false,
-		showheader:true,
+		showcontrols:true,
 		edit:{file:f},
 		actions: {},
 		preview: {
@@ -79,8 +79,8 @@ var buildFilesEdit = function(dom,data,ui) {
 };
 
 var paneuiheader = function() {
-	return Maggi({
-		visible:true,
+    return Maggi({
+        visible:true,
 		children:{
 			file:listitemui,
 			files:{
@@ -226,7 +226,7 @@ var paneui = function() {
 				[data,"set", "file", updateFile],
 				[data,"set", "mode", updateMode],
 				[data,"set", "readonly", updateRO],
-				[data,"set", "showheader", updateSH]
+				[data,"set", "showcontrols", updateSH]
 			];
 			return installBindings(handlers);
 		}

@@ -4,7 +4,7 @@ var http = require('http'),
     io = require('socket.io').listen(app),
     fs = require('fs'),
     mime = require('mime'),
-    Maggi = require('./Maggi.js'),
+    Maggi = require('Maggi.js'),
     dbname = "Maggi.UI.IDE",
     dbs = Maggi.db.server(io,dbname),
     db = dbs[dbname],
@@ -12,7 +12,7 @@ var http = require('http'),
     port = process.argv[2] || 8000,
     log = {HTTP:false,proxy:false},
     url = require('url'),
-    writefile = require('./Maggi.js/writefile.js');
+    writefile = require('Maggi.js/writefile.js');
 
 console.log("Maggi.UI IDE Server localhost:"+port);
 

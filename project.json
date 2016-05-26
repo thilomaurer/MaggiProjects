@@ -1,5 +1,25 @@
 {
-    "name":"Maggi.UI.IDE",
-    "author":"Thilo Maurer, www.thilomaurer.de",
-    "icon":"https://upload.wikimedia.org/wikipedia/commons/6/6a/Under_construction_icon-orange.svg"
+	"name":"Maggi.UI.IDE",
+	"author":"Thilo Maurer, www.thilomaurer.de",
+	"icon":"https://upload.wikimedia.org/wikipedia/commons/6/6a/Under_construction_icon-orange.svg",
+	"deps":[
+		"jquery.js",
+		"socket.io.js",
+		"Maggi.js/Maggi.js",
+		"Maggi.js/sprintf.js",
+		"Maggi.js/Maggi.UI.js","Maggi.js/Maggi.UI.css", "Maggi.js/Maggi.UI.input.css", "Maggi.js/Maggi.UI.select.css",
+		"ace-min-noconflict/ace.js",
+		"Maggi.js/Maggi.UI.editor.js","Maggi.js/Maggi.UI.editor.css",
+		"Maggi.js/Maggi.UI.iframe.js",
+		"Maggi.js/Maggi.UI.overlay.js","Maggi.js/Maggi.UI.overlay.css",
+		"project.js","project.css",
+		"pane.js","pane.css",
+		"panes.js","panes.css",
+		"ide.js","ide.css",
+		"list.js",
+		"file.js","file.css",
+		"files.js",
+		"prj.js",
+		"main.js","main.css"
+	]
 }

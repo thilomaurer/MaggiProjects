@@ -28,13 +28,13 @@ var panesui = function(prjdata) {
 					var k=parseInt(i)+1;
 					while (panes[k]!=null) k+=1;
 					k=k.toString();
-					panes.add(k,{fileid:panes[i].fileid,mode:"edit",showheader:true});
+					panes.add(k,{fileid:panes[i].fileid,mode:"edit",showcontrols:true});
 					panes.order=orderInsert(panes.order,i,k);
 					var idom=panesdom.ui[k];
-					idom.addClass("closing");
-					setTimeout(function() { 
-						idom.removeClass("closing");
-					},0);
+                    idom.addClass("closing");
+                    setTimeout(function() { 
+                        idom.removeClass("closing");
+                    },0);
 				};
 				d.bind("closepane",function(k,v) {
 					for (var i in panes) if (panes[i]===data) rem(i);
@@ -49,10 +49,10 @@ var panesui = function(prjdata) {
 					var revid=prjdata.view.revision;
 					var rev=prjdata.revisions[revid];
 					d.files=rev.files;
-					var setcommitted=function(k,v) {
-						d.readonly=v; 
-						if (v==true) d.addfile=null; else d.addfile=projectfuncs(prjdata).addfile;
-					};
+                    var setcommitted=function(k,v) {
+					    d.readonly=v; 
+                        if (v==true) d.addfile=null; else d.addfile=projectfuncs(prjdata).addfile;
+                    };
 					if (data!=null) {
 						d.mode=data.mode;
 						d.showheader=data.showheader;
