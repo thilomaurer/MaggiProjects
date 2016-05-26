@@ -1,6 +1,0 @@
-#!/bin/bash
-nodejs=$(which nodejs 2>/dev/null)
-if [ -z "$nodejs" ]; then
-	nodejs=$(which node 2>/dev/null)
-fi
-$nodejs ./ide-server.js 8000

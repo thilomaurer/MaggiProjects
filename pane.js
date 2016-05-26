@@ -202,7 +202,7 @@ var paneui = function() {
 	return {
 		children:{
 			header:paneuiheader(),
-			preview:{type:"iframe", class:"flexrows"},
+			preview:{type:"user", user:previewui, class:"flexrows"},
 			edit:{type:"editor", class:"flexrows",readonly:false,settings:{}}
 		},
 		order:["header","edit"],

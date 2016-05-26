@@ -465,10 +465,10 @@ var childwithkv = function(o,key,name) {
 var initproject=function(user,metadata,sources,complete) {
 
 	var mime={
-		js:"text/javascript",
+		js:"application/javascript",
 		html:"text/html",
 		css:"text/css",
-		txt:"text",
+		txt:"text/plain",
 		json:"application/json",
 		svg:"image/svg+xml"
 	};

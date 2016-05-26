@@ -22,21 +22,30 @@ var sampleprojects={};
 
 sampleprojects.Maggi=function(complete) {
 	initproject(
-		{name:"<nobody>",username:"username",email:"username@domain.com"},
-		{name:"New Empty Project"},
+		{name:"<nobody>",username:"username",email:"user@localhost"},
+		{
+            name:"New Empty Project",
+            author:null,
+            icon:null,
+            deps: [
+                "node_modules/jquery/dist/jquery.js",
+                "node_modules/socket.io/node_modules/socket.io-client/socket.io.js",
+                "node_modules/headjs/dist/1.0.0/head.load.js",
+                "node_modules/Maggi.js/node_modules/sprintf-js/src/sprintf.js",
+                "node_modules/Maggi.js/Maggi.js",
+                "node_modules/Maggi.js/Maggi.UI.js",
+                "node_modules/Maggi.js/Maggi.UI.css",
+                "main.js"
+            ]
+		},
 		[
-			"jquery.js",
-			"socket.io.js",
-			["sprintf.js","Maggi.js-0.2/sprintf.js"],
-			["Maggi.js/Maggi.js","Maggi.js-0.2/Maggi.js"],
-			["Maggi.js/Maggi.UI.js","Maggi.js-0.2/Maggi.UI.js"],
-			["Maggi.js/Maggi.UI.css","Maggi.js-0.2/Maggi.UI.css"],
 			["main.js","demos/main.js"],
 		],
 		function(project) {
-			project.view.panes.add(0,{fileid:7,mode:"edit"});
-			project.view.panes.add(1,{fileid:7,mode:"preview"});
-			project.view.panes.order=["0","1"];
+			project.view.panes.add(0,{fileid:0,mode:"edit"});
+			project.view.panes.add(1,{fileid:1,mode:"edit"});
+			project.view.panes.add(2,{fileid:1,mode:"preview"});
+			project.view.panes.order=["0","1","2"];
 			complete(project);
 		}
 	);
@@ -45,14 +54,23 @@ sampleprojects.Maggi=function(complete) {
 sampleprojects.pwcalc=function(complete) {
 	initproject(
 		{name:"Thilo Maurer",email:"tm@thilomaurer.de",username:"thilomaurer"},
-		{name:"Password Calculator",icon:"lock.svg"},
+		{
+            name:"Password Calculator",
+		    author:"Thilo Maurer, www.thilomaurer.de",
+		    icon:"lock.svg",
+            deps: [
+                "node_modules/jquery/dist/jquery.js",
+                "node_modules/socket.io/node_modules/socket.io-client/socket.io.js",
+                "node_modules/headjs/dist/1.0.0/head.load.js",
+                "node_modules/Maggi.js/node_modules/sprintf-js/src/sprintf.js",
+                "node_modules/Maggi.js/Maggi.js",
+                "node_modules/Maggi.js/Maggi.UI.js",
+                "node_modules/Maggi.js/Maggi.UI.css",
+                "utils.js",
+                "pwcalc.js","pwcalc.css",
+            ]
+		},
 		[
-			"jquery.js",
-			"socket.io.js",
-			["sprintf.js","Maggi.js-0.2/sprintf.js"],
-			["Maggi.js/Maggi.js","Maggi.js-0.2/Maggi.js"],
-			["Maggi.js/Maggi.UI.js","Maggi.js-0.2/Maggi.UI.js"],
-			["Maggi.js/Maggi.UI.css","Maggi.js-0.2/Maggi.UI.css"],
 			["README.txt","demos/README.txt"],
 			["pwcalc.js","demos/pwcalc.js"],
 			["pwcalc.css","demos/pwcalc.css"],
@@ -61,9 +79,9 @@ sampleprojects.pwcalc=function(complete) {
 			["lock.svg","demos/lock.svg"]
 		],
 		function(project) {
-			project.view.panes.add(0,{fileid:8,mode:"edit"});
-			project.view.panes.add(1,{fileid:9,mode:"edit"});
-			project.view.panes.add(2,{fileid:8,mode:"preview"});
+			project.view.panes.add(0,{fileid:2,mode:"edit"});
+			project.view.panes.add(1,{fileid:3,mode:"edit"});
+			project.view.panes.add(2,{fileid:2,mode:"preview"});
 			project.view.panes.order=["0","1","2"];
 			complete(project);
 		}

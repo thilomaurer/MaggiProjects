@@ -13,7 +13,7 @@
 	flex:1 1 auto;
 }
 
-.iframe > iframe {
+.pane > #preview > iframe {
 	flex:1 1 auto;
 }
 
