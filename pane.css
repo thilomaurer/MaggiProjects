@@ -1,9 +1,3 @@
-.pane > #preview,
-.pane > #edit {
-	/*height: 100%;*/
-	/*align-self:stretch*/
-}
-
 .pane > #header {
 	flex:0 0 auto;
 }
@@ -48,12 +42,7 @@
 .paneheader #preview_actions.invisible {
 	display:none;
 }
-/*
-.paneheader #editor_actions > *,
-.paneheader #preview_actions > * {
-	display:inline-block;
-}
-*/
+
 .paneheader > * {
 	margin:1px;
 }

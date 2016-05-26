@@ -4,8 +4,8 @@ var ideui = function() {
             header:{
                 data:{
                     banner:{
-                        logo:"icons/Maggi.UI.IDE.svg",
-                        title:"Maggi.UI.IDE Projects",
+                        logo:"node_modules/Maggi.js/Maggi.js.svg",
+                        title:"aggi Projects",
                     },
                     newproject:{icon:"icons/plus.svg",name:"Create new Project..."}
                 },
@@ -15,8 +15,9 @@ var ideui = function() {
 					    class:"visibilityanimate prjjson hoverhighlight"
                     },
                     banner:{
+                        wrap:true,
                         children:{
-                            logo:{type:"image"},
+                            logo:{type:"image",class:"logo"},
                             title:{type:"text"}
                         },
 					    class:"visibilityanimate"

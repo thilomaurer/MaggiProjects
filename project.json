@@ -1,7 +1,7 @@
 {
-	"name":"Maggi.UI.IDE",
+	"name":"Maggi Projects",
 	"author":"Thilo Maurer, www.thilomaurer.de",
-	"icon":"https://upload.wikimedia.org/wikipedia/commons/6/6a/Under_construction_icon-orange.svg",
+	"icon":"node_modules/Maggi.js/Maggi.js.svg",
 	"deps":[
 		"node_modules/jquery/dist/jquery.js",
 		"node_modules/socket.io/node_modules/socket.io-client/socket.io.js",
