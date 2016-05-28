@@ -4,6 +4,7 @@
 }
 
 .listitem > #type {
+    text-align:center;
 	vertical-align: bottom;
 	width:24px;
 }
@@ -13,15 +14,13 @@
 	width:100%;
 }
 
-.listitem > #details.icon {
-	padding:4px;
-	width:24px;
-	height:24px;
+.listitem > #details {
 	border-radius:0;
 	cursor:pointer;
+	padding:0;
 }
 
-.listitem > #details.icon:hover {
+.listitem > #details:hover {
 	background-color:transparent;
 }
 
@@ -30,7 +29,7 @@
 }
 
 .listitem.disabled > #type {
-    opacity:0.333;
+    aopacity:0.333;
 }
 
 

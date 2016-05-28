@@ -33,7 +33,7 @@ var buildFilesEdit = function(dom,data,ui) {
 	var int_data=Maggi({
 		files:data,
 		actions:{
-			adder:{type:"plus",name:"Add File..."}
+			adder:{type:"class:ion-md-add",name:"Add File..."}
 		},
 	});
 	var int_ui={
@@ -92,8 +92,8 @@ var paneuiheader = function() {
 				class:"scroll"
 			},
 			//mode:{type:"select",choices:{edit:{label:"edit"},preview:{label:"preview"}},visible:true},
-			play:{type:"label",class:"play icon"},
-			options:{type:"label",class:"options icon"},
+			preview:{type:"label",class:"icon ion-ios-play",visible:false},
+			options:{type:"label",class:"icon ion-ios-more"},
 			actions: {
 				popup:true, popuptrigger:"options",
 				children: {
@@ -105,13 +105,13 @@ var paneuiheader = function() {
 			preview_actions:{
 				data:{},
 				children:{
-				    reload:{type:"label",class:"reload icon"},
-					detach:{type:"label",class:"detach icon"}
+				    reload:{type:"label",class:"ion-md-refresh icon"},
+					detach:{type:"label",class:"ion-ios-browsers icon"}
 				}
 			},
 			spacer:{type:"label"}
 		},
-		order: ["file","files","mode","spacer","play","editor_actions","preview_actions","options","actions"],
+		order: ["file","files","spacer","mode","preview","editor_actions","preview_actions","options","actions"],
 		class:"paneheader",
 		builder:function(dom,data,ui) {
 			if (data==null) return;
@@ -128,7 +128,7 @@ var paneuiheader = function() {
 			dom.ui.actions.ui.insertpane.click(function() {
 				ui.children.actions.visible=false;
 			});
-			dom.ui.play.click(function() {
+			dom.ui.preview.click(function() {
 			    var m="edit";
 			    if (data.mode==m) m="preview";
 				data.mode=m;
@@ -150,11 +150,14 @@ var paneuiheader = function() {
 						if (v) dc.class="detach icon activated"; else dc.class="detach icon";
 					});
 				}
-				var dp=ui.children.play;
-				if (p) dp.class="play icon activated"; else dp.class="play icon";
+				var dp=ui.children.preview;
+				if (p) dp.class="icon ion-md-play activated"; else dp.class="icon ion-md-play";
 			};
+			var previewtypes=["text/javascript","application/javascript","text/html"];
 			var updateModeVis = function(k,v) {
-				//ui.children.mode.visible=(v.type=="text/javascript");
+			    var canpreview=v&&(previewtypes.indexOf(v.type)>=0);
+				ui.children.preview.visible=canpreview;
+				if (canpreview===false) data.mode="edit";
 			};
 			var updateRO = function(k,v) {
 				var editlabel="edit";

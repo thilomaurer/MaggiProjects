@@ -7,11 +7,11 @@ var ideui = function() {
                         logo:"node_modules/Maggi.js/Maggi.js.svg",
                         title:"aggi Projects",
                     },
-                    newproject:{icon:"icons/plus.svg",name:"Create new Project..."}
+                    newproject:{icon:"",name:"Create new Project..."}
                 },
                 children:{
                     newproject:{
-					    children:{icon:"image", name:"text"},
+					    children:{icon:{class:"ion-md-add ion-lg"},name:"text"},
 					    class:"visibilityanimate prjjson hoverhighlight"
                     },
                     banner:{
@@ -51,10 +51,8 @@ var ideui = function() {
 					var install=function(k) {
 						if (k instanceof Array) return;
 						ui.children[k].connector={
-							type:"label",
-							label:"<",
 							onClick:function() { ui.selected=null; },
-							class:"visibilityanimate hoverhighlight"
+							class:"visibilityanimate hoverhighlight ion-ios-arrow-forward ion-flip-x"
 						};
                         ui.children[k].actions={
                             data:{},

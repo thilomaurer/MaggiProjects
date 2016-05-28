@@ -24,11 +24,19 @@ var listitemui=function() {
 				"text/html":"icons/html5.svg",
 				"text/css":"icons/css3.svg",
 				"text":"icons/text.svg",
-				plus:"icons/plus.svg"}
+				//plus:"icons/plus.svg"
+    			}
 			},
 			name: {type:"text"},
 		},
-		class:"listitem"
+		class:"listitem",
+		builder(dom,data,ui) {
+		    if (data&&data.type.indexOf("class:")==0) {
+		        var c=data.type.substring(6);
+		        console.log(c);
+		        dom.ui.type.addClass(c);
+		    }
+		}
 	};
 };
 

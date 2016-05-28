@@ -22,6 +22,15 @@
 	border-radius: 5px;
 }
 
+.project {
+    display: flex;
+    align-items: baseline;    
+}
+
+.project > #spacer {
+    flex:1 0 0;
+}
+
 .project #view > #revision:before {
 	content: "revision ";
 }
@@ -30,22 +39,9 @@
 	background: #ccf;
 }
 
-.project > * {
-	display:inline-block;
-}
-
 .project #revisions #revisions.simplelist {
     display:flex;
     flex-direction:column-reverse;
-}
-
-.project > .icon {
-	height: 20px;
-	width: 20px;
-	padding: 6px;
-	border-radius:5px;
-	margin-right: 1px;
-	margin-top: 9px;
 }
 
 .prj.unselected > .project > #prjjson {

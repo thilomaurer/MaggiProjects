@@ -13,7 +13,7 @@
 
 .prj .project > #connector {
 	font-size:24px;
-	width:14px;
+	width:9px;
 	padding:9px 5px 9px 5px;
 	transition:width 350ms ease;
 }
@@ -87,6 +87,8 @@
 
 .ide > #header > #newproject {
 	flex: 0 0 auto;
+	padding-left:10px;
+	font-size:24px;
 }
 
 .ide > #header > * {
@@ -137,3 +139,18 @@
 .ide.prjselected > #filler {
 	flex:0.0000001 0 0;
 }
+
+.ion-flip-x {
+    transform: scaleX(-1);
+}
+
+.ion-lg {
+    font-size:1.333em;
+    position: relative;
+    top: 0.1em;
+}
+
+
+
+
+

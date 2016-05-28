@@ -1,12 +1,12 @@
 var filedata=function(o) {
-	var fd={name:null,type:null,enc:null,data:null,cursor:{row:0,column:0},scope:"client"};
+	var fd={name:null,type:null,enc:null,data:null,cursor:{row:0,column:0}};
 	$.extend(fd,o);
 	return Maggi(fd);
 };
 
 var fileui=function() {
 	var ui=listitemui();
-	ui.children.details={type:"label", class:"icon info", label:"\u00A0"};
+	ui.children.details={type:"label", class:"icon ion-ios-more"};
 	ui.editvisible=false;
 	ui=Maggi(ui);
 	ui.builder=function(dom,data,ui) {
@@ -45,10 +45,6 @@ var fileeditui=function() {
 				"image/svg+xml":{label:"SVG"},
 				"application/json":{label:"JSON"}
 			},class:"fillhorizontal"},
-			scope: {type:"select",choices:{
-				"client":{label:"Client"},
-				"server":{label:"Server"}
-			},class:"fillhorizontal"}, 
 			name: {type:"input",placeholder:"filename"},
 			cursor: {
 				children: {

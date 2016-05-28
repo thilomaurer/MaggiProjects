@@ -190,7 +190,7 @@ var projectui=function() {
 	return {
 		children:{
 		    connector:null,
-			optionsicon:{type:"label",class:"options icon visibilityanimate"},
+			optionsicon:{type:"label",class:"ion-ios-settings icon visibilityanimate"},
 			options: {
 				popup:true,
 				popuptrigger:"optionsicon",
@@ -327,9 +327,10 @@ var projectui=function() {
 				selected:null,
 				builder:null,
 				class:"scroll"
-			}
+			},
+			spacer:{}
 		},
-		order:["connector","optionsicon","options","prjjson","prjjson_actions","view","revisions"],
+		order:["connector","prjjson","prjjson_actions","view","revisions","spacer","optionsicon","options"],
 		class:"project",
 		builder:function(dom,data,ui) {
 			if (data==null) return;

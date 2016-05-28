@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-process.title="Maggi.UI.IDE-server";
+process.title="MaggiProjects";
 
 var http = require('http'),
     https = require('https'),
@@ -21,26 +21,37 @@ var http = require('http'),
 console.log("Maggi.UI IDE Server localhost:"+port);
 
 function httpHandler(req, res) {
-	var fn=req.url;
-	if (log.HTTP) console.log("GET " + fn);
+	if (log.HTTP) console.log("GET", req.url);
+	
+    var u;
+    try {
+        u = url.parse(req.url, true);
+    } catch(e) {
+        console.warn(e);
+        res.writeHead(400);
+        res.end('Malformatted URL: '+req.url);
+        return;
+    }
+    var pn=u.pathname;
+
 	var dir="projects";
-	if (fn.indexOf("/"+dir+"/")===0) {
+	if (pn.indexOf("/"+dir+"/")===0) {
 		req.url=req.url.substring(dir.length+1);
 		return projectsHttpHandler(req,res);
 	}
-	if (fn.indexOf("/proxy?")===0) {
+	if (pn=="/proxy") {
 		req.url=req.url.substring(1);
 		return proxyHttpHandler(req,res);
 	}
-	if (fn=="/") fn="/index.html";
-	var fp=__dirname + fn;
+	if (pn=="/") pn="/index.html";
+	var fp=__dirname + pn;
 	fs.readFile(fp, function(err, data) {
 		if (err) {
 			console.log(err);
 			res.writeHead(500);
 			return res.end('Error loading '+req.url);
 		}
-		res.writeHead(200, {"Content-Type": mime.lookup(fn)});
+		res.writeHead(200, {"Content-Type": mime.lookup(pn)});
 		res.end(data);
 	});
 }
@@ -144,9 +155,18 @@ function proxyHttpHandler(client_req,client_res) {
 }
 
 function projectsHttpHandler(req,res) {
-	var fn=decodeURIComponent(req.url);
-	var k=fn.split("/"); k.shift();
-	console.log(JSON.stringify(k));
+    
+    var u;
+    try {
+        u = url.parse(req.url, true);
+    } catch(e) {
+        console.warn(e);
+        res.writeHead(400);
+        res.end('Malformatted URL: '+req.url);
+        return;
+    }
+    console.log(u);
+	var k=decodeURI(u.pathname).split("/"); k.shift();
 	var prjname=k.shift();
 	var prjs=db.data.projects;
 	for (var prjid in prjs) {
@@ -164,13 +184,14 @@ function projectsHttpHandler(req,res) {
                         res.writeHead(500);
                         return res.end('Error loading '+req.url);
                     }
-                    res.writeHead(200, {"Content-Type": mime.lookup(fn)});
+                    res.writeHead(200, {"Content-Type": mime.lookup(fp)});
                     res.end(data);
                 });
                 return;
             }
 			if (k[k.length-1]=="") k[k.length-1]="index.html";
 			var fn=k.join("/");
+            console.log(fn);
 			var files=rev.files;
 			for (var k in files) {
 				var file=files[k];
