@@ -4,21 +4,27 @@ process.title="MaggiProjects";
 
 var http = require('http'),
     https = require('https'),
-    app = http.createServer(httpHandler),
-    io = require('socket.io').listen(app),
+    zlib = require('zlib'),
     fs = require('fs'),
+    options = {
+	key: fs.readFileSync('key.pem'),
+	cert: fs.readFileSync('cert.pem')
+    },
+    app = https.createServer(options,httpHandler),
+    redirapp = http.createServer(redirectHandler),
+    io = require('socket.io').listen(app),
     mime = require('mime'),
     Maggi = require('Maggi.js'),
     dbname = "Maggi.UI.IDE",
     dbs = Maggi.db.server(io,dbname),
     db = dbs[dbname],
     mkdirp = require('mkdirp'),
-    port = process.argv[2] || 8000,
-    log = {HTTP:false,proxy:false},
+    secureport = process.argv[2] || 8443,
+    port = 8080,
+    log = {HTTP:false,proxy:true},
     url = require('url'),
-    writefile = require('Maggi.js/writefile.js');
-
-console.log("Maggi.UI IDE Server localhost:"+port);
+    writefile = require('Maggi.js/writefile.js'),
+    serverURL = "https://localhost:"+secureport;
 
 function httpHandler(req, res) {
 	if (log.HTTP) console.log("GET", req.url);
@@ -126,7 +132,7 @@ function proxyHttpHandler(client_req,client_res) {
 	proxyCounter+=1;
 	proxyInProgress+=1;
 	var pc=proxyCounter;
-	if (log.proxy) console.log("PROXYING",pc,url_parts.query.url);
+	if (log.proxy) console.log("PROXY",pc,url_parts.query.url);
 	var httpx=null;
 	if (options.protocol=="http:") httpx=http;
 	if (options.protocol=="https:") httpx=https;
@@ -136,22 +142,69 @@ function proxyHttpHandler(client_req,client_res) {
 		return;
 	}
 
+	//var acceptEncoding = client_req.headers['accept-encoding']||'';
 	var start=new Date().getTime();
-	var proxy = httpx.request(options, function (res) {
-		//console.log('STATUS: ' + res.statusCode);
-		//console.log('HEADERS: ' + JSON.stringify(res.headers));
+	options.method=client_req.method;
+	options.headers={};
+	var fields=['content-type','content-length','connection','accept','accept-encoding','accept-language','cookie','user-agent'];
+	for (var i in fields) {
+		var k=fields[i];
+		if (client_req.headers[k]!=null) options.headers[k]=client_req.headers[k];
+	};
+	var scs=url_parts.query.setcookiesearch;
+	var scr=url_parts.query.setcookiereplace;
+	if (log.proxy) {
+		console.log('PROXY REQ', options);
+		console.log('PROXY CLIENT_REQ_HEADERS', client_req.headers);
+	}
+	var req = httpx.request(options, function (res) {
 		proxyInProgress-=1;
 		var end=new Date().getTime();
-		if (log.proxy) console.log("PROXYING",pc,"took",end-start,";",proxyInProgress,"outstanding");
+		if (log.proxy) {
+			console.log("PROXY",pc,{msec:end-start,outstanding:proxyInProgress});
+			console.log('PROXY RES STATUS', res.statusCode);
+			console.log('PROXY RES HEADERS', res.headers);
+		}
+		if ((scs!=null)&&(scr!=null)) {
+			var sci=res.headers['set-cookie'];
+			for (var i=0;i<sci.length;i++) {
+				sci[i]=sci[i].replace(new RegExp(scs),scr);
+			}
+		}
+		if (res.headers.location!=null) {
+			var query={
+				url:res.headers.location
+			};
+			if (scs!=null) query.setcookiesearch=scs;
+			if (scr!=null) query.setcookiereplace=scr;
+			var querystring="";
+			for (var k in query) {
+				if (querystring.length!=0) querystring+="&";
+				querystring+=k+"="+encodeURIComponent(query[k]);
+			}
+			res.headers.location="/proxy?"+querystring;
+		}
+		client_res.writeHead(res.statusCode,res.headers);
+		/*
+		if (acceptEncoding.match(/\bgzip\b/)) {
+			client_res.writeHead(200, { 'Content-Encoding': 'gzip' });
+			res=res.pipe(zlib.createGzip());
+		}
+		else
+		if (acceptEncoding.match(/\bdeflate\b/)) {
+			client_res.writeHead(200, { 'Content-Encoding': 'deflate' });
+			res=res.pipe(zlib.createDeflate());
+		}
+		*/
 		res.pipe(client_res, { end: true });
 	});
-	proxy.on('error', function (err) {
-        console.warn(err);
-        client_res.writeHead(400);
-        client_res.end('Proxy Error');
+	req.on('error', function (err) {
+		console.warn(err);
+		client_res.writeHead(400);
+		client_res.end('Proxy Error');
 	});
 
-	client_req.pipe(proxy, { end: true });
+	client_req.pipe(req, { end: true });
 }
 
 function projectsHttpHandler(req,res) {
@@ -207,4 +260,11 @@ function projectsHttpHandler(req,res) {
 	return res.end('Error loading '+req.url);
 }
 
-app.listen(port);
+function redirectHandler(req, res) {
+	res.writeHead(301,{Location: serverURL});
+	res.end();
+}
+
+app.listen(secureport);
+redirapp.listen(port);
+console.log("Maggi Projects Server "+serverURL);

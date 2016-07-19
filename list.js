@@ -33,7 +33,6 @@ var listitemui=function() {
 		builder(dom,data,ui) {
 		    if (data&&data.type.indexOf("class:")==0) {
 		        var c=data.type.substring(6);
-		        console.log(c);
 		        dom.ui.type.addClass(c);
 		    }
 		}
