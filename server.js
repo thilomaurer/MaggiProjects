@@ -21,7 +21,7 @@ var http = require('http'),
     mkdirp = require('mkdirp'),
     secureport = process.argv[2] || 8443,
     port = 8080,
-    log = {HTTP:false,proxy:true},
+    log = {HTTP:false,proxy:false},
     url = require('url'),
     writefile = require('Maggi.js/writefile.js'),
     serverURL = "https://localhost:"+secureport;
@@ -153,9 +153,13 @@ function proxyHttpHandler(client_req,client_res) {
 	};
 	var scs=url_parts.query.setcookiesearch;
 	var scr=url_parts.query.setcookiereplace;
+	var origin=url_parts.query.origin;
+	var host=url_parts.query.host;
+	if (origin!=null) options.headers.origin=origin;
+	if (host!=null) options.headers.host=host;
 	if (log.proxy) {
-		console.log('PROXY REQ', options);
 		console.log('PROXY CLIENT_REQ_HEADERS', client_req.headers);
+		console.log('PROXY PROXY_REQ', options);
 	}
 	var req = httpx.request(options, function (res) {
 		proxyInProgress-=1;
@@ -167,8 +171,10 @@ function proxyHttpHandler(client_req,client_res) {
 		}
 		if ((scs!=null)&&(scr!=null)) {
 			var sci=res.headers['set-cookie'];
-			for (var i=0;i<sci.length;i++) {
-				sci[i]=sci[i].replace(new RegExp(scs),scr);
+			if (sci!=null) {
+				for (var i=0;i<sci.length;i++) {
+					sci[i]=sci[i].replace(new RegExp(scs),scr);
+				}
 			}
 		}
 		if (res.headers.location!=null) {
@@ -218,17 +224,16 @@ function projectsHttpHandler(req,res) {
         res.end('Malformatted URL: '+req.url);
         return;
     }
-    console.log(u);
-	var k=decodeURI(u.pathname).split("/"); k.shift();
-	var prjname=k.shift();
-	var prjs=db.data.projects;
-	for (var prjid in prjs) {
-		var prj=prjs[prjid];
-		var revid=prj.view.revision;
-		var rev=prj.revisions[revid];
+    var k=decodeURI(u.pathname).split("/"); k.shift();
+    var prjname=k.shift();
+    var prjs=db.data.projects;
+    for (var prjid in prjs) {
+        var prj=prjs[prjid];
+        var revid=prj.view.revision;
+        var rev=prj.revisions[revid];
         var project=getRevisionManifest(rev);
-		if (project===null) continue;
-		if (project.name==prjname) {
+        if (project===null) continue;
+        if (project.name==prjname) {
             if (k[0]=="node_modules") {
                 var fp=__dirname + "/" + k.join("/");
                 fs.readFile(fp, function(err, data) {
@@ -242,22 +247,21 @@ function projectsHttpHandler(req,res) {
                 });
                 return;
             }
-			if (k[k.length-1]=="") k[k.length-1]="index.html";
-			var fn=k.join("/");
-            console.log(fn);
-			var files=rev.files;
-			for (var k in files) {
-				var file=files[k];
-				if (file.name==fn) {
-					res.writeHead(200, {"Content-Type": file.type});
-					res.end(file.data);
-					return;
-				}
-			}
-		}
-	}
-	res.writeHead(404);
-	return res.end('Error loading '+req.url);
+            if (k[k.length-1]=="") k[k.length-1]="index.html";
+            var fn=k.join("/");
+            var files=rev.files;
+            for (var k in files) {
+                var file=files[k];
+                if (file.name==fn) {
+                    res.writeHead(200, {"Content-Type": file.type});
+                    res.end(file.data);
+                    return;
+                }
+            }
+        }
+    }
+    res.writeHead(404);
+    return res.end('Error loading '+req.url);
 }
 
 function redirectHandler(req, res) {
