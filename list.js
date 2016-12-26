@@ -23,7 +23,7 @@ var listitemui=function() {
 				"application/javascript":"icons/js.svg",
 				"text/html":"icons/html5.svg",
 				"text/css":"icons/css3.svg",
-				"text":"icons/text.svg",
+				"text/plain":"icons/text.svg",
 				//plus:"icons/plus.svg"
     			}
 			},

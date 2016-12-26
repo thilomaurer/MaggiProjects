@@ -20,7 +20,7 @@ var filesui=function() {
 
 var files=function(m,dom) {
     m.data={
-            a:filedata({name:"file-A",type:"text"}),
+            a:filedata({name:"file-A",type:"text/plain"}),
             b:filedata({name:"file-B",type:"text/javascript"}),
             c:filedata({name:"file-C",type:"text/html"}),
     };

@@ -41,7 +41,7 @@ var fileeditui=function() {
 				"application/javascript":{label:"JS"},
 				"text/html":{label:"HTML"},
 				"text/css":{label:"CSS"},
-				"text":{label:"TXT"},
+				"text/plain":{label:"TXT"},
 				"image/svg+xml":{label:"SVG"},
 				"application/json":{label:"JSON"}
 			},class:"fillhorizontal"},
@@ -129,7 +129,7 @@ var fileinput=function(dom,data,setdata,ui) {
                     "application/javascript",
                     "text/html",
                     "text/css",
-                    "text",
+                    "text/plain",
                     "image/svg+xml",
                     "application/json"
                 ];
