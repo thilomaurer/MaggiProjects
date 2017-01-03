@@ -254,7 +254,7 @@ function projectsHttpHandler(req,res) {
                 var file=files[k];
                 if (file.name==fn) {
                     res.writeHead(200, {"Content-Type": file.type});
-                    res.end(file.data);
+                    res.end(file.data,file.enc);
                     return;
                 }
             }
