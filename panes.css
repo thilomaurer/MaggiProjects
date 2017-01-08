@@ -1,10 +1,10 @@
 .mui-light.panes > *,
 .mui-light .panes > * {
-	border-left: 1px solid black;
+	border-left: 1px solid gray;
 }
 .mui.panes > *,
 .mui .panes > * {
-	border-left: 1px solid white;
+	border-left: 1px solid hsla(224, 8%, 44%, 1);
 }
 
 .panes > *:first-child {

@@ -59,9 +59,9 @@ var panesui = function(prjdata) {
 						u.children.header.children.files.selected=data.fileid;
 					}
 					var handlers=[
-					    [u.children.header.children.files,"set","selected",function(k,v) {data.fileid=v;}],
+					    [u.children.header.children.files,"set","selected",function(k,v) {if (data) data.fileid=v;}],
 					    [rev,"set","committed",setcommitted],
-					    [d,"set","mode",function(k,v) {data.mode=v;}],
+					    [d,"set","mode",function(k,v) {if (data) data.mode=v;}],
 					];
 					backbuild=installBindings(handlers);
 				};

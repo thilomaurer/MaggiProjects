@@ -61,6 +61,10 @@
 	margin-top:5px;
 }
 
+.project #options.popup {
+	max-width:50%;
+}
+
 #options #editor .simplelist > * {
 	margin-left:10px;
 }
