@@ -1,0 +1,242 @@
+.mui .ace-maggiui .ace_gutter {
+    background:rgba(0,0,0,0.1);
+}
+.mui .ace-maggiui .ace_print-margin {
+    width: 1px;
+    background: rgba(0,0,0,0.2)
+}
+.mui .ace-maggiui {
+    color: #FFF
+}
+.mui .ace-maggiui .ace_constant.ace_other,
+.mui .ace-maggiui .ace_cursor {
+    color: #FFF
+}
+.mui .ace-maggiui .ace_marker-layer .ace_selection {
+    background: hsla(224, 8%, 40%, 1);
+}
+.mui .ace-maggiui.ace_multiselect .ace_selection.ace_start {
+    box-shadow: 0 0 3px 0px #2D2D2D;
+}
+.mui .ace-maggiui .ace_marker-layer .ace_step {
+    background: rgb(102, 82, 0)
+}
+.mui .ace-maggiui .ace_marker-layer .ace_bracket {
+    margin: -1px 0 0 -1px;
+    border: 1px solid #6A6A6A
+}
+.mui .ace-maggiui .ace_stack {
+    background: rgb(66, 90, 44)
+}
+.mui .ace-maggiui .ace_marker-layer .ace_active-line {
+    background: rgba(0,0,0,0.2)
+}
+.mui .ace-maggiui .ace_gutter-active-line {
+    background-color: rgba(0,0,0,0.2)
+}
+.mui .ace-maggiui .ace_marker-layer .ace_selected-word {
+    border: 1px solid #515151
+}
+.mui .ace-maggiui .ace_invisible {
+    color: #666
+}
+.mui .ace-maggiui .ace_keyword,
+.mui .ace-maggiui .ace_meta,
+.mui .ace-maggiui .ace_storage,
+.mui .ace-maggiui .ace_storage.ace_type,
+.mui .ace-maggiui .ace_support.ace_type {
+    color: #FBF
+}
+.mui .ace-maggiui .ace_keyword.ace_operator {
+    color: #9FF
+}
+.mui .ace-maggiui .ace_constant.ace_character,
+.mui .ace-maggiui .ace_constant.ace_language,
+.mui .ace-maggiui .ace_constant.ace_numeric,
+.mui .ace-maggiui .ace_keyword.ace_other.ace_unit,
+.mui .ace-maggiui .ace_support.ace_constant,
+.mui .ace-maggiui .ace_variable.ace_parameter {
+    color: #F95
+}
+.mui .ace-maggiui .ace_invalid {
+    color: #CCC;
+    background-color: #F99
+}
+.mui .ace-maggiui .ace_invalid.ace_deprecated {
+    color: #CCC;
+    background-color: #C9C
+}
+.mui .ace-maggiui .ace_fold {
+    background-color: #9CF;
+    border-color: #999
+}
+.mui .ace-maggiui .ace_entity.ace_name.ace_function,
+.mui .ace-maggiui .ace_support.ace_function,
+.mui .ace-maggiui .ace_variable {
+    color: #9CF
+}
+.mui .ace-maggiui .ace_support.ace_class,
+.mui .ace-maggiui .ace_support.ace_type {
+    color: #FC9
+}
+.mui .ace-maggiui .ace_heading,
+.mui .ace-maggiui .ace_markup.ace_heading,
+.mui .ace-maggiui .ace_string {
+    color: #CFC
+}
+.mui .ace-maggiui .ace_comment {
+    color: #F55
+}
+.mui .ace-maggiui .ace_entity.ace_name.ace_tag,
+.mui .ace-maggiui .ace_entity.ace_other.ace_attribute-name,
+.mui .ace-maggiui .ace_meta.ace_tag,
+.mui .ace-maggiui .ace_variable {
+    color: #FAA
+}
+.mui .ace-maggiui .ace_indent-guide {
+	background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAAEklEQVQImWNgYGBgYLh/5+x/AAizA4hxNNsZAAAAAElFTkSuQmCC) right repeat-y
+}
+
+.mui .ace_search {
+	background-color:hsla(224, 8%, 30%, 1);
+	box-shadow:2px 0px 8px black;
+	border:0;
+}
+
+.mui .ace_search .ace_button {
+	color:white;
+	border:1px solid black;
+}
+
+.mui .ace_search .ace_button.checked:hover,
+.mui .ace_search .ace_button.checked {
+	border:1px solid white;
+}
+
+.mui .ace_search .ace_button:hover {
+	background-color:hsla(224, 8%, 30%, 1);
+	border:1px solid black;
+}
+
+.mui .ace_search .ace_search_field,
+.mui .ace_search .ace_searchbtn,
+.mui .ace_search .ace_replacebtn {
+	background:hsla(224, 8%, 24%, 1);
+	color:white;
+}
+
+.mui .ace_search .ace_search_form,
+.mui .ace_search .ace_search_form > *, 
+.mui .ace_search .ace_replace_form,
+.mui .ace_search .ace_replace_form  > * {
+	border-color:black;
+}
+
+
+/* light scheme */
+
+.mui-light .ace-maggiui .ace_gutter {
+    background:rgba(0,0,0,0.05);
+}
+.mui-light .ace-maggiui .ace_print-margin {
+    width: 1px;
+    background: rgba(0,0,0,0.2)
+}
+.mui-light .ace-maggiui {
+    color: #000
+}
+.mui-light .ace-maggiui .ace_constant.ace_other,
+.mui-light .ace-maggiui .ace_cursor {
+    color: #000
+}
+.mui-light .ace-maggiui .ace_marker-layer .ace_selection {
+    background: hsla(224, 8%, 85%, 1);
+}
+.mui-light .ace-maggiui.ace_multiselect .ace_selection.ace_start {
+    box-shadow: 0 0 3px 0px #2D2D2D;
+}
+.mui-light .ace-maggiui .ace_marker-layer .ace_step {
+    background: rgb(102, 82, 0)
+}
+.mui-light .ace-maggiui .ace_marker-layer .ace_bracket {
+    margin: -1px 0 0 -1px;
+    border: 1px solid #6A6A6A
+}
+.mui-light .ace-maggiui .ace_stack {
+    background: rgb(66, 90, 44)
+}
+.mui-light .ace-maggiui .ace_marker-layer .ace_active-line {
+    background: rgba(0,0,0,0.05)
+}
+.mui-light .ace-maggiui .ace_gutter-active-line {
+    background-color: rgba(0,0,0,0.05)
+}
+.mui-light .ace-maggiui .ace_marker-layer .ace_selected-word {
+    border: 1px solid #515151
+}
+.mui-light .ace-maggiui .ace_invisible {
+    color: #666
+}
+.mui-light .ace-maggiui .ace_keyword,
+.mui-light .ace-maggiui .ace_meta,
+.mui-light .ace-maggiui .ace_storage,
+.mui-light .ace-maggiui .ace_storage.ace_type,
+.mui-light .ace-maggiui .ace_support.ace_type {
+    color: #00F
+}
+.mui-light .ace-maggiui .ace_keyword.ace_operator {
+    color: #C60
+}
+.mui-light .ace-maggiui .ace_constant.ace_character,
+.mui-light .ace-maggiui .ace_constant.ace_language,
+.mui-light .ace-maggiui .ace_constant.ace_numeric,
+.mui-light .ace-maggiui .ace_keyword.ace_other.ace_unit,
+.mui-light .ace-maggiui .ace_support.ace_constant,
+.mui-light .ace-maggiui .ace_variable.ace_parameter {
+    color: #C00
+}
+.mui-light .ace-maggiui .ace_invalid {
+    color: #CCC;
+    background-color: #F99
+}
+.mui-light .ace-maggiui .ace_invalid.ace_deprecated {
+    color: #CCC;
+    background-color: #C9C
+}
+.mui-light .ace-maggiui .ace_fold {
+    background-color: #9CF;
+    border-color: #999
+}
+.mui-light .ace-maggiui .ace_entity.ace_name.ace_function,
+.mui-light .ace-maggiui .ace_support.ace_function,
+.mui-light .ace-maggiui .ace_variable {
+    color: #C0F
+}
+.mui-light .ace-maggiui .ace_support.ace_class,
+.mui-light .ace-maggiui .ace_support.ace_type {
+    color: #C60
+}
+.mui-light .ace-maggiui .ace_heading,
+.mui-light .ace-maggiui .ace_markup.ace_heading,
+.mui-light .ace-maggiui .ace_string {
+    color: #080
+}
+.mui-light .ace-maggiui .ace_comment {
+    color: #999
+	
+}
+.mui-light .ace-maggiui .ace_entity.ace_name.ace_tag,
+.mui-light .ace-maggiui .ace_entity.ace_other.ace_attribute-name,
+.mui-light .ace-maggiui .ace_meta.ace_tag,
+.mui-light .ace-maggiui .ace_variable {
+    color: #000
+}
+.mui-light .ace-maggiui .ace_indent-guide {
+	background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAAEklEQVQImWNgYGBgYLh/5+x/AAizA4hxNNsZAAAAAElFTkSuQmCC) right repeat-y
+}
+
+.mui-light .ace_search {
+	background-color:white;
+	box-shadow:2px 0px 8px black;
+	border:0;
+}

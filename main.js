@@ -1,20 +1,34 @@
 
-var main = function() {
+var main=function() {
 	var dom=$('body');
 	var m=Maggi.UI_devel(dom);
 	ide_init(m);
-
+	
 	var ddd=new Date();
 	var events={
-	    ready: function() {
-    		console.log("Time to ready in ms:",(new Date()).getTime()-ddd.getTime());
-    		m.ui.children.connecting.visible=false;
-	    },
-	    disconnect: function() {
-		    m.ui.children.connecting.visible=true;
-	    }
+		ready: function() {
+			console.log("Time to ready in ms:",(new Date()).getTime()-ddd.getTime());
+			m.ui.children.connecting.visible=false;
+		},
+		disconnect: function() {
+			console.warn("disconnect");
+			m.ui.children.connecting.visible=true;
+		},
+		reconnect: function() {
+			console.warn("reconnect");
+			m.ui.children.connecting.visible=false;
+		},
+		reconnect_error: function() {
+			console.warn("reconnect_error");
+		},
+		reconnect_attempt: function() {
+			console.warn("reconnect_attempt");
+		},
+		reconnect_failed: function() {
+			console.warn("reconnect_failed");
+		},
 	};
-
+	
 	m.data=Maggi.db.client("Maggi.UI.IDE",events,m.data);
 };
 

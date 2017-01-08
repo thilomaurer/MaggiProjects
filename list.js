@@ -25,13 +25,12 @@ var listitemui=function() {
 				"text/css":"icons/css3.svg",
 				"text/plain":"icons/text.svg",
 				//plus:"icons/plus.svg"
-    			}
-			},
+			}},
 			name: {type:"text"},
 		},
 		class:"listitem",
 		builder(dom,data,ui) {
-		    if (data&&data.type.indexOf("class:")==0) {
+		    if (data&&data.type.indexOf("class:")===0) {
 		        var c=data.type.substring(6);
 		        dom.ui.type.addClass(c);
 		    }

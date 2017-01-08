@@ -7,9 +7,12 @@ body, h1, h2, h3, h4 {
 
 @font-face {
 	font-family: 'Open Sans';
-	font-style: normal;
-	font-weight: 400;
-	src: local('Open Sans'), local('OpenSans'), url(cJZKeOuBrn4kERxqtaUH3T8E0i7KZn-EPnyo3HZu7kw.woff) format('woff'), url(https://themes.googleusercontent.com/static/fonts/opensans/v8/cJZKeOuBrn4kERxqtaUH3T8E0i7KZn-EPnyo3HZu7kw.woff) format('woff');
+	src: local('Open Sans'), local('OpenSans'), url('Open Sans.woff') format('woff');
+}
+
+@font-face {
+	font-family: "DejaVu Sans Mono";
+	src: local('DejaVu Sans Mono'), url('DejaVu Sans Mono.woff') format('woff');
 }
 
 html {
@@ -23,7 +26,7 @@ body {
 
 table {
 	border-collapse: collapse;
-	border-spacing:0px;
+	border-spacing:0;
 }
 
 .table,

@@ -124,26 +124,27 @@ var previewui=function(dom,s,sets,ui,onDataChange) {
 	};
 
 	var updateFile = function(file) {
-	    var sel,el;
-	    if ((file.type=="text/javascript")||(file.type=="application/javascript")) {
-    	    sel='script[src="'+file.name+'"]';
-            el = doc.querySelector(sel);
-            ElementOfFile[file.name]=el;
-    		makedocument();
-	    }
-	    if (file.type=="text/css") {
-            if (ElementOfFile[file.name]==null) {
-        	    sel='link[href="'+file.name+'"]';
-                el = doc.querySelector(sel);
-                el.remove();
-                el=doc.createElement("style");
+		var sel,el;
+		if ((file.type=="text/javascript")||(file.type=="application/javascript")) {
+			sel='script[src="'+file.name+'"]';
+			el = doc.querySelector(sel);
+			ElementOfFile[file.name]=el;
+			makedocument();
+		}
+		if (file.type=="text/css") {
+			if (ElementOfFile[file.name]==null) {
+				sel='link[href="'+file.name+'"]';
+				el = doc.querySelector(sel);
+				if (el==null) return;
+				el.remove();
+				el=doc.createElement("style");
 				el.id=file.name;
 				el.type=file.type;
 				head.appendChild(el);
-                ElementOfFile[file.name]=el;
-            }
-            ElementOfFile[file.name].innerHTML=file.data;
-	    }
+				ElementOfFile[file.name]=el;
+			}
+			ElementOfFile[file.name].innerHTML=file.data;
+		}
 	};
 
 	var sethandler=function(k,v) {

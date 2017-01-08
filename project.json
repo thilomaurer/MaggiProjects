@@ -10,6 +10,7 @@
 		"node_modules/Maggi.js-0.1/Maggi.UI.js","node_modules/Maggi.js-0.1/Maggi.UI.css", "node_modules/Maggi.js-0.1/Maggi.UI.input.css", "node_modules/Maggi.js-0.1/Maggi.UI.select.css",
 		"node_modules/ace-editor-builds/src-min-noconflict/ace.js",
 		"node_modules/Maggi.js-0.1/Maggi.UI.editor.js","node_modules/Maggi.js-0.1/Maggi.UI.editor.css",
+		"ace-theme-maggiui.css",
 		"node_modules/Maggi.js-0.1/Maggi.UI.overlay.js","node_modules/Maggi.js-0.1/Maggi.UI.overlay.css",
 		"node_modules/ionicons/dist/css/ionicons.css",
 		"project.js","project.css",

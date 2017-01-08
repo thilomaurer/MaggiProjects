@@ -39,6 +39,10 @@ var projectdata=function(o) {
 				email:null,
 			},
 			editor: {
+				colorscheme:{
+					day:"xcode",
+					night:"solarized_dark"
+				},
 				gutter:{
 					showGutter:true,
 					fixedWidthGutter:true,
@@ -187,6 +191,46 @@ Maggi.UI.labelwrap=function(dom,data,setdata,ui,onDataChange) {
 };
 
 var projectui=function() {
+	var colorselectui={
+		type:"select",
+		choices:{
+			ambiance               :{label:"Ambiance"},
+			chaos                  :{label:"Chaos"},
+			chrome                 :{label:"Chrome"},
+			clouds                 :{label:"Clouds"},
+			clouds_midnight        :{label:"Clouds Midnight"},
+			cobalt                 :{label:"Cobalt"},
+			crimson_editor         :{label:"Crimson Editor"},
+			dawn                   :{label:"Dawn"},
+			dreamweaver            :{label:"Dreamweaver"},
+			eclipse                :{label:"Eclipse"},
+			github                 :{label:"Github"},
+			idle_fingers           :{label:"Idle Fingers"},
+			iplastic               :{label:"Iplastic"},
+			katzenmilch            :{label:"Katzenmilch"},
+			kr_theme               :{label:"Kr Theme"},
+			kuroir                 :{label:"Kuroir"},
+			merbivore              :{label:"Merbivore"},
+			merbivore_soft         :{label:"Merbivore_soft"},
+			mono_industrial        :{label:"Mono_industrial"},
+			monokai                :{label:"Monokai"},
+			pastel_on_dark         :{label:"Pastel on Dark"},
+			solarized_dark         :{label:"Solarized Dark"},
+			solarized_light        :{label:"Solarized Light"},
+			sqlserver              :{label:"Sqlserver"},
+			terminal               :{label:"Terminal"},
+			textmate               :{label:"Textmate"},
+			tomorrow               :{label:"Tomorrow"},
+			tomorrow_night_blue    :{label:"Tomorrow Night Blue"},
+			tomorrow_night_bright  :{label:"Tomorrow Night Bright"},
+			tomorrow_night_eighties:{label:"Tomorrow Night Eighties"},
+			tomorrow_night         :{label:"Tomorrow Night"},
+			twilight               :{label:"Twilight"},
+			vibrant_ink            :{label:"Vibrant Ink"},
+			xcode                  :{label:"Xcode"},
+			maggiui                :{label:"Maggi.UI"},
+		}
+	};
 	return {
 		children:{
 		    connector:null,
@@ -259,6 +303,19 @@ var projectui=function() {
 											emacs:{label:"Emacs"}
 										}
 									}
+								}
+							}},
+							colorschemelabel:{type:"label",label:"COLOR SCHEME"},
+							colorscheme:{class:"simplelist",children:{
+								day:{
+									type:"labelwrap",
+									label:"Day Scheme",
+									d:colorselectui
+								},
+								night:{
+									type:"labelwrap",
+									label:"Night Scheme",
+									d:colorselectui
 								}
 							}},
 							gutterlabel:{type:"label",label:"GUTTER"},
@@ -376,11 +433,9 @@ var projectui=function() {
 					} else {
 						var files=data.revisions[rev].files;
 						for (var fidx in files) {
-							name=files[fidx].name;
-							if (name==i) {
-								var src="data:"+files[fidx].type+";utf8,"+files[fidx].data;
-								d.icon=src;
-							}
+							var f=files[fidx];
+							if (f.name==i)
+								d.icon="data:"+f.type+";"+f.enc+","+f.data;
 						}
 					}
 					u.add("data",d);

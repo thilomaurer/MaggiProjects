@@ -206,7 +206,7 @@ var paneui = function() {
 		children:{
 			header:paneuiheader(),
 			preview:{type:"user", user:previewui, class:"flexrows"},
-			edit:{type:"editor", class:"flexrows",readonly:false,settings:{}}
+			edit:{type:"editor", class:"flexrows",readonly:false,settings:{colorscheme:{day:"maggiui"}}}
 		},
 		order:["header","edit"],
 		class:"pane flexrows",
@@ -245,7 +245,7 @@ var pane=function(m,dom) {
 		m.data.files.add(i,filedata({name:"file"+i+".html",type:"text/html",data:"fsdfsdf"}));
 	m.ui=paneui();
 	m.ui.children.header.children.files.selected="0";
-	dom.addClass("mui-light expand");
+	dom.addClass("mui expand");
 };
 
 
