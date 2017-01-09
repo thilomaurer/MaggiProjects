@@ -206,7 +206,7 @@ var paneui = function() {
 		children:{
 			header:paneuiheader(),
 			preview:{type:"user", user:previewui, class:"flexrows"},
-			edit:{type:"editor", class:"flexrows",readonly:false,settings:{colorscheme:{day:"maggiui"}}}
+			edit:{type:"editor", class:"flexrows",readonly:false,settings:{colorscheme:{day:"maggiui"},editing:{displayIndentGuides:true}}}
 		},
 		order:["header","edit"],
 		class:"pane flexrows",
