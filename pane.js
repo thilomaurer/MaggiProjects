@@ -206,7 +206,7 @@ var paneui = function() {
 		children:{
 			header:paneuiheader(),
 			preview:{type:"user", user:previewui, class:"flexrows"},
-			edit:{type:"editor", class:"flexrows",readonly:false,settings:{colorscheme:{day:"maggiui"}}}
+			edit:{type:"editor", class:"flexrows",readonly:false,settings:{colorscheme:{day:"maggiui"},editing:{useSoftTabs:false,displayIndentGuides:true,showInvisibles:true}}}
 		},
 		order:["header","edit"],
 		class:"pane flexrows",
@@ -238,7 +238,13 @@ var paneui = function() {
 
 var pane=function(m,dom) {
 	m.data=panedata();
-	m.data.files.add("0",filedata({name:"file.css",type:"text/css",data:"a\na\na\na\na"}));
+	var data="a\na\na\na\na\n";
+	data=data+data;
+	data=data+data;
+	data=data+data;
+	data=data+data;
+	data=data+data;
+	m.data.files.add("0",filedata({name:"file.css",type:"text/css",data:data,cursor:{row:100,column:0}}));
 	m.data.files.add("1",filedata({name:"file.js",type:"text/javascript",data:""}));
 	m.data.files.add("2",filedata({name:"file.html",type:"text/html",data:"fsdfsdf"}));
 	for (i=3;i<50;i++)

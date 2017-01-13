@@ -85,7 +85,7 @@
     color: #CFC
 }
 .mui .ace-maggiui .ace_comment {
-    color: #F55
+    color: #888
 }
 .mui .ace-maggiui .ace_entity.ace_name.ace_tag,
 .mui .ace-maggiui .ace_entity.ace_other.ace_attribute-name,
@@ -94,7 +94,10 @@
     color: #FAA
 }
 .mui .ace-maggiui .ace_indent-guide {
-	background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAAEklEQVQImWNgYGBgYLh/5+x/AAizA4hxNNsZAAAAAElFTkSuQmCC) right repeat-y
+	background-image: linear-gradient(#666 33%, rgba(255,255,255,0) 0%);
+    background-position: right;
+    background-size: 1px 2px;
+    background-repeat: repeat-y;
 }
 
 .mui .ace_search {
@@ -175,7 +178,7 @@
     border: 1px solid #515151
 }
 .mui-light .ace-maggiui .ace_invisible {
-    color: #666
+    color: #DDD
 }
 .mui-light .ace-maggiui .ace_keyword,
 .mui-light .ace-maggiui .ace_meta,
@@ -222,7 +225,7 @@
     color: #080
 }
 .mui-light .ace-maggiui .ace_comment {
-    color: #999
+    color: #888
 	
 }
 .mui-light .ace-maggiui .ace_entity.ace_name.ace_tag,
@@ -232,7 +235,10 @@
     color: #000
 }
 .mui-light .ace-maggiui .ace_indent-guide {
-	background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAAEklEQVQImWNgYGBgYLh/5+x/AAizA4hxNNsZAAAAAElFTkSuQmCC) right repeat-y
+	background-image: linear-gradient(#DDD 33%, rgba(255,255,255,0) 0%);
+    background-position: right;
+    background-size: 1px 2px;
+    background-repeat: repeat-y;
 }
 
 .mui-light .ace_search {
