@@ -4,7 +4,7 @@
 	"icon":"node_modules/Maggi.js/Maggi.js.svg",
 	"deps":[
 		"node_modules/jquery/dist/jquery.js",
-		"node_modules/socket.io/node_modules/socket.io-client/socket.io.js",
+		"node_modules/socket.io-client/socket.io.js",
 		"node_modules/Maggi.js-0.1/Maggi.js",
 		"node_modules/Maggi.js-0.1/sprintf.js",
 		"node_modules/Maggi.js-0.1/detect-element-resize.js",
