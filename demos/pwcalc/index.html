@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <script src="node_modules/headjs/dist/1.0.0/head.load.js"></script>
+        <script>
+			(function() {
+                var getJSON=function(filename,callback) {
+                    var xobj = new XMLHttpRequest();
+                    xobj.overrideMimeType("application/json");
+                    xobj.open('GET', filename, true);
+                    xobj.onreadystatechange = function() {
+                        if (xobj.readyState == 4 && xobj.status == "200")
+                            callback(JSON.parse(xobj.responseText));
+                    };
+                    xobj.send(null);
+                };
+                var addElement=function(e,attr) {
+					var el = document.createElement(e);
+					for (var k in attr)
+						el.setAttribute(k,attr[k]);
+					document.getElementsByTagName('head')[0].appendChild(el);
+                }
+                getJSON("package.json",function(package) {
+					document.title=package.name;
+					addElement("meta",{name:"author",content:package.author})
+					var pm=package["Maggi.js"];
+					for (k in pm.link)
+						if (pm.link[k])
+							addElement("link",{rel:k,href:pm.link[k]});
+					for (k in pm.meta)
+						if (pm.meta[k])
+							addElement("meta",{name:k,content:pm.meta[k]});
+                    head.load(package["Maggi.js"].deps,function() {
+                        var dom=$('body');
+                        var m=Maggi.UI_devel(dom);
+                        main(m);
+                    });
+                });
+            })();
+        </script>
+    </head>
+</html>

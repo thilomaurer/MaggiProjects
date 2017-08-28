@@ -27,7 +27,7 @@ var previewui=function(dom,s,sets,ui,onDataChange) {
     var getJSON=function(filename,callback) {\n\
         var xobj = new XMLHttpRequest();\n\
         xobj.overrideMimeType('application/json');\n\
-        xobj.open('GET', 'project.json', true);\n\
+        xobj.open('GET', filename, true);\n\
         xobj.onreadystatechange = function() {\n\
             if (xobj.readyState == 4 && xobj.status == '200')\n\
                 callback(JSON.parse(xobj.responseText));\n\
@@ -35,7 +35,7 @@ var previewui=function(dom,s,sets,ui,onDataChange) {
         xobj.send(null);\n\
     };\n\
     getJSON('project.json',function(project) {\n\
-	    head.load(project.deps,function() {\n\
+	    head.load(project['Maggi.js'].deps,function() {\n\
             var fn="+funcname+";\n\
             var dom=$('body');\n\
             var m=Maggi.UI_devel(dom);\n\

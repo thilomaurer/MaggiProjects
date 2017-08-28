@@ -1,0 +1,40 @@
+{
+  "name": "Password Calculator",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Example User <user@example.com> (https://www.example.com/)",
+  "license": "",
+  "dependencies": {
+    "Maggi.js": "^0.2.7",
+    "headjs": "^1.0.3",
+    "jquery": "^3.2.1",
+    "socket.io": "^2.0.3"
+  },
+  "Maggi.js": {
+  	"link": {
+	  	"icon": "",
+	  	"apple-touch-icon": ""
+  	},
+  	"meta": {
+        "viewport": "width=device-width, height=device-height, initial-scale=1, user-scalable=yes",
+        "mobile-web-app-capable": "yes",
+        "apple-mobile-web-app-status-bar-style": "black-translucent",
+        "apple-mobile-web-app-capable": "yes"
+  	},
+	"deps": [
+		"node_modules/jquery/dist/jquery.js",
+		"node_modules/socket.io-client/socket.io.js",
+		"node_modules/headjs/dist/1.0.0/head.load.js",
+		"node_modules/sprintf-js/src/sprintf.js",
+		"node_modules/Maggi.js/Maggi.js",
+		"node_modules/Maggi.js/Maggi.UI.js",
+		"node_modules/Maggi.js/Maggi.UI.css",
+		"pwcalc.js","pwcalc.css","utils.js"
+	]  
+  }
+}

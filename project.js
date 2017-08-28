@@ -518,7 +518,7 @@ var childwithkv = function(o,key,name) {
 	return null;
 };
 
-var initproject=function(user,metadata,sources,complete) {
+var initproject=function(user,sources,complete) {
 
 	var mime={
 		js:"application/javascript",
@@ -532,8 +532,6 @@ var initproject=function(user,metadata,sources,complete) {
 	var data=projectdata();
 	var rev=0;
 	data.options.user=user;
-
-	data.addfile({name:"project.json",type:mime["json"],data:JSON.stringify(metadata,null,"\t")});
 
 	var files=data.revisions[rev].files;
 	data.revisions[rev].message="start of project";

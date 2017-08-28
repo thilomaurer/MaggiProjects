@@ -250,8 +250,8 @@ function projectsHttpHandler(req,res) {
             if (k[k.length-1]=="") k[k.length-1]="index.html";
             var fn=k.join("/");
             var files=rev.files;
-            for (var k in files) {
-                var file=files[k];
+            for (var kk in files) {
+                var file=files[kk];
                 if (file.name==fn) {
                     res.writeHead(200, {"Content-Type": file.type});
                     res.end(file.data,file.enc);
