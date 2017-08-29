@@ -31,7 +31,7 @@
 .button.yellow {
 	background: #f1b018;
 }
-.button.inactive, button.disabled {
+.button.inactive, .button.disabled {
 	background: #888888 !important;
 	box-shadow: none;
 }

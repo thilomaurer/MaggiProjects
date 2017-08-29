@@ -28,10 +28,11 @@
 	margin:10px;
 }
 
+/*
 .listitem.disabled > #type {
-    aopacity:0.333;
+    opacity:0.333;
 }
-
+*/
 
 .fileedit > #cursor > * {
 	display:inline;

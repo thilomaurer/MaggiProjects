@@ -101,7 +101,12 @@ var paneuiheader = function() {
 					insertpane:{type:"function",label:"insert pane", class:"button"},
 				}
 			},
-			editor_actions:{data:{},children:{}},
+			editor_actions:{
+				data:{},
+				children:{
+					beautify:{type:"label",class:"icon ion-ios-color-wand"},
+				}
+			},
 			preview_actions:{
 				data:{},
 				children:{
@@ -111,7 +116,7 @@ var paneuiheader = function() {
 			},
 			spacer:{type:"label"}
 		},
-		order: ["file","files","spacer","mode","preview","editor_actions","preview_actions","options","actions"],
+		order: ["file","files","spacer","editor_actions","preview_actions","mode","preview","options","actions"],
 		class:"paneheader",
 		builder:function(dom,data,ui) {
 			if (data==null) return;
@@ -138,6 +143,38 @@ var paneuiheader = function() {
 			});
 			dom.ui.preview_actions.ui.reload.click(function() {
 				data.preview.reload+=1;
+			});
+			dom.ui.editor_actions.ui.beautify.click(function() {
+				var ff={
+					"text/javascript":js_beautify,
+					"application/javascript":js_beautify,
+					"application/json":js_beautify,
+					"text/html":html_beautify,
+					"text/css":css_beautify,
+				};
+				var f=ff[data.file.type];
+				var options={
+						    "indent_with_tabs": true,
+					        "end_with_newline": true,
+					        "brace_style":"collapse-preserve-inline",
+						    "html": {
+						    	"indent_inner_html": true,
+						    	"extra_liners":[],
+						        "js": {
+						        	"end_with_newline": false,
+						        },
+						        "css": {
+						        	"end_with_newline": false,
+						        }
+						    },
+						    "css": {
+						    },
+						    "js": {
+						    }
+				};
+				if (f) {
+						data.file.data=f(data.file.data,options);
+				}
 			});
 			var updateMode = function(k,v) {
 				var p=(v=="preview");
@@ -238,15 +275,9 @@ var paneui = function() {
 
 var pane=function(m,dom) {
 	m.data=panedata();
-	var data="a\na\na\na\na\n";
-	data=data+data;
-	data=data+data;
-	data=data+data;
-	data=data+data;
-	data=data+data;
-	m.data.files.add("0",filedata({name:"file.css",type:"text/css",data:data,cursor:{row:100,column:0}}));
-	m.data.files.add("1",filedata({name:"file.js",type:"text/javascript",data:""}));
-	m.data.files.add("2",filedata({name:"file.html",type:"text/html",data:"fsdfsdf"}));
+	m.data.files.add("0",filedata({name:"file.css",type:"text/css",data:"y { margin:0 }",cursor:{row:100,column:0}}));
+	m.data.files.add("1",filedata({name:"file.js",type:"text/javascript",data:"var x=function(a,b,c,d) { a=1; b=2; };"}));
+	m.data.files.add("2",filedata({name:"file.html",type:"text/html",data:"<HTML><BODY>fsdfsdf</BODY></HTML>"}));
 	for (i=3;i<50;i++)
 		m.data.files.add(i,filedata({name:"file"+i+".html",type:"text/html",data:"fsdfsdf"}));
 	m.ui=paneui();
