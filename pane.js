@@ -190,7 +190,7 @@ var paneuiheader = function() {
 				if (p) dp.class = "icon ion-md-play activated";
 				else dp.class = "icon ion-md-play";
 			};
-			var previewtypes = ["text/javascript", "application/javascript", "text/html"];
+			var previewtypes = ["text/javascript", "application/javascript", "text/html", "text/markdown"];
 			var updateModeVis = function(k, v) {
 				var canpreview = v && (previewtypes.indexOf(v.type) >= 0);
 				ui.children.preview.visible = canpreview;
@@ -278,9 +278,12 @@ var pane = function(m, dom) {
 	m.data.files.add("0", filedata({ name: "file.css", type: "text/css", data: "y { margin:0 }", cursor: { row: 100, column: 0 } }));
 	m.data.files.add("1", filedata({ name: "file.js", type: "text/javascript", data: "var x=function(a,b,c,d) { a=1; b=2; };" }));
 	m.data.files.add("2", filedata({ name: "file.html", type: "text/html", data: "<HTML><BODY>fsdfsdf</BODY></HTML>" }));
+	m.data.files.add("3", filedata({ name: "file.md", type: "text/markdown", data: "**bold** *italic*\n" }));
+	/*
 	for (i = 3; i < 50; i++)
 		m.data.files.add(i, filedata({ name: "file" + i + ".html", type: "text/html", data: "fsdfsdf" }));
+	*/
 	m.ui = paneui();
-	m.ui.children.header.children.files.selected = "0";
+	m.ui.children.header.children.files.selected = 3;
 	dom.addClass("mui expand");
 };

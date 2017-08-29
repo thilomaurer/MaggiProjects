@@ -22,6 +22,8 @@
 		"socket.io": "^1.4.5",
 		"headjs": "^1.0.3",
 		"ionicons": "^3.0.0",
+		"github-markdown-css": "^2.8.0",	
+		"marked": "^0.3.6",
 		"js-beautify": "^1.6.14"
 	},
 	"devDependencies": {},
@@ -67,6 +69,7 @@
 			"node_modules/js-beautify/js/lib/beautify.js",
 			"node_modules/js-beautify/js/lib/beautify-css.js",
 			"node_modules/js-beautify/js/lib/beautify-html.js",
+			"node_modules/marked/marked.min.js",
 			"project.js", "project.css",
 			"filepreview.js",
 			"pane.js", "pane.css",
