@@ -57,7 +57,7 @@ sampleprojects.pwcalc=function(complete) {
 		{name:"Thilo Maurer",email:"tm@thilomaurer.de",username:"thilomaurer"},
 		[
 			["package.json","demos/pwcalc/project.json"],
-			["README.txt","demos/pwcalc/README.txt"],
+			["README.md","demos/pwcalc/README.md"],
 			["index.html","demos/pwcalc/index.html"],
 			["pwcalc.js","demos/pwcalc/pwcalc.js"],
 			["pwcalc.css","demos/pwcalc/pwcalc.css"],

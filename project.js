@@ -525,6 +525,7 @@ var initproject=function(user,sources,complete) {
 		html:"text/html",
 		css:"text/css",
 		txt:"text/plain",
+		md:"text/markdown",
 		json:"application/json",
 		svg:"image/svg+xml"
 	};

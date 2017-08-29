@@ -37,7 +37,8 @@ var listitemui=function() {
 				"application/javascript":"icons/js.svg",
 				"text/html":"icons/html5.svg",
 				"text/css":"icons/css3.svg",
-				"text/plain":"icons/text.svg"
+				"text/plain":"icons/text.svg",
+				"text/markdown":"icons/markdown.svg"
 			}},
 			name: {type:"text"},
 		},
