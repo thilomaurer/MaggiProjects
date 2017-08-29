@@ -38,7 +38,7 @@ sampleprojects.Maggi=function(complete) {
 	initproject(
 		{name:"<nobody>",username:"username",email:"user@localhost"},
 		[
-			["project.json","demos/empty/project.json"],
+			["package.json","demos/empty/project.json"],
 			["main.js","demos/empty/main.js"],
 			["index.html","demos/empty/index.html"],
 		],
@@ -56,7 +56,7 @@ sampleprojects.pwcalc=function(complete) {
 	initproject(
 		{name:"Thilo Maurer",email:"tm@thilomaurer.de",username:"thilomaurer"},
 		[
-			["project.json","demos/pwcalc/project.json"],
+			["package.json","demos/pwcalc/project.json"],
 			["README.txt","demos/pwcalc/README.txt"],
 			["index.html","demos/pwcalc/index.html"],
 			["pwcalc.js","demos/pwcalc/pwcalc.js"],

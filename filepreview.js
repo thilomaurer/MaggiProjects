@@ -5,20 +5,23 @@ var previewui=function(dom,s,sets,ui,onDataChange) {
 	var head;
 	var builddoc=function() {
 		ElementOfFile={};
-    	var startidx=s.file.name.lastIndexOf("\/")+1;
-    	var endidx=s.file.name.lastIndexOf(".");
-    	var funcname=s.file.name.substring(startidx,endidx);
-    
-    	var projectJSON=childwithkv(s.files,"name","project.json").data;
-    	var project;
-    	try {
-    		project=JSON.parse(projectJSON);
-    	} catch(e) {
-    		console.log(e);
-    	}
-    	var projectbase="projects/"+project.name+"/";
-    
-    	var jshtml="\
+		var startidx=s.file.name.lastIndexOf("\/")+1;
+		var endidx=s.file.name.lastIndexOf(".");
+		var funcname=s.file.name.substring(startidx,endidx);
+
+		var pkgFile=childwithkv(s.files,"name","package.json");
+		if (pkgFile==null) return;
+		var pkgJSON=pkgFile.data;
+		var pkg;
+		try {
+			pkg=JSON.parse(pkgJSON);
+		} catch(e) {
+			console.log(e);
+			return;
+		}
+		var projectbase="projects/"+pkg.name+"/";
+
+		var jshtml="\
 <!DOCTYPE html><html lang=\"en\"><head><title></title><meta charset=\"utf-8\">\
 <base href=\""+projectbase+"\">\
 <script src=\"node_modules/headjs/dist/1.0.0/head.load.js\"></script>\
@@ -34,8 +37,8 @@ var previewui=function(dom,s,sets,ui,onDataChange) {
         };\n\
         xobj.send(null);\n\
     };\n\
-    getJSON('project.json',function(project) {\n\
-	    head.load(project['Maggi.js'].deps,function() {\n\
+    getJSON('package.json',function(pkg) {\n\
+	    head.load(pkg['Maggi.js'].deps,function() {\n\
             var fn="+funcname+";\n\
             var dom=$('body');\n\
             var m=Maggi.UI_devel(dom);\n\

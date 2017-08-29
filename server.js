@@ -69,7 +69,7 @@ var getRevisionManifest=function(revision) {
 		return null;
 	};
 
-    var k=childwithkv(revision.files,"name","project.json");
+    var k=childwithkv(revision.files,"name","package.json");
     var d=null;
     try {
             d=JSON.parse(k.data);
@@ -87,7 +87,7 @@ var exportRevision=function(revision) {
     		console.warn("unable to export project revision with empty name");
     		return;
     	}
-        for (k in revision.files) {
+        for (var k in revision.files) {
                 var file=revision.files[k];
                 var fp=__dirname + "/projects/" + revname + "/" +file.name;
                 writefile(fp, file.data, file.enc);

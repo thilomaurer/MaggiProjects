@@ -391,27 +391,27 @@ var projectui=function() {
 		class:"project",
 		builder:function(dom,data,ui) {
 			if (data==null) return;
-            var buildRevisionsView = function(dom,d,ui) {
-            	var int_data=Maggi({
-            		revisions:d,
-            	});
-            	var int_ui=Maggi({
-            		visible:false,
-            		children: {
-            			revisionsLabel:{type:"label",label:"REVISIONS", class:"listlabel"},
-            			revisions: revisionsui(data),
-            		}
-            	});
-            	ui.bind("set","selected",function(k,v) {
-            		int_ui.children.revisions.selected=v;	
-            	});
-            	int_ui.children.revisions.selected=ui.selected;
-            	int_ui.children.revisions.bind("set","selected",function(k,v) {
-            		ui.visible=false;
-            		ui.selected=v;
-            	});
-            	return Maggi.UI(dom,int_data,int_ui);
-            };
+			    var buildRevisionsView = function(dom,d,ui) {
+				var int_data=Maggi({
+					revisions:d,
+				});
+				var int_ui=Maggi({
+					visible:false,
+					children: {
+						revisionsLabel:{type:"label",label:"REVISIONS", class:"listlabel"},
+						revisions: revisionsui(data),
+					}
+				});
+				ui.bind("set","selected",function(k,v) {
+					int_ui.children.revisions.selected=v;	
+				});
+				int_ui.children.revisions.selected=ui.selected;
+				int_ui.children.revisions.bind("set","selected",function(k,v) {
+					ui.visible=false;
+					ui.selected=v;
+				});
+				return Maggi.UI(dom,int_data,int_ui);
+			    };
 
 			ui.children.revisions.builder=buildRevisionsView;
 
@@ -419,7 +419,7 @@ var projectui=function() {
 			    var u=ui.children.prjjson;
 				if (u.data!=null) return;
 				var rev=data.view.revision;
-				var k=childwithkv(data.revisions[rev].files,"name","project.json");
+				var k=childwithkv(data.revisions[rev].files,"name","package.json");
 				var update=function() {
 					var d;
 					try {
@@ -428,15 +428,14 @@ var projectui=function() {
 						console.log(e);
 					}
 					if (d==null) return;
-					var i=d.icon;
-					if (i&&(i.startsWith("http://")||i.startsWith("https://"))) {
-					} else {
-						var files=data.revisions[rev].files;
-						for (var fidx in files) {
-							var f=files[fidx];
-							if (f.name==i)
-								d.icon="data:"+f.type+";"+f.enc+","+f.data;
-						}
+					var i=d["Maggi.js"]&&d["Maggi.js"].link&&d["Maggi.js"].link.icon;
+					d.name=d["Maggi.js"]&&d["Maggi.js"].title||d.name;
+					d.icon=i;
+					var files=data.revisions[rev].files;
+					for (var fidx in files) {
+						var f=files[fidx];
+						if (f.name==i)
+							d.icon="data:"+f.type+";"+f.enc+","+f.data;
 					}
 					u.add("data",d);
 				};
@@ -459,6 +458,7 @@ var projectui=function() {
 	};
 };
 
+/*
 var projectui2=function() {
 	return {
 		children:{
@@ -479,7 +479,7 @@ var projectui2=function() {
 			    var u=ui.children.prjjson;
 				if (u.data!=null) return;
 				var rev=data.view.revision;
-				var k=childwithkv(data.revisions[rev].files,"name","project.json");
+				var k=childwithkv(data.revisions[rev].files,"name","package.json");
 				var update=function() {
 					var d;
 					try {
@@ -510,7 +510,7 @@ var projectui2=function() {
 		}
 	};
 };
-
+*/
 
 var childwithkv = function(o,key,name) {
 	for (var k in o) 
