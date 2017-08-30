@@ -105,14 +105,14 @@ var paneuiheader = function() {
 			editor_actions: {
 				data: {},
 				children: {
-					beautify: { type: "label", class: "icon ion-ios-color-wand" },
+					beautify: { type: "label", class: "icon ion-ios-color-wand", visible: true },
 				}
 			},
 			preview_actions: {
 				data: {},
 				children: {
-					reload: { type: "label", class: "ion-md-refresh icon" },
-					detach: { type: "label", class: "ion-ios-browsers icon" }
+					reload: { type: "label", class: "icon ion-md-refresh" },
+					detach: { type: "label", class: "icon ion-ios-browsers" }
 				}
 			},
 			spacer: { type: "label" }
@@ -182,19 +182,22 @@ var paneuiheader = function() {
 				if (p) {
 					var dc = ui.children.preview_actions.children.detach;
 					data.preview.bind("set", "detach", function(k, v) {
-						if (v) dc.class = "detach icon activated";
-						else dc.class = "detach icon";
+						if (v) dc.class += " activated";
+						else dc.class = dc.class.split(" ").filter(s=>s!="activated").join(" ");
 					});
 				}
 				var dp = ui.children.preview;
 				if (p) dp.class = "icon ion-md-play activated";
 				else dp.class = "icon ion-md-play";
 			};
-			var previewtypes = ["text/javascript", "application/javascript", "text/html", "text/markdown"];
+			var previewTypes = ["text/javascript", "application/javascript", "text/html", "text/markdown"];
+			var beautifyTypes = ["text/javascript", "application/javascript", "text/html", "text/css", "application/json"];
 			var updateModeVis = function(k, v) {
-				var canpreview = v && (previewtypes.indexOf(v.type) >= 0);
+				var canpreview = v && (previewTypes.indexOf(v.type) >= 0);
 				ui.children.preview.visible = canpreview;
 				if (canpreview === false) data.mode = "edit";
+				var canbeautify = v && (beautifyTypes.indexOf(v.type) >= 0);
+				ui.children.editor_actions.children.beautify.visible = canbeautify;
 			};
 			var updateRO = function(k, v) {
 				var editlabel = "edit";

@@ -117,33 +117,7 @@
 	background-color: rgba(0,0,0,0.1);
 }
 
-.icon.info {
-	background-image:url(icons/info.svg);
-}
-
-.icon.trash {
-	background-image:url(icons/trash.svg);
-}
-
-.icon.detach {
-	background-image: url(icons/detach.svg);
-}
-
-.icon.reload {
-	background-image: url(icons/refresh.svg);
-}
-
-.icon.play {
-	background-image: url(icons/play.svg);
-}
-
-.icon.options {
-	background-image: url(icons/options.svg);
-	float:right;
-}
-
 .pane iframe {
 	border:0;
 	background:white;
 }
-

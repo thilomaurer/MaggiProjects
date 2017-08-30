@@ -101,7 +101,6 @@ var previewui = function(dom, s, sets, ui, onDataChange) {
 
 	var builddoc_html = function() {
 		var html = s.file.data;
-		console.log(html);
 		doc.open();
 		doc.write(html);
 		doc.close();
@@ -125,6 +124,7 @@ var previewui = function(dom, s, sets, ui, onDataChange) {
 		ElementOfFile = {};
 		var types = {
 			"application/javascript": builddoc_js,
+			"text/javascript": builddoc_js,
 			"text/html": builddoc_html,
 			"text/markdown": builddoc_md,
 		};
