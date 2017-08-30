@@ -6,26 +6,22 @@ var http = require('http'),
 	https = require('https'),
 	zlib = require('zlib'),
 	fs = require('fs'),
-	options = {
-		key: fs.readFileSync('key.pem'),
-		cert: fs.readFileSync('cert.pem')
-	},
-	app = https.createServer(options, httpHandler),
-	redirapp = http.createServer(redirectHandler),
-	io = require('socket.io').listen(app),
+	pem = require('pem'),
 	mime = require('mime'),
 	Maggi = require('Maggi.js'),
-	dbname = "Maggi.UI.IDE",
-	dbs = Maggi.db.server(io, dbname),
-	db = dbs[dbname],
 	mkdirp = require('mkdirp'),
+	url = require('url'),
+	writefile = require('Maggi.js/writefile.js'),
+	keyfile = "key.pem",
+	certfile = "cert.pem",
+	app, redirapp, io, dbs, db,
+	dbname = "Maggi.UI.IDE",
 	secureport = process.argv[2] || 8443,
 	port = 8080,
 	log = { HTTP: false, proxy: false },
-	url = require('url'),
-	writefile = require('Maggi.js/writefile.js'),
 	serverURL = "https://localhost:" + secureport,
 	parent_node_modules = fs.existsSync(__dirname + "/../../node_modules");
+
 
 function httpHandler(req, res) {
 	if (log.HTTP) console.log("GET", req.url);
@@ -117,9 +113,6 @@ var dbchangehandler = function(k, v) {
 		exportRevision(revision);
 	}
 };
-
-db.bind("set", dbchangehandler);
-db.bind("add", dbchangehandler);
 
 var proxyCounter = 0;
 var proxyInProgress = 0;
@@ -243,7 +236,7 @@ function projectsHttpHandler(req, res) {
 		if (project === null) continue;
 		if (project.name == prjname) {
 			if (k[0] == "node_modules") {
-				var redir="/";
+				var redir = "/";
 				if (parent_node_modules)
 					redir = "/../../";
 				var fp = __dirname + redir + k.join("/");
@@ -280,6 +273,37 @@ function redirectHandler(req, res) {
 	res.end();
 }
 
-app.listen(secureport);
-redirapp.listen(port);
-console.log("Maggi Projects Server " + serverURL);
+var load_certificates = function(cb) {
+	if (fs.existsSync(keyfile) && fs.existsSync(certfile)) {
+		cb({
+			key: fs.readFileSync(keyfile),
+			cert: fs.readFileSync(certfile)
+		});
+	} else {
+		pem.createCertificate({ days: 365, selfSigned: true }, function(err, keys) {
+			var options = {
+				key: keys.serviceKey,
+				cert: keys.certificate
+			};
+			fs.writeFileSync(keyfile, options.key);
+			fs.writeFileSync(certfile, options.cert);
+			console.log("SSL key pair created and saved.");
+			cb(options);
+		});
+	}
+}
+
+function start(options) {
+	app = https.createServer(options, httpHandler);
+	redirapp = http.createServer(redirectHandler);
+	io = require('socket.io').listen(app);
+	dbs = Maggi.db.server(io, dbname);
+	db = dbs[dbname];
+	db.bind("set", dbchangehandler);
+	db.bind("add", dbchangehandler);
+	app.listen(secureport);
+	redirapp.listen(port);
+	console.log("Maggi Projects Server " + serverURL);
+}
+
+load_certificates(start);
