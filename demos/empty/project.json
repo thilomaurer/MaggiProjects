@@ -29,7 +29,7 @@
 		},
 		"deps": [
 			"node_modules/jquery/dist/jquery.js",
-			"node_modules/socket.io-client/socket.io.js",
+			"node_modules/socket.io-client/dist/socket.io.js",
 			"node_modules/headjs/dist/1.0.0/head.load.js",
 			"node_modules/sprintf-js/src/sprintf.js",
 			"node_modules/Maggi.js/Maggi.js",
