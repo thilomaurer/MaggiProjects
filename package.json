@@ -1,5 +1,5 @@
 {
-	"name": "MaggiProjects",
+	"name": "maggi-projects",
 	"version": "0.3.0",
 	"description": "IDE for Maggi.UI",
 	"main": "server.js",
