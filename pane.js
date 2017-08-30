@@ -146,33 +146,7 @@ var paneuiheader = function() {
 				data.preview.reload += 1;
 			});
 			dom.ui.editor_actions.ui.beautify.click(function() {
-				var ff = {
-					"text/javascript": js_beautify,
-					"application/javascript": js_beautify,
-					"text/html": html_beautify,
-					"text/css": css_beautify,
-				};
-				var f = ff[data.file.type];
-				var options = {
-					"indent_with_tabs": true,
-					"end_with_newline": true,
-					"brace_style": "collapse-preserve-inline",
-					"html": {
-						"indent_inner_html": true,
-						"extra_liners": [],
-						"js": {
-							"end_with_newline": false,
-						},
-						"css": {
-							"end_with_newline": false,
-						}
-					},
-					"css": {},
-					"js": {}
-				};
-				if (f) {
-					data.file.data = f(data.file.data, options);
-				}
+				data.file.beautify();
 			});
 			var updateMode = function(k, v) {
 				var p = (v == "preview");
@@ -183,7 +157,7 @@ var paneuiheader = function() {
 					var dc = ui.children.preview_actions.children.detach;
 					data.preview.bind("set", "detach", function(k, v) {
 						if (v) dc.class += " activated";
-						else dc.class = dc.class.split(" ").filter(s=>s!="activated").join(" ");
+						else dc.class = dc.class.split(" ").filter(s => s != "activated").join(" ");
 					});
 				}
 				var dp = ui.children.preview;
@@ -191,13 +165,11 @@ var paneuiheader = function() {
 				else dp.class = "icon ion-md-play";
 			};
 			var previewTypes = ["text/javascript", "application/javascript", "text/html", "text/markdown"];
-			var beautifyTypes = ["text/javascript", "application/javascript", "text/html", "text/css", "application/json"];
 			var updateModeVis = function(k, v) {
-				var canpreview = v && (previewTypes.indexOf(v.type) >= 0);
+				var canpreview = v && v.can_preview();
 				ui.children.preview.visible = canpreview;
 				if (canpreview === false) data.mode = "edit";
-				var canbeautify = v && (beautifyTypes.indexOf(v.type) >= 0);
-				ui.children.editor_actions.children.beautify.visible = canbeautify;
+				ui.children.editor_actions.children.beautify.visible = v && v.can_beautify();
 			};
 			var updateRO = function(k, v) {
 				var editlabel = "edit";
@@ -282,11 +254,12 @@ var pane = function(m, dom) {
 	m.data.files.add("1", filedata({ name: "file.js", type: "text/javascript", data: "var x=function(a,b,c,d) { a=1; b=2; };" }));
 	m.data.files.add("2", filedata({ name: "file.html", type: "text/html", data: "<HTML><BODY>fsdfsdf</BODY></HTML>" }));
 	m.data.files.add("3", filedata({ name: "file.md", type: "text/markdown", data: "**bold** *italic*\n" }));
+	m.data.files.add("4", filedata({ name: "file.json", type: "application/json", data: '{ "a":1,\n"b":2}\n' }));
 	/*
 	for (i = 3; i < 50; i++)
 		m.data.files.add(i, filedata({ name: "file" + i + ".html", type: "text/html", data: "fsdfsdf" }));
 	*/
 	m.ui = paneui();
-	m.ui.children.header.children.files.selected = 3;
+	m.ui.children.header.children.files.selected = 4;
 	dom.addClass("mui expand");
 };
