@@ -82,7 +82,7 @@ var paneuiheader = function() {
 	return Maggi({
 		visible: true,
 		children: {
-			file: listitemui,
+			file: fileui,
 			files: {
 				popup: true,
 				popuptrigger: "file",

@@ -61,6 +61,15 @@
 	margin-bottom:0;
 }
 
+.file.listitem > #details {
+	vertical-align:bottom;
+}
+
+.file > #removed {
+	color:orange;
+}
+
+
 .mui .icon,
 .mui-light .icon {
 	height: 32px;

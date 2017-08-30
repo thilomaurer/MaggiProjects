@@ -1,15 +1,16 @@
 var file = function(m, dom) {
-	m.data = filedata({ name: "test.name", type: "text/css" });
+	m.data = filedata({ name: "test.name", type: "tex/css", removed:true });
 	m.ui = fileui();
 	m.ui.add("enabled", true);
 	m.ui.enabled = false;
-	m.ui.class = "mui-light";
+	m.ui.class += " mui-light";
 };
 
 
 file.count_nonblanks_before_cursor = function() {
 	var c = this.cursor;
 	var d = this.data;
+
 	function getPosition(string, subString, row, column) {
 		var l = string.split(subString, row + 1);
 		l[row] = l[row].substring(0, column);
@@ -88,7 +89,7 @@ file.beautify = function() {
 };
 
 var filedata = function(o) {
-	var fd = { name: null, type: null, enc: null, data: null, cursor: { row: 0, column: 0 } };
+	var fd = { name: null, type: null, enc: null, data: null, cursor: { row: 0, column: 0 }, removed: false };
 	$.extend(fd, o);
 	fd = Maggi(fd);
 	fd.count_nonblanks_before_cursor = file.count_nonblanks_before_cursor;
@@ -100,9 +101,21 @@ var filedata = function(o) {
 };
 
 var fileui = function() {
+	var removed_user = function(dom, data, setdata, ui, datachange) {
+		var up = function(data) {
+			if (data) dom.text("(removed)");
+			else dom.text("");
+		};
+		datachange(up);
+		up(data);
+	}
+
+
 	var ui = listitemui();
+	ui.children.removed = { type: "user", user: removed_user };
 	ui.children.details = { type: "label", class: "icon ion-ios-more" };
 	ui.editvisible = false;
+	ui.class+=" file"
 	ui = Maggi(ui);
 	ui.builder = function(dom, data, ui) {
 		var repairfile = function(data) {
@@ -117,7 +130,20 @@ var fileui = function() {
 			ui.editvisible = true;
 			return false;
 		};
+		var showEditor = function(k, v) {
+			if (v === true) {
+				makeFileEditor($('body'), data, function() {
+					ui.add("delete_item",true);
+				}, function() {
+					ui.editvisible = false;
+				});
+			}
+		};
 		ui.children.details.add("onClick", click);
+		ui.bind("set", "editvisible", showEditor);
+		return function() {
+			ui.unbind(showEditor);
+		};
 	};
 	return ui;
 };
@@ -125,10 +151,16 @@ var fileui = function() {
 var fileeditui = function() {
 
 	var loc = function(dom, data, setdata, ui, datachange) {
-		var text = "empty file";
-		if (data !== null)
-			text = data.length + " characters, " + data.split("\n").length + " lines";
-		dom.text(text);
+		var up = function(data) {
+			var text = "empty file";
+			if (data !== null)
+				text = data.length + " characters, " +
+				data.split(/\s+/).length + " words, " +
+				data.split("\n").length + " lines";
+			dom.text("Summary: " + text);
+		}
+		datachange(up);
+		up(data);
 	};
 
 	return {
@@ -146,10 +178,10 @@ var fileeditui = function() {
 				},
 				class: "fillhorizontal"
 			},
-			name: { type: "input", placeholder: "filename" },
+			name: { type: "input", placeholder: "filename", prefix: "Filename:\xa0" },
 			cursor: {
 				children: {
-					label: { type: "label", label: "cursor position: line " },
+					label: { type: "label", label: "Cursor Position: line " },
 					row: "text",
 					label2: { type: "label", label: ", column " },
 					column: "text"
@@ -165,11 +197,17 @@ var fileeditui = function() {
 	};
 };
 
-var makeFileEditor = function(dom, file, setfile, onRemove, onClose) {
+var makeFileEditor = function(dom, file, onDelete, onClose) {
 	var data = Maggi({
 		delete: function() {
+			if (true||confirm("Deletion of file '" + file.name + "' cannot be undone. \nContinue?")) {
+				data.close();
+				onDelete();
+			}
+		},
+		mark_removed: function() {
 			data.close();
-			onRemove();
+			file.removed=true;
 		},
 		close: function() {
 			removeOverlay();
@@ -185,17 +223,22 @@ var makeFileEditor = function(dom, file, setfile, onRemove, onClose) {
 		type: "object",
 		class: "popup",
 		children: {
-			//title:{type:"label", label:"File Settings"},
+			title:{type:"label", label:"File Settings"},
 			data: fileeditui,
-			close: { type: "function", class: "right button", label: "Done", enabled: false },
+			close: { type: "function", class: "right button blue", label: "Done", enabled: false },
 			upload: { type: "user", user: fileinput },
+			mark_removed: { type: "function", class: "left button orange", label: "Mark as Removed" },
 			delete: { type: "function", class: "left button red", label: "Delete File" },
 		},
 		builder: function(dom, data, ui) {
 			dom.parent().addClass("mui-light");
 			data.bind("set", "upload", function(k, v) {
-				data.data = { name: v.name, type: v.mimeType, enc: v.enc, data: v.data, cursor: { row: 0, column: 0 } };
-				setfile(data.data);
+				var d = data.data;
+				d.name = v.name;
+				d.type = v.mimeType;
+				d.enc = v.enc;
+				d.data = v.data;
+				d.cursor = { row: 0, column: 0 };
 			});
 			var validate = function(k) {
 				if (k == "data" || k[0] == "data")
@@ -220,7 +263,7 @@ var fileinput = function(dom, data, setdata, ui) {
 	m.ui = {
 		children: {
 			i: { type: "input", kind: "file", visible: false },
-			select: { type: "function", label: "Upload File", class: "button" },
+			select: { type: "function", label: "Import Local File", class: "button" },
 		},
 		builder: function(dom) {
 			dom.ui.i.change(function(evt) {
