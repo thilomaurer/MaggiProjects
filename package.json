@@ -1,6 +1,6 @@
 {
 	"name": "MaggiProjects",
-	"version": "0.2.8",
+	"version": "0.3.0",
 	"description": "IDE for Maggi.UI",
 	"main": "server.js",
 	"bin": {
