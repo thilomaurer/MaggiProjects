@@ -43,12 +43,17 @@
 		<link rel="apple-touch-icon" type="image/svg+xml" href="icons/Maggi.UI.IDE.svg">
 		<script>
 			$(document).ready(function() {
-				Maggi.log=false;
-				var fn=prj;
-				var dom=$('body');
-				var m=Maggi.UI_devel(dom);
-				if (fn!=null) { fn(m,dom); } 
-				else { dom.empty(); console.log('Maggi.IDE: function "+funcname+" was not defined');}});
+				Maggi.log = false;
+				var fn = prj;
+				var dom = $('body');
+				var m = Maggi.UI_devel(dom);
+				if (fn != null) {
+					fn(m, dom);
+				} else {
+					dom.empty();
+					console.log('Maggi.IDE: function "+funcname+" was not defined');
+				}
+			});
 		</script>
 	</head>
 	<body></body>

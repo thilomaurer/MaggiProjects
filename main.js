@@ -37,23 +37,10 @@ var sampleprojects={};
 sampleprojects.Maggi=function(complete) {
 	initproject(
 		{name:"<nobody>",username:"username",email:"user@localhost"},
-		{
-            name:"New Empty Project",
-            author:null,
-            icon:null,
-            deps: [
-                "node_modules/jquery/dist/jquery.js",
-                "node_modules/socket.io/node_modules/socket.io-client/socket.io.js",
-                "node_modules/headjs/dist/1.0.0/head.load.js",
-                "node_modules/Maggi.js/node_modules/sprintf-js/src/sprintf.js",
-                "node_modules/Maggi.js/Maggi.js",
-                "node_modules/Maggi.js/Maggi.UI.js",
-                "node_modules/Maggi.js/Maggi.UI.css",
-                "main.js"
-            ]
-		},
 		[
-			["main.js","demos/main.js"],
+			["package.json","demos/empty/project.json"],
+			["main.js","demos/empty/main.js"],
+			["index.html","demos/empty/index.html"],
 		],
 		function(project) {
 			project.view.panes.add(0,{fileid:0,mode:"edit"});
@@ -68,35 +55,21 @@ sampleprojects.Maggi=function(complete) {
 sampleprojects.pwcalc=function(complete) {
 	initproject(
 		{name:"Thilo Maurer",email:"tm@thilomaurer.de",username:"thilomaurer"},
-		{
-            name:"Password Calculator",
-		    author:"Thilo Maurer, www.thilomaurer.de",
-		    icon:"lock.svg",
-            deps: [
-                "node_modules/jquery/dist/jquery.js",
-                "node_modules/socket.io/node_modules/socket.io-client/socket.io.js",
-                "node_modules/headjs/dist/1.0.0/head.load.js",
-                "node_modules/Maggi.js/node_modules/sprintf-js/src/sprintf.js",
-                "node_modules/Maggi.js/Maggi.js",
-                "node_modules/Maggi.js/Maggi.UI.js",
-                "node_modules/Maggi.js/Maggi.UI.css",
-                "utils.js",
-                "pwcalc.js","pwcalc.css",
-            ]
-		},
 		[
-			["README.txt","demos/README.txt"],
-			["pwcalc.js","demos/pwcalc.js"],
-			["pwcalc.css","demos/pwcalc.css"],
-			["pwcalc.html","demos/pwcalc.html"],
-			["utils.js","demos/utils.js"],
-			["lock.svg","demos/lock.svg"]
+			["package.json","demos/pwcalc/project.json"],
+			["README.md","demos/pwcalc/README.md"],
+			["index.html","demos/pwcalc/index.html"],
+			["pwcalc.js","demos/pwcalc/pwcalc.js"],
+			["pwcalc.css","demos/pwcalc/pwcalc.css"],
+			["utils.js","demos/pwcalc/utils.js"],
+			["lock.svg","demos/pwcalc/lock.svg"]
 		],
 		function(project) {
-			project.view.panes.add(0,{fileid:2,mode:"edit"});
+			project.view.panes.add(0,{fileid:1,mode:"edit"});
 			project.view.panes.add(1,{fileid:3,mode:"edit"});
-			project.view.panes.add(2,{fileid:2,mode:"preview"});
-			project.view.panes.order=["0","1","2"];
+			project.view.panes.add(2,{fileid:4,mode:"edit"});
+			project.view.panes.add(3,{fileid:3,mode:"preview"});
+			project.view.panes.order=["0","1","2","3"];
 			complete(project);
 		}
 	);

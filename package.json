@@ -1,43 +1,89 @@
 {
-  "name": "MaggiProjects",
-  "version": "0.2.7",
-  "description": "IDE for Maggi.UI",
-  "main": "server.js",
-  "dependencies": {
-    "ace-editor-builds": "~1.2.0",
-    "jquery": "~2.2.4",
-    "Maggi.js-0.1": "~0.1.8",
-    "Maggi.js": "~0.2.6",
-    "mime": "~1.3.4",
-    "mkdirp": "~0.5.1",
-    "socket.io": "~1.4.5",
-    "headjs": "~1.0.3",
-    "ionicons": "~3.0.0"
-  },
-  "devDependencies": {},
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/thilomaurer/Maggi.js.git"
-  },
-  "keywords": [
-    "Maggi",
-    "UI",
-    "development",
-    "IDE",
-    "server"
-  ],
-  "author": {
-    "name": "Thilo Maurer",
-    "email": "tm@thilomaurer.de",
-    "url": "http://www.thilomaurer.de/"
-  },
-  "license": "AGPL-3.0",
-  "bugs": {
-    "url": "https://github.com/thilomaurer/Maggi.js/issues"
-  },
-  "readme": "ERROR: No README data found!"
+	"name": "MaggiProjects",
+	"version": "0.3.0",
+	"description": "IDE for Maggi.UI",
+	"main": "server.js",
+	"bin": {
+		"MaggiProjects": "./server.js"
+	},
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"start": "node server.js"
+	},
+	"author": {
+		"name": "Thilo Maurer",
+		"email": "tm@thilomaurer.de",
+		"url": "http://www.thilomaurer.de/"
+	},
+	"dependencies": {
+		"ace-editor-builds": "^1.2.0",
+		"jquery": "^2.2.4",
+		"Maggi.js-0.1": "^0.1.10",
+		"Maggi.js": "^0.2.6",
+		"mime": "^1.3.4",
+		"mkdirp": "^0.5.1",
+		"socket.io": "^1.4.5",
+		"headjs": "^1.0.3",
+		"ionicons": "^3.0.0",
+		"github-markdown-css": "^2.8.0",
+		"marked": "^0.3.6",
+		"pem": "^1.9.7",
+		"js-beautify": "^1.6.14"
+	},
+	"devDependencies": {},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/thilomaurer/Maggi.js.git"
+	},
+	"keywords": [
+		"Maggi",
+		"UI",
+		"development",
+		"IDE",
+		"server"
+	],
+	"license": "AGPL-3.0",
+	"bugs": {
+		"url": "https://github.com/thilomaurer/Maggi.js/issues"
+	},
+	"Maggi.js": {
+		"title": "Maggi Projects",
+		"link": {
+			"icon": "node_modules/Maggi.js/Maggi.js.svg",
+			"apple-touch-icon": "node_modules/Maggi.js/Maggi.js.svg"
+		},
+		"meta": {
+			"viewport": "width=device-width, height=device-height, initial-scale=1, user-scalable=yes",
+			"mobile-web-app-capable": "yes",
+			"apple-mobile-web-app-status-bar-style": "black-translucent",
+			"apple-mobile-web-app-capable": "yes"
+		},
+		"deps": [
+			"node_modules/jquery/dist/jquery.js",
+			"node_modules/socket.io-client/dist/socket.io.js",
+			"node_modules/Maggi.js-0.1/Maggi.js",
+			"node_modules/Maggi.js-0.1/sprintf.js",
+			"node_modules/Maggi.js-0.1/detect-element-resize.js",
+			"node_modules/Maggi.js-0.1/Maggi.UI.js", "node_modules/Maggi.js-0.1/Maggi.UI.css", "node_modules/Maggi.js-0.1/Maggi.UI.input.css", "node_modules/Maggi.js-0.1/Maggi.UI.select.css",
+			"node_modules/ace-editor-builds/src-min-noconflict/ace.js",
+			"node_modules/Maggi.js-0.1/Maggi.UI.editor.js", "node_modules/Maggi.js-0.1/Maggi.UI.editor.css",
+			"ace-theme-maggiui.css",
+			"node_modules/Maggi.js-0.1/Maggi.UI.overlay.js", "node_modules/Maggi.js-0.1/Maggi.UI.overlay.css",
+			"node_modules/ionicons/dist/css/ionicons.css",
+			"node_modules/js-beautify/js/lib/beautify.js",
+			"node_modules/js-beautify/js/lib/beautify-css.js",
+			"node_modules/js-beautify/js/lib/beautify-html.js",
+			"node_modules/marked/marked.min.js",
+			"project.js", "project.css",
+			"filepreview.js",
+			"pane.js", "pane.css",
+			"panes.js", "panes.css",
+			"ide.js", "ide.css",
+			"list.js",
+			"file.js", "file.css",
+			"files.js",
+			"prj.js",
+			"main.js", "main.css"
+		]
+	}
 }
