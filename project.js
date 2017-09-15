@@ -40,8 +40,8 @@ var projectdata=function(o) {
 			},
 			editor: {
 				colorscheme:{
-					day:"xcode",
-					night:"solarized_dark"
+					day:"maggiui",
+					night:"maggiui"
 				},
 				gutter:{
 					showGutter:true,
@@ -179,20 +179,26 @@ var revisionsui=function(prjdata) {
 
 Maggi.UI.labelwrap=function(dom,data,setdata,ui,onDataChange) {
 
-	var int_ui={class:"cols labelwrap",children:{
-		label:{type:"label",label:ui.label},
-		data:ui.d
-	}};
+	var int_ui={
+		class:"cols labelwrap",
+		children:{
+			label:{type:"label",label:ui.label},
+			data:ui.d
+		}
+	};
 	var int_data=Maggi({data:data});
 	int_data.bind("set","data",function(k,v) {
 		setdata(v);
+	});
+	onDataChange(function(data) {
+		int_data.data=data;	
 	});
 	Maggi.UI(dom,int_data,int_ui);
 };
 
 var projectui=function() {
 	var colorselectui={
-		type:"select",
+		type:"select_OS",
 		choices:{
 			ambiance               :{label:"Ambiance"},
 			chaos                  :{label:"Chaos"},
@@ -391,27 +397,27 @@ var projectui=function() {
 		class:"project",
 		builder:function(dom,data,ui) {
 			if (data==null) return;
-			    var buildRevisionsView = function(dom,d,ui) {
-				var int_data=Maggi({
-					revisions:d,
-				});
-				var int_ui=Maggi({
-					visible:false,
-					children: {
-						revisionsLabel:{type:"label",label:"REVISIONS", class:"listlabel"},
-						revisions: revisionsui(data),
-					}
-				});
-				ui.bind("set","selected",function(k,v) {
-					int_ui.children.revisions.selected=v;	
-				});
-				int_ui.children.revisions.selected=ui.selected;
-				int_ui.children.revisions.bind("set","selected",function(k,v) {
-					ui.visible=false;
-					ui.selected=v;
-				});
-				return Maggi.UI(dom,int_data,int_ui);
-			    };
+            var buildRevisionsView = function(dom,d,ui) {
+            	var int_data=Maggi({
+            		revisions:d,
+            	});
+            	var int_ui=Maggi({
+            		visible:false,
+            		children: {
+            			revisionsLabel:{type:"label",label:"REVISIONS", class:"listlabel"},
+            			revisions: revisionsui(data),
+            		}
+            	});
+            	ui.bind("set","selected",function(k,v) {
+            		int_ui.children.revisions.selected=v;	
+            	});
+            	int_ui.children.revisions.selected=ui.selected;
+            	int_ui.children.revisions.bind("set","selected",function(k,v) {
+            		ui.visible=false;
+            		ui.selected=v;
+            	});
+            	return Maggi.UI(dom,int_data,int_ui);
+            };
 
 			ui.children.revisions.builder=buildRevisionsView;
 
@@ -429,8 +435,8 @@ var projectui=function() {
 					}
 					if (d==null) return;
 					var i=d["Maggi.js"]&&d["Maggi.js"].link&&d["Maggi.js"].link.icon;
-					d.name=d["Maggi.js"]&&d["Maggi.js"].title||d.name;
-					d.icon=i;
+					d.name=d["Maggi.js"]&&d["Maggi.js"].title||d.name;					
+					d.icon=i;	
 					var files=data.revisions[rev].files;
 					for (var fidx in files) {
 						var f=files[fidx];

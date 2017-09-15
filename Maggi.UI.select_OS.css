@@ -1,0 +1,39 @@
+.select_OS>select {
+	width: 100%;
+	border-radius: 5px;
+	font-size: 18px;
+	padding: 3px;
+	outline: none;
+}
+
+
+.mui-light .select_OS>select {
+	border: 1px solid transparent;
+	color: black;
+	background: hsla(0, 0%, 85%, 0.5);
+}
+
+.mui-light .select_OS>select:focus {
+	border: 1px solid #29a1d3;
+	box-shadow: 0 0 0 1px #29a1d3;
+}
+
+.mui-light .select_OS>select:hover {
+	border: 1px solid #29a1d3;
+}
+
+
+.mui .select_OS>select {
+	border: 1px solid transparent;
+	color: white;
+	background: hsla(224, 8%, 15%, 0.5);
+}
+
+.mui .select_OS>select:focus {
+	border: 1px solid #29a1d3;
+	box-shadow: 0 0 0 1px #29a1d3;
+}
+
+.mui .select_OS>select:hover {
+	border: 1px solid #29a1d3;
+}

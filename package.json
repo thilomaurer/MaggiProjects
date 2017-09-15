@@ -33,7 +33,7 @@
 	"devDependencies": {},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/thilomaurer/Maggi.js.git"
+		"url": "https://github.com/thilomaurer/MaggiProjects.git"
 	},
 	"keywords": [
 		"Maggi",
@@ -44,7 +44,7 @@
 	],
 	"license": "AGPL-3.0",
 	"bugs": {
-		"url": "https://github.com/thilomaurer/Maggi.js/issues"
+		"url": "https://github.com/thilomaurer/MaggiProjects/issues"
 	},
 	"Maggi.js": {
 		"title": "Maggi Projects",
@@ -74,6 +74,7 @@
 			"node_modules/js-beautify/js/lib/beautify-css.js",
 			"node_modules/js-beautify/js/lib/beautify-html.js",
 			"node_modules/marked/marked.min.js",
+			"Maggi.UI.select_OS.js","Maggi.UI.select_OS.css",
 			"project.js", "project.css",
 			"filepreview.js",
 			"pane.js", "pane.css",
