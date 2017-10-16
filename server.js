@@ -422,10 +422,12 @@ var git_commit = function(options, project) {
 	return git.Repository.open(dir)
 		.then(function(r) {
 			repo = r;
+			if (repo.headUnborn()) return null;
 			return repo.getBranchCommit(branch);
 		})
 		.then(function(commit) {
 			headCommit = commit;
+			if (commit==null) return null;
 			return commit.getTree();
 		})
 		.then(function(t) {
@@ -446,10 +448,11 @@ var git_commit = function(options, project) {
 			}));
 		})
 		.then(function() {
+			var parents=headCommit?[headCommit]:null;
 			var indexTreeId = treebuilder.write();
 			var author = git.Signature.now(options.author.name, options.author.email);
 			var committer = author;
-			return repo.createCommit(branch, author, committer, options.message, indexTreeId, [headCommit]);
+			return repo.createCommit(branch, author, committer, options.message, indexTreeId, parents);
 		})
 		.then(function(commitId) {
 			return git_read_repo(repo, project);
@@ -520,6 +523,14 @@ var git_apply_stash = function(options, project) {
 		});
 };
 
+var git_init = function(options, project) {
+	console.log("Initializing repo via git");
+
+	var dir = project_git_path(project);
+	var isBare = 0;
+	return git.Repository.init(dir, isBare);
+};
+
 var run_project = function(key, project) {
 	if (key instanceof Array) return;
 
@@ -527,18 +538,22 @@ var run_project = function(key, project) {
 
 	var run = function() {
 		if (current != null) return;
-		var fc = first_command();
-		if (fc == null) return;
-		exec_command(fc).then(function() {
+		var cmd = first_command();
+		if (cmd == null) return;
+		exec_command(cmd).then(function() {
 			run();
 		}).catch(function(error) {
-			console.error("Error during command:", error)
+			console.error("Error during command:", error);
+			var errormsg = error;
+			if (error.message) errormsg = error.message;
+			cmd[1].add("error", errormsg);
+			current = null;
 		});
 	};
 
-	var exec_command = function(fc) {
-		var cmd = fc[1];
-		var key = fc[0];
+	var exec_command = function(cmd) {
+		var key = cmd[0];
+		var cmd = cmd[1];
 		current = key;
 		var fs = {
 			"git_clone": git_clone,
@@ -549,17 +564,13 @@ var run_project = function(key, project) {
 			"git_drop_stash": git_drop_stash,
 			"git_push": git_push,
 			"git_pull": git_pull,
+			"git_init": git_init,
 		};
 		var f = fs[cmd.command];
+		if (f==null) return new Promise((a,r)=>r("unknown command "+cmd.command));
 		return f(cmd.parameters, project).then(function() {
 			current = null;
 			project.commands.remove(key);
-		}).catch(function(error) {
-			console.error(error);
-			var errormsg = error;
-			if (error.message) errormsg = error.message;
-			cmd.add("error", errormsg);
-			current = null;
 		});
 	};
 

@@ -157,16 +157,6 @@ var ideui = function() {
 var ide_init = function(m, dom) {
 	
 	m.data = { projects: {} };
-	/*
-	m.data.bind("set", "projects", function(k, v) {
-		console.log(k);
-		for (i in v) {
-			p = v[i];
-			pp = projectdata(p);
-			v[i] = pp;
-		}
-	});
-	*/
 	m.bind("set","data",function(k,v) {
 		if (k instanceof Array) return;
 		ide.revive(v);
@@ -211,5 +201,9 @@ projects.revive = function(data) {
 	console.log("projects.revive");
 	Maggi.revive(data, {
 		"": project.revive
+	});
+	data.bind("add", function(k,v) {
+		if (k instanceof Array) return;
+		project.revive(v);	
 	});
 };

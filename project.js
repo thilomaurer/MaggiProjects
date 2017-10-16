@@ -188,6 +188,13 @@ project.revive = function(data) {
 			}
 		});
 	};
+	data.git_init = function() {
+		data.addcommand({
+			command: "git_init",
+			parameters: {
+			}
+		});
+	};
 };
 
 Maggi.UI.labelwrap = function(dom, data, setdata, ui, onDataChange) {
@@ -559,7 +566,10 @@ project.data_from_files = function(user, sources, complete) {
 
 	var files = data.files;
 	data.repo.refs.branches = ["master"];
-	data.repo.history.add(0, commit.data({ author: user.name + " <" + user.email + ">" }));
+	data.repo.history.add(0, commit.data({ author: {name:user.name, email: user.email }}));
+	data.checkedout.branch = "master";
+	data.checkedout.id = null;
+	data.git_init();
 
 	var nfloaded = 0;
 	$.each(sources, function(idx, k) {
@@ -589,20 +599,6 @@ project.data_from_files = function(user, sources, complete) {
 };
 
 project.data_from_git = function(user, git_url, git_branch, complete) {
-	/*
-		var c = command.data.git_clone();
-		c.parameters.url = git_url;
-		c.parameters.branch = git_branch;
-		c.parameters.user = user;
-
-		//c.parameters.progress={step:100,steps:200};
-
-		var data = project.data({
-			commands: {
-				0: c
-			}
-		});
-		*/
 	var data = project.data();
 	data.clone(git_url, git_branch, user);
 	complete(data);
@@ -622,9 +618,6 @@ project.samples.Maggi = function(complete) {
 			project.view.panes.add(1, { mode: "edit", filename: "main.js" });
 			project.view.panes.add(2, { mode: "preview", filename: "main.js" });
 			project.view.panes.order = ["0", "1", "2"];
-			project.checkedout.branch = "master";
-			project.checkedout.id = null;
-			//project.history[0].author = { name: user.name, email: user.email };
 
 			complete(project);
 		}
@@ -647,22 +640,6 @@ project.samples.pwcalc = function(complete) {
 			project.view.panes.add(2, { mode: "edit", filename: "pwcalc.css" });
 			project.view.panes.add(3, { mode: "preview", filename: "pwcalc.js" });
 			project.view.panes.order = ["0", "1", "2", "3"];
-			var user = project.options.user;
-			project.repo.history.add("1", commit.data({
-				message: "initial commit",
-				author: { name: user.name, email: user.email },
-				date: new Date().getTime(),
-				committed: true,
-				id: "012345789"
-			}));
-			project.repo.history.add("0", commit.data({
-				author: { name: user.name, email: user.email },
-				parent_ids: { 0: 0 },
-			}));
-			project.repo.stashes.add("0", stash.data({ message: "text", id: "fdsfsd", index: "0" }));
-			project.checkedout.branch = "master";
-			project.checkedout.id = null;
-			//project.checkedout.id = project.history[1].id;
 			complete(project);
 		}
 	);
