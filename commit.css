@@ -1,0 +1,30 @@
+.commit #message,
+.commit #author {
+	font-weight: bold;
+}
+
+.commit>#author,
+.commit>#committed,
+.commit>#id,
+.commit>#date {
+	display: inline;
+	font-size: 14px;
+}
+
+.commit>#id {
+	font-family: "DejaVu Sans Mono", monospace;
+}
+
+.commit>#commit,
+.commit>#branch {
+	float: right;
+}
+
+.commit>.button {
+	margin-top: 5px;
+	margin-left: 5px;
+}
+
+.commit {
+	overflow: hidden;
+}

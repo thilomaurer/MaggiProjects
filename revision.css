@@ -1,0 +1,24 @@
+.project #revisions #revisions.simplelist {
+	display: flex;
+	flex-direction: column-reverse;
+}
+
+.revision #message,
+.revision #committer {
+	font-weight:bold;
+}
+
+.revision > #committer,
+.revision > #completed {
+	display:inline;
+	font-size:14px;
+}
+
+.revision #branch {
+	float: right;
+}
+
+.revision .input,
+.revision .button {
+	margin-top: 5px;
+}

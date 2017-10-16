@@ -28,7 +28,8 @@
 		"github-markdown-css": "^2.8.0",
 		"marked": "^0.3.6",
 		"pem": "^1.9.7",
-		"js-beautify": "^1.6.14"
+		"js-beautify": "^1.6.14",
+		"nodegit": "^0.20.2"
 	},
 	"devDependencies": {},
 	"repository": {
@@ -75,7 +76,12 @@
 			"node_modules/js-beautify/js/lib/beautify-html.js",
 			"node_modules/marked/marked.min.js",
 			"Maggi.UI.select_OS.js","Maggi.UI.select_OS.css",
+			"command.js", "command.css",
+			"commit.js", "commit.css",
+			"commithistory.js",
+			"revision.js", "revision.css",
 			"project.js", "project.css",
+			"project_creator.js", "project_creator.css",
 			"filepreview.js",
 			"pane.js", "pane.css",
 			"panes.js", "panes.css",

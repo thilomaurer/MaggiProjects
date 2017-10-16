@@ -10,6 +10,7 @@ var http = require('http'),
 	mime = require('mime'),
 	Maggi = require('Maggi.js'),
 	mkdirp = require('mkdirp'),
+	git = require('nodegit'),
 	url = require('url'),
 	writefile = require('Maggi.js/writefile.js'),
 	keyfile = "key.pem",
@@ -96,6 +97,295 @@ var exportRevision = function(revision) {
 	}
 };
 
+var git_read_history = function(repo, project) {
+	repo.getMasterCommit().then(function(firstCommitOnMaster) {
+		var history = firstCommitOnMaster.history(git.Revwalk.SORT.Time);
+		var commits = [];
+		history.on("commit", function(commit) {
+			var c = {
+				id: commit.sha(),
+				author: commit.author().name() + " <" + commit.author().email() + ">",
+				date: new Date(commit.date()).getTime(),
+				message: commit.message(),
+				parent_ids: commit.parents().toString(),
+				committed: true
+			};
+			commits.push(c);
+		});
+		history.on("end", function() {
+			project.history = commits;
+		});
+		history.start();
+	});
+	var type = git.Reference.TYPE.SYMBOLIC;
+	repo.getReferenceNames(type).then(function(arrayString) {
+		console.log(arrayString);
+	});
+};
+
+var git_import_commit = function(commit) {
+
+	var getFile = function(e) {
+		var mime = {
+			js: "application/javascript",
+			html: "text/html",
+			css: "text/css",
+			txt: "text/plain",
+			md: "text/markdown",
+			json: "application/json",
+			svg: "image/svg+xml"
+		};
+		if (e.isBlob()) {
+			return e.getBlob().then(function(blob) {
+					var enc = blob.isBinary() && "base64" || "utf8";
+					var extension = e.name().split(".").pop();
+					return {
+						name: e.path(),
+						type: mime[extension],
+						enc: enc,
+						data: blob.content().toString(enc),
+						cursor: { row: 0, column: 0 },
+						removed: false
+					};
+				})
+				.catch(function(error) {
+					console.error(error);
+				});
+		}
+		if (e.isTree()) {
+			return e.getTree().then(getDirectory);
+		}
+		console.log("unknown entry: " + e.path());
+		return null;
+	};
+	var flatten = arrays => [].concat.apply([], arrays);
+	var getDirectory = tree => Promise.all(tree.entries().map(getFile));
+
+
+	var project = projectdata();
+	var rev = project.revisions[0];
+	project.revisions.remove(0);
+
+	//project.checkout.branch = branch;
+	project.checkout.id = commit.sha();
+
+	rev.message = commit.message();
+	rev.committer = commit.committer().name();
+	rev.completed = commit.committer().when().time() * 1000;
+	rev.committed = true;
+	rev.revision = commit.sha();
+	rev.parentrevision = commit.parents().toString();
+	return commit.getTree()
+		.then(getDirectory)
+		.then(function(files) {
+			files = flatten(files);
+			rev.files = files;
+			project.freefileid = files.length;
+			project.revisions.add(rev.revision, rev);
+			projectfuncs(project).branch(rev)();
+			var fileid = files.findIndex(f => f.name.match(/readme\.md/i)) || 0;
+			var panes = project.view.panes;
+			panes.add(0, { fileid: fileid, mode: "edit" });
+			panes.add(1, { fileid: fileid, mode: "preview" });
+			panes.order = ["0", "1"];
+			return project;
+		});
+}
+
+
+var git_clone = function(options, project_handle) {
+	var url = options.url;
+	var branch = options.branch;
+	var dir = "projects/" + project_handle + ".git";
+	console.log("Adding project via git clone from branch " + branch + " of repo " + url);
+
+	var repo;
+	return git.Clone(url, dir, { checkoutBranch: branch })
+		.then(function(r) {
+			repo = r;
+			//repo.setIdent(options.user.name, options.user.email);
+			return repo.getHeadCommit();
+		})
+		.then(git_import_commit)
+		.then(function(project) {
+			git_read_history(repo, project);
+			return project;
+		})
+		.catch(function(error) {
+			console.error(error);
+		});
+};
+
+var git_checkout = function(options, project_handle) {
+	var id = options.id;
+	var branch = options.branch;
+	var dir = "projects/" + project_handle + ".git";
+	console.log("Loading project via git checkout from branch " + branch + " of commit " + id);
+
+	return git.Repository.open(dir)
+		.then(function(r) {
+			repo = r;
+			//repo.setIdent(options.user.name, options.user.email);
+			return repo.getCommit(id);
+		})
+		.then(git_import_commit)
+		.then(function(project) {
+			git_read_history(repo, project);
+			return project;
+		})
+		.catch(function(error) {
+			console.error(error);
+		});
+};
+
+
+var revision = function() {
+	var data = Maggi({
+		revision: 0,
+		started: new Date(),
+		completed: null,
+		committer: null,
+		committed: false,
+		parentrevision: null,
+		message: null,
+		files: []
+	});
+	return data;
+};
+
+var projectdata = function(o) {
+	var data = Maggi({
+		revisions: {
+			0: revision()
+		},
+		freefileid: 0,
+		view: {
+			revision: 0,
+			panes: {
+				order: {}
+			}
+		},
+		commands: {},
+		checkout: {
+			branch: "master",
+			id: "00000"
+		},
+		history: {
+
+		},
+		addfile: function(file) {
+			file = filedata(file);
+			var fileid = data.freefileid++;
+			var revid = data.view.revision;
+			data.revisions[revid].files.add(fileid, file);
+			return fileid;
+		},
+		options: {
+			colorscheme: "auto",
+			user: {
+				username: null,
+				name: null,
+				email: null,
+			},
+			editor: {
+				colorscheme: {
+					day: "maggiui",
+					night: "maggiui"
+				},
+				gutter: {
+					showGutter: true,
+					fixedWidthGutter: true,
+					highlightGutterLine: true,
+					showLineNumbers: true,
+				},
+				ui: {
+					animatedScroll: false,
+					hScrollBarAlwaysVisible: false,
+					vScrollBarAlwaysVisible: false,
+					showPrintMargin: false,
+					printMarginColumn: 80,
+					fadeFoldWidgets: false,
+					showFoldWidgets: true,
+					scrollPastEnd: true,
+					highlightActiveLine: true,
+					highlightSelectedWord: true,
+				},
+				editing: {
+					showInvisibles: false,
+					displayIndentGuides: true,
+					useSoftTabs: false,
+					tabSize: 4,
+					cursorStyle: "ace",
+					selectionStyle: "line",
+					keyboard: "gui"
+				}
+			}
+		}
+	});
+	if (o) Maggi.merge(data, o);
+	return data;
+};
+
+var projectfuncs = function(data) {
+	var project = {
+		addfile: function(file) {
+			file = filedata(file);
+			var fileid = data.freefileid++;
+			var revid = data.view.revision;
+			data.revisions[revid].files.add(fileid, file);
+			return fileid;
+		},
+		branch: function(rev) {
+			return function() {
+				if (rev == null) return;
+				var newid = Object.keys(data.revisions).length;
+				var newrev = revision();
+				newrev.revision = newid;
+				newrev.parentrevision = rev.revision;
+				newrev.files = JSON.parse(JSON.stringify(rev.files));
+				data.revisions.add(newid, newrev);
+				data.view.revision = newid;
+				return newid;
+			};
+		},
+		commit: function(rev) {
+			return function() {
+				if (rev == null) return;
+				if (rev.committed) { alert("Error: Revision " + id + " already committed earlier."); return; }
+				rev.completed = new Date();
+				rev.committer = data.options.user.username;
+				rev.committed = true;
+			};
+		}
+	};
+	return project;
+};
+
+
+var run_project = function(project, p) {
+
+	var exec_command = function(cmd) {
+		if (cmd == null) return;
+		if (cmd.command == "git_clone")
+			git_clone(cmd.parameters, p).then(function(project) {
+				db.data.projects[p] = project;
+			});
+		if (cmd.command == "git_checkout")
+			git_checkout(cmd.parameters, p).then(function(project) {
+				db.data.projects[p] = project;
+			});
+	};
+
+	var cmds, cmd;
+	cmds = project.commands;
+	if (cmds) cmd = cmds[0];
+	if (cmd) exec_command(cmd);
+	
+	project.commands.bind("add", function(k, v) {
+		exec_command(v);
+	});
+}
+
 var dbchangehandler = function(k, v) {
 	if (
 		k.length == 8 &&
@@ -111,6 +401,15 @@ var dbchangehandler = function(k, v) {
 		var project = db.data.projects[p];
 		var revision = project.revisions[r];
 		exportRevision(revision);
+	}
+	if (
+		k.length == 3 &&
+		k[0] == "data" &&
+		k[1] == "projects"
+	) {
+		var p = k[2];
+		var project = db.data.projects[p];
+		run_project(project, p);
 	}
 };
 
@@ -273,27 +572,25 @@ function redirectHandler(req, res) {
 	res.end();
 }
 
-var load_certificates = function(cb) {
+var load_certificates = () => new Promise((resolve, reject) => {
+	var res = (key, cert) => resolve({ key, cert });
 	if (fs.existsSync(keyfile) && fs.existsSync(certfile)) {
-		cb({
-			key: fs.readFileSync(keyfile),
-			cert: fs.readFileSync(certfile)
-		});
+		res(fs.readFileSync(keyfile), fs.readFileSync(certfile));
 	} else {
 		pem.createCertificate({ days: 365, selfSigned: true }, function(err, keys) {
-			var options = {
-				key: keys.serviceKey,
-				cert: keys.certificate
-			};
-			fs.writeFileSync(keyfile, options.key);
-			fs.writeFileSync(certfile, options.cert);
-			console.log("SSL key pair created and saved.");
-			cb(options);
+			if (err)
+				return reject(err);
+			else {
+				fs.writeFileSync(keyfile, keys.serviceKey);
+				fs.writeFileSync(certfile, keys.certificate);
+				console.log("SSL key pair created and saved.");
+				res(keys.serviceKey, keys.certificate);
+			}
 		});
 	}
-}
+});
 
-function start(options) {
+var start = function(options) {
 	app = https.createServer(options, httpHandler);
 	redirapp = http.createServer(redirectHandler);
 	io = require('socket.io').listen(app);
@@ -306,4 +603,4 @@ function start(options) {
 	console.log("Maggi Projects Server " + serverURL);
 }
 
-load_certificates(start);
+load_certificates().then(start);

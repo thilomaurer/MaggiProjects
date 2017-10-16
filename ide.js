@@ -1,135 +1,142 @@
 var ideui = function() {
 	return {
 		children: {
-            header:{
-                data:{
-                    banner:{
-                        logo:"node_modules/Maggi.js/Maggi.js.svg",
-                        title:"aggi Projects",
-                    },
-                    newproject:{icon:"",name:"Create new Project..."}
-                },
-                children:{
-                    newproject:{
-					    children:{icon:{class:"ion-md-add ion-lg"},name:"text"},
-					    class:"visibilityanimate prjjson hoverhighlight"
-                    },
-                    banner:{
-                        wrap:true,
-                        children:{
-                            logo:{type:"image",class:"logo"},
-                            title:{type:"text"}
-                        },
-					    class:"visibilityanimate"
-                    }
-                },
-                class:"cols",
-				visible:true
-            },
-            projects: {
-            class:"flexrows flexanimate",
-            childdefault:prjui,
-            selected:null,
-            builder:function(dom,data,ui) {
-                var u=function() {
-					    if (ui.selected==null) dom.addClass("noneselected"); else dom.removeClass("noneselected");
-						$.each(dom.ui,function(k,v) {
-							var dui=dom.ui[k];
-							ui.children[k].mode={true:"active",false:"inactive"}[ui.selected==k];
-							dom.ui[k][{true:"removeClass",false:"addClass"}[ui.selected==k]]("unselected");
-							if (ui.selected!=k) {
-                                var dui=dom.ui[k];
-								var dc=function(event) {
-									ui.selected=k;
-									dui.off("click",dc);
+			header: {
+				data: {
+					banner: {
+						logo: "node_modules/Maggi.js/Maggi.js.svg",
+						title: "aggi Projects",
+					},
+					newproject: { icon: "", name: "Create new Project..." }
+				},
+				children: {
+					newproject: {
+						children: { icon: { class: "ion-md-add ion-lg" }, name: "text" },
+						class: "visibilityanimate prjjson hoverhighlight"
+					},
+					banner: {
+						wrap: true,
+						children: {
+							logo: { type: "image", class: "logo" },
+							title: { type: "text" }
+						},
+						class: "visibilityanimate"
+					}
+				},
+				class: "cols",
+				visible: true
+			},
+			projects: {
+				class: "flexrows flexanimate",
+				childdefault: prjui,
+				selected: null,
+				builder: function(dom, data, ui) {
+					var u = function() {
+						if (ui.selected == null) dom.addClass("noneselected");
+						else dom.removeClass("noneselected");
+						$.each(dom.ui, function(k, v) {
+							var dui = dom.ui[k];
+							ui.children[k].mode = { true: "active", false: "inactive" }[ui.selected == k];
+							dom.ui[k][{ true: "removeClass", false: "addClass" }[ui.selected == k]]("unselected");
+							if (ui.selected != k) {
+								var dui = dom.ui[k];
+								var dc = function(event) {
+									ui.selected = k;
+									dui.off("click", dc);
 									event.stopPropagation();
 								};
-								dui.on("click",dc);
+								dui.on("click", dc);
 							}
 						});
 					};
-					var install=function(k) {
+					var install = function(k) {
 						if (k instanceof Array) return;
-						ui.children[k].connector={
-							onClick:function() { ui.selected=null; },
-							class:"visibilityanimate hoverhighlight ion-ios-arrow-forward ion-flip-x"
+						ui.children[k].connector = {
+							onClick: function() { ui.selected = null; },
+							class: "visibilityanimate hoverhighlight ion-ios-arrow-forward ion-flip-x"
 						};
-                        ui.children[k].actions={
-                            data:{},
-                            children: {
-                                deleteproject:{
-                                    type:"label",
-                                    label:"delete project",
-                                    class:"button red",
-                                    onClick:function() {
-                                        if (confirm("Really delete this project?")) {
-                                            ui.selected=null;
-                                            data.remove(k);
-                                        }
-                                    }
-                                },
-                            }
-                        };						
+						ui.children[k].actions = {
+							data: {},
+							children: {
+								deleteproject: {
+									type: "label",
+									label: "delete project",
+									class: "button red",
+									onClick: function() {
+										if (confirm("Really delete this project?")) {
+											ui.selected = null;
+											data.remove(k);
+										}
+									}
+								},
+							}
+						};
 						u();
 					};
-					ui.bind("set","selected",u);
-					ui.children.bind("add",install);
-					$.each(ui.children,install);
+					ui.bind("set", "selected", u);
+					ui.children.bind("add", install);
+					$.each(ui.children, install);
 					return function() {
-					    ui.unbind("set",u);
-    					ui.children.unbind("add",install);
+						ui.unbind("set", u);
+						ui.children.unbind("add", install);
 					};
 				}
 			},
-			filler:{type:"label",label:""},
-			connecting:{
-				visible:true,
-				builder(dom,d,u) {
-					var data=Maggi({label:"Connecting..."});
-					var ui={type:"overlay",ui:{
-						type:"object",
-						children:{
-							label:"text"
-						}
-					}};
-					var ui={
-						type:"object",
-						visible:u.visible,
-						children:{
-							label:"text"
+			filler: { type: "label", label: "" },
+			connecting: {
+				visible: true,
+				builder(dom, d, u) {
+					var data = Maggi({ label: "Connecting..." });
+					var ui = {
+						type: "overlay",
+						ui: {
+							type: "object",
+							children: {
+								label: "text"
+							}
 						}
 					};
-					u.bind("set","visible",function(k,v) { ui.visible=v; });
-					return Maggi.UI(dom,data,ui);
+					var ui = {
+						type: "object",
+						visible: u.visible,
+						children: {
+							label: "text"
+						}
+					};
+					u.bind("set", "visible", function(k, v) { ui.visible = v; });
+					return Maggi.UI(dom, data, ui);
 				}
 			}
 		},
-		offline:false,
-		showheader:true,
-		class:"ide rows flexanimate mui-light",
-		builder:function(dom,data,ui) {
-			ui.bind("set","offline",function(k,v) {
-				ui.children.connecting.visible=!v;
+		offline: false,
+		showheader: true,
+		class: "ide rows flexanimate",
+		builder: function(dom, data, ui) {
+			$('html').addClass("mui-light");
+			ui.bind("set", "offline", function(k, v) {
+				ui.children.connecting.visible = !v;
 			});
-			ui.bind("set","showheader",function(k,v) {
-				ui.children.header.visible=v;
+			ui.bind("set", "showheader", function(k, v) {
+				ui.children.header.visible = v;
 			});
-			ui.children.header.children.newproject.add("onClick",function(e) {
-				var sp=sampleprojects.Maggi;
-				if (e.ctrlKey===true) sp=sampleprojects.pwcalc;
-				sp(function(project) {
-					var rev=project.revisions[project.view.revision];
-					var branch=projectfuncs(project).branch(rev);
-					branch();
-					var id;
-					do 
-						id=Math.random().toString(36).substr(2, 10);
-					while (data[id]!=null);
-					data.projects.add(id,project);
+			var gen_unused_id = function() {
+				var id;
+				do
+					id = Math.random().toString(36).substr(2, 10);
+				while (data[id] != null);
+				return id;
+			};
+			var add_project = function(project) {
+				var id = gen_unused_id();
+				data.projects.add(id, project);
+			};
+			ui.children.header.children.newproject.add("onClick", function(e) {
+				makeProjectCreator($('body'), function(prj) {
+					prj(add_project);
 				});
 			});
-			ui.children.projects.bind("set","selected",function(k,v) {
-				if (v!=null) {
+			ui.children.projects.bind("set", "selected", function(k, v) {
+				if (v != null) {
 					dom.addClass("prjselected");
 				} else {
 					dom.removeClass("prjselected");
@@ -139,31 +146,36 @@ var ideui = function() {
 	};
 };
 
-var ide_init = function(m,dom) {
-	m.data={projects:{}};
-	m.data.bind("set","projects",function(k,v) {
+var ide_init = function(m, dom) {
+	m.data = { projects: {} };
+	m.data.bind("set", "projects", function(k, v) {
 		for (i in v) {
-			p=v[i];
-			pp=projectdata(p);
-			v[i]=pp;
+			p = v[i];
+			pp = projectdata(p);
+			v[i] = pp;
 		}
-	});	
-	m.ui=ideui();
+	});
+	m.ui = ideui();
 };
 
-var orderRemove=function(o,k) {
-	var order=toArray(o);
-	order.splice(order.indexOf(k),1);
+var orderRemove = function(o, k) {
+	var order = toArray(o);
+	order.splice(order.indexOf(k), 1);
 	return order;
 };
 
-var orderInsert=function(o,k,i) {
-	var order=toArray(o);
-	order.splice(order.indexOf(k)+1,0,i);
+var orderInsert = function(o, k, i) {
+	var order = toArray(o);
+	order.splice(order.indexOf(k) + 1, 0, i);
 	return order;
 };
 
 var toArray = function(o) {
-	if (o==null) return [];
+	if (o == null) return [];
 	return Object.keys(o).sort().map(function(k) { return o[k]; });
+};
+
+var ide = function(m) {
+	ide_init(m);
+	m.ui.children.connecting.visible = false;
 };

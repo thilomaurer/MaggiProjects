@@ -1,7 +1,6 @@
 
-var main=function() {
-	var dom=$('body');
-	var m=Maggi.UI_devel(dom);
+var main=function(m) {
+
 	ide_init(m);
 	
 	var ddd=new Date();
@@ -47,6 +46,8 @@ sampleprojects.Maggi=function(complete) {
 			project.view.panes.add(1,{fileid:1,mode:"edit"});
 			project.view.panes.add(2,{fileid:1,mode:"preview"});
 			project.view.panes.order=["0","1","2"];
+			project.checkout.branch="master";
+			project.checkout.id="00000000000";
 			complete(project);
 		}
 	);

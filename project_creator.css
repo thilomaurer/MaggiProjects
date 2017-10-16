@@ -1,0 +1,26 @@
+.project_creator {
+	width: 66.6%;
+}
+
+.project_creator>#import>#import {
+	flex: 0 0 auto;
+	padding-left: 20px;
+	padding-right: 20px;
+	border-top-left-radius:0;
+	border-bottom-left-radius:0;
+	margin-left:1px;
+	justify-content:center;
+}
+
+.project_creator>#import #data #url {
+	border-top-right-radius:0;
+}
+
+.project_creator>#import #data #branch {
+	border-bottom-right-radius:0;
+}
+
+.project_creator>#import>#branch {
+	margin-left: 10px;
+}
+

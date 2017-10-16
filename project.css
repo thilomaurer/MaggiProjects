@@ -1,89 +1,90 @@
-.prjjson > * {
-	display:inline-block;
+.prjjson>* {
+	display: inline-block;
 }
 
-.prjjson > #icon > img {
-	height:40px;
-	vertical-align:-11px;
+.prjjson>#icon>img {
+	height: 40px;
+	vertical-align: -11px;
 }
 
-.prjjson > #name {
-	font-size:24px;
-	padding:4px;
+.prjjson>#name {
+	font-size: 24px;
+	padding: 4px;
 }
 
 .prjjson {
 	border-radius: 5px;
-	padding:5px;
+	padding: 5px;
 }
 
+.project #checkout > * {
+	display:inline;
+}
+
+.project #checkout,
 .project #view {
-	padding:5px;
+	padding: 5px;
 	border-radius: 5px;
 }
 
 .project {
-    display: flex;
-    align-items: baseline;    
+	display: flex;
+	align-items: baseline;
 }
 
-.project > #spacer {
-    flex:1 0 0;
+.project>#git_clone>* {
+	display: inline;
 }
 
-.project #view > #revision:before {
-	content: "revision ";
+.project>#git_clone>* {
+	display: inline;
 }
 
-.project #view > #revisions.list .selected {
+.project>#spacer {
+	flex: 1 0 0;
+}
+
+.project #view #revision:before {
+	content:"revision ";
+}
+
+.project #view>#revisions.list .selected {
 	background: #ccf;
 }
 
-.project #revisions #revisions.simplelist {
-    display:flex;
-    flex-direction:column-reverse;
-}
-
-.prj.unselected > .project > #prjjson {
-    pointer-events: none;
+.prj.unselected>.project>#prjjson {
+	pointer-events: none;
 }
 
 .project_info #name {
-	font-size:20px;
+	font-size: 20px;
 }
 
-.revision #branch {
-	float:right;
-}
 
-.revision .input, 
-.revision .button {
-	margin-top:5px;
-}
 
 .project #options.popup {
-	max-width:50%;
+	max-width: 50%;
 }
 
-#options #editor .simplelist > * {
-	margin-left:10px;
+#options #editor .simplelist>* {
+	margin-left: 10px;
 }
 
 #options #editor {
-	margin-left:0px;
-	margin-right:0px;
+	margin-left: 0px;
+	margin-right: 0px;
 }
 
-#options #editor > .label{
-	margin:10px;
+#options #editor>.label {
+	margin: 10px;
 	margin-bottom: 0px;
 }
 
 .labelwrap {
-	align-items:baseline;
+	align-items: baseline;
 }
 
-.labelwrap > #label {
+.labelwrap>#label {
 	flex: 0 0 auto;
-	padding-right:10px;
+	padding-right: 10px;
 }

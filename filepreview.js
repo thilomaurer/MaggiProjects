@@ -3,11 +3,8 @@ var previewui = function(dom, s, sets, ui, onDataChange) {
 	var ElementOfFile;
 	var doc;
 	var head;
-	var builddoc_js = function() {
-		var startidx = s.file.name.lastIndexOf("\/") + 1;
-		var endidx = s.file.name.lastIndexOf(".");
-		var funcname = s.file.name.substring(startidx, endidx);
 
+	var package_json = function() {
 		var pkgFile = childwithkv(s.files, "name", "package.json");
 		if (pkgFile == null) return;
 		var pkgJSON = pkgFile.data;
@@ -16,9 +13,18 @@ var previewui = function(dom, s, sets, ui, onDataChange) {
 			pkg = JSON.parse(pkgJSON);
 		} catch (e) {
 			console.log(e);
-			return;
+			pkg = {};
 		}
-		var projectbase = "projects/" + pkg.name + "/";
+		return pkg;
+	};
+
+	var builddoc_js = function() {
+		var startidx = s.file.name.lastIndexOf("\/") + 1;
+		var endidx = s.file.name.lastIndexOf(".");
+		var funcname = s.file.name.substring(startidx, endidx);
+
+		var pkg = package_json();
+		var projectbase = "projects/" + (pkg?pkg.name:"_null_") + "/";
 
 		var jshtml = "\
 <!DOCTYPE html><html lang=\"en\"><head><title></title><meta charset=\"utf-8\">\
@@ -116,7 +122,16 @@ var previewui = function(dom, s, sets, ui, onDataChange) {
 		x.type = "text/css";
 		x.href = "node_modules/github-markdown-css/github-markdown.css";
 		doc.head.append(x);
-		doc.body.className="markdown-body";
+
+		var b = document.createElement("base");
+		var pkg = package_json();
+		if (pkg && pkg.name) {
+			var projectbase = "projects/" + pkg.name + "/";
+			b.href = projectbase;
+			doc.head.append(b);
+		}
+
+		doc.body.className = "markdown-body";
 		doc.close();
 	};
 
@@ -128,7 +143,7 @@ var previewui = function(dom, s, sets, ui, onDataChange) {
 			"text/html": builddoc_html,
 			"text/markdown": builddoc_md,
 		};
-		var f = types[s.file.type];
+		var f = s.file && types[s.file.type];
 		if (f) f();
 	};
 
@@ -168,7 +183,7 @@ var previewui = function(dom, s, sets, ui, onDataChange) {
 
 	var updateFile = function(file) {
 		var sel, el;
-		if (s.file===file && file.type == "text/markdown") {
+		if (s.file === file && file.type == "text/markdown") {
 			makedocument();
 		}
 		if ((file.type == "text/javascript") || (file.type == "application/javascript")) {

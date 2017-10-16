@@ -11,7 +11,6 @@ npm init myapp -y
 npm install --save-dev maggi-projects
 $(npm bin)/maggi-projects
 ```
-
 Result:
 ```
 SSL key pair created and saved.
@@ -19,4 +18,3 @@ Initializing new db 'Maggi.UI.IDE' from db/Maggi.UI.IDE.json
 Loading db 'Maggi.UI.IDE' from db/Maggi.UI.IDE.json
 Maggi Projects Server https://localhost:8443
 ```
-

@@ -1,0 +1,19 @@
+.command>* {
+	display: inline;
+}
+
+#commands>#activity {
+	margin-right: 4px;
+	display: inline-block;
+	animation: spin 3s linear infinite;
+}
+
+#commands>* {
+	display: inline;
+}
+
+@keyframes spin {
+	100% {
+		transform: rotate(360deg);
+	}
+}

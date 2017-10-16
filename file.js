@@ -108,14 +108,14 @@ var fileui = function() {
 		};
 		datachange(up);
 		up(data);
-	}
+	};
 
 
 	var ui = listitemui();
 	ui.children.removed = { type: "user", user: removed_user };
 	ui.children.details = { type: "label", class: "icon ion-ios-more" };
 	ui.editvisible = false;
-	ui.class+=" file"
+	ui.class+=" file";
 	ui = Maggi(ui);
 	ui.builder = function(dom, data, ui) {
 		var repairfile = function(data) {
@@ -231,7 +231,6 @@ var makeFileEditor = function(dom, file, onDelete, onClose) {
 			delete: { type: "function", class: "left button red", label: "Delete File" },
 		},
 		builder: function(dom, data, ui) {
-			dom.parent().addClass("mui-light");
 			data.bind("set", "upload", function(k, v) {
 				var d = data.data;
 				d.name = v.name;
