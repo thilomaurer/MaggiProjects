@@ -1,4 +1,5 @@
 var listui=function() { 
+	var emptylabel=$("<div>",{id:"emptylabel",text:"no entries"})
 	return { 
 		type:"list",
 		childdefault:listitemui,
@@ -9,14 +10,20 @@ var listui=function() {
 		orderkey:null,
 		builder:function(dom,data,ui) {
 			var empty=(data==null)||(Object.keys(data).length===0);
-			if (empty) dom.text("empty");
+			if (empty) dom.append(emptylabel); else emptylabel.remove();
 			var order=function() {
 				var o=null;
 				var ok=ui.orderkey;
 				if (ok!=null)
 				o=Object.keys(data).sort(function(a,b) {
-					var da=data[a][ok];
-					var db=data[b][ok];
+					var da=data[a];
+					var db=data[b];
+					if (da==null) return false;
+					if (db==null) return true;
+					da=da[ok];
+					db=db[ok];
+					if (da==null) return false;
+					if (db==null) return true;
 					return da.localeCompare(db);
 				});
 				ui.order=o;

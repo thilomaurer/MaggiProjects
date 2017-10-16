@@ -44,8 +44,11 @@
 	background: #ddd;
 }
 
+
+/* header animation */
+
 .ide>#header {
-	flex: 0.00001 0 135px;
+	flex: 0.00001 0 199px;
 	background: linear-gradient(hsla(0, 0%, 0%, 0.2), transparent);
 	display: flex;
 	flex-flow: row;
@@ -56,48 +59,61 @@
 }
 
 .ide>#header>* {
+	align-self: flex-end;
+}
+
+
+/*header itself*/
+
+.ideheader {
+	width: 100%;
+}
+
+.ideheader>* {
 	flex: 1 0 auto;
 }
 
-.ide>#header>#banner {
+.ideheader>#banner {
 	display: flex;
 	justify-content: center;
 }
 
-.ide>#header>#banner>div {
+.ideheader>#banner>div {
 	display: inline-flex;
 	align-items: baseline;
 	padding: 30px;
 }
 
-.ide>#header>#banner .logo img {
+.ideheader>#banner .logo img {
 	height: 70px;
 }
 
-.mui .ide>#header>#banner #title,
-.mui.ide>#header>#banner #title {
+.mui .ideheader>#banner #title,
+.mui.ideheader>#banner #title {
 	font-size: 60px;
 	color: #bbb;
 }
 
-.mui-light .ide>#header>#banner #title,
-.mui-light.ide>#header>#banner #title {
+.mui-light .ideheader>#banner #title,
+.mui-light.ideheader>#banner #title {
 	font-size: 60px;
 	color: #555;
 }
 
-.ide>#header>#newproject>#icon {
+.ideheader>#newproject>#icon {
 	flex: 0 0 auto;
 	font-size: 24px;
 	padding: 4px;
 }
 
-.ide>#header>* {
-	align-self: flex-end;
-}
 
-.ide.prjselected>#header .visibilityanimate,
-.prj.unselected .visibilityanimate {
+/*
+*/
+
+
+/*.ide.prjselected>#header > .visibilityanimate,*/
+
+.prj.unselected .project>.visibilityanimate {
 	visibility: hidden;
 	opacity: 0;
 	transition: opacity 350ms ease, visibility 0s linear 350ms;

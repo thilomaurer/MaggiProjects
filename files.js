@@ -17,15 +17,22 @@ var filesui = function() {
 };
 
 var files = function(m, dom) {
-	m.data = {
-		a: filedata({ name: "file-text", type: "text/plain" }),
-		b: filedata({ name: "file-js", type: "text/javascript" }),
-		d: filedata({ name: "file-markdown", type: "text/markdown" }),
-		c: filedata({ name: "file-html", type: "text/html", removed: true }),
-	};
+	m.data = files.exampledata();
 	m.ui = filesui();
 	m.ui.class += " tablelist";
 	m.ui.children.b.add("enabled", true);
 	m.ui.children.b.enabled = false;
 	$('html').addClass("mui-light");
+};
+
+files.exampledata = function() {
+	var files = {
+		"0": filedata({ name: "file.css", type: "text/css", data: "y { margin:0 }", cursor: { row: 100, column: 0 } }),
+		"1": filedata({ name: "file.js", type: "text/javascript", data: "var x=function(a,b,c,d) { a=1; b=2; };" }),
+		"2": filedata({ name: "file.html", type: "text/html", data: "<HTML><BODY>fsdfsdf</BODY></HTML>" }),
+		"3": filedata({ name: "file.md", type: "text/markdown", data: "**bold** *italic*\n" }),
+		"4": filedata({ name: "file.json", type: "application/json", data: '{ "a":1,\n"b":2}\n', removed: true }),
+		"5": filedata({ name: "file2.md", type: "text/markdown", data: "**bold** test *italic*\n" }),
+	};
+	return files;
 };

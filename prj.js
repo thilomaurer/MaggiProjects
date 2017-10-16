@@ -3,9 +3,9 @@ var prj = function(m, dom) {
 		m.data = project;
 		m.ui = prjui;
 	};
-	sampleprojects.Maggi(apply);
+	project.samples.Maggi(apply);
 	setTimeout(function() {
-		initproject_git({ name: "<nobody>", username: "username", email: "user@localhost" },
+		project.data_from_git({ name: "<nobody>", email: "user@localhost" },
 			"https://github.com/example.git",
 			"master",
 			function(project) {
@@ -13,7 +13,7 @@ var prj = function(m, dom) {
 				//m.data.commands.add(1,{command:"other"})
 				setTimeout(function() {
 					m.data.commands.remove(0);
-				},3000);
+				},5000);
 			});
 	}, 3000);
 	dom.addClass("expand");
@@ -23,7 +23,7 @@ var prj = function(m, dom) {
 var prjui = function() {
 	return {
 		children: {
-			project: projectui,
+			project: project.ui,
 			view: {
 				children: {
 					panes: null

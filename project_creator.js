@@ -2,13 +2,13 @@ var makeProjectCreator = function(dom, result) {
 	var res = function(project) {
 		removeOverlay();
 		result(project);
-	}
+	};
 	var data = Maggi({
 		empty: function() {
-			res(sampleprojects.Maggi);
+			res(project.samples.Maggi);
 		},
 		pwcalc: function() {
-			res(sampleprojects.pwcalc);
+			res(project.samples.pwcalc);
 		},
 		import: {
 			data: {
@@ -16,7 +16,7 @@ var makeProjectCreator = function(dom, result) {
 				branch: "master",
 			},
 			import: function() {
-				var prj = complete => initproject_git({ name: "<nobody>", username: "username", email: "user@localhost" },
+				var prj = complete => project.data_from_git({ name: "<nobody>", username: "username", email: "user@localhost" },
 					data.import.data.url,
 					data.import.data.branch,
 					complete);
@@ -66,4 +66,4 @@ var project_creator = function(m) {
 		console.log(result);
 	});
 	$('html').addClass("mui");
-}
+};

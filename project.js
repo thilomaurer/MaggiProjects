@@ -1,32 +1,51 @@
-var projectdata = function(o) {
+var project = function(m, dom) {
+
+	var recreate = function(p) {
+		p = JSON.parse(JSON.stringify(p));
+		p = Maggi(p);
+		project.revive(p);
+		return p;
+	};
+	var apply = function(p) {
+		//p = recreate(p);
+		m.data = p;
+		m.ui = prjui;
+		/*
+				setTimeout(function() {
+					m.data.history = commithistory.exampledata();
+				}, 10000);
+				*/
+	};
+	//project.samples.Maggi(apply);
+	project.samples.pwcalc(apply);
+	/*
+	project.data_from_git({ name: "<nobody>", email: "user@localhost" },
+		"https://github.com/thilomaurer/MaggiProjects.git",
+		"master",
+		apply);
+*/
+	dom.addClass("expand");
+};
+
+project.data = function(o) {
 	var data = Maggi({
-		revisions: {
-			0: revision.data()
-		},
+		id: null,
+		files: {},
 		freefileid: 0,
 		view: {
-			revision: 0,
 			panes: {
 				order: {}
 			}
 		},
 		commands: {},
-		checkout: {
+		checkedout: {
 			branch: null,
 			id: null
 		},
-		history: {},
-		addfile: function(file) {
-			file = filedata(file);
-			var fileid = data.freefileid++;
-			var revid = data.view.revision;
-			data.revisions[revid].files.add(fileid, file);
-			return fileid;
-		},
+		repo: repo.data(),
 		options: {
 			colorscheme: "auto",
 			user: {
-				username: null,
 				name: null,
 				email: null,
 			},
@@ -66,50 +85,109 @@ var projectdata = function(o) {
 		}
 	});
 	if (o) Maggi.merge(data, o);
+	project.revive(data);
 	return data;
 };
 
-var projectfuncs = function(data) {
-	var project = {
-		addfile: function(file) {
-			file = filedata(file);
-			var fileid = data.freefileid++;
-			var revid = data.view.revision;
-			data.revisions[revid].files.add(fileid, file);
-			return fileid;
-		},
-		branch: function(rev) {
-			return function() {
-				if (rev == null) return;
-				var newid = Object.keys(data.revisions).length;
-				var newrev = revision.data();
-				newrev.revision = newid;
-				newrev.parentrevision = rev.revision;
-				newrev.files = JSON.parse(JSON.stringify(rev.files));
-				data.revisions.add(newid, newrev);
-				data.view.revision = newid;
-				return newid;
-			};
-		},
-		commit: function(rev) {
-			return function() {
-				if (rev == null) return;
-				if (rev.committed) { alert("Error: Revision " + id + " already committed earlier."); return; }
-				rev.completed = new Date().getTime();
-				rev.committer = data.options.user.username;
-				rev.committed = true;
-			};
-		},
-		checkout: function() {
-			return function(parameters) {
-				data.commands.add(0, {
-					command: "git_checkout",
-					parameters: parameters
-				});
-			};
-		}
+project.revive = function(data) {
+	console.log("project.revive");
+	data.options.user.bind("set", "name", (k, v) => { if (data.repo.history[0].id == null) data.repo.history[0].author.name = v; });
+	data.options.user.bind("set", "email", (k, v) => { if (data.repo.history[0].id == null) data.repo.history[0].author.email = v; });
+	Maggi.revive(data, {
+		repo: repo.revive
+	});
+
+	data.addfile = function(file) {
+		file = filedata(file);
+		var fileid = data.freefileid++;
+		data.files.add(fileid, file);
+		return fileid;
 	};
-	return project;
+	data.addcommand = function(cmd) {
+		var ck = Object.keys(data.commands).sort((a, b) => (a - b));
+		var lk = ck.pop() || 0;
+		var key = lk + 1;
+		data.commands.add(key, command.data(cmd));
+		return key;
+	};
+	data.push = function() {
+		data.addcommand({
+			command: "git_push",
+			parameters: {
+//				id: id
+			}
+		});
+	};
+	data.pull = function() {
+		data.addcommand({
+			command: "git_pull",
+			parameters: {
+//				id: id
+			}
+		});
+	};
+	data.branch = function(id, branch) {
+		data.addcommand({
+			command: "git_branch",
+			parameters: {
+				id: id,
+				branch: branch
+			}
+		});
+	};
+	data.commit = function(cc) {
+		var c = commit.data(cc);
+		c.author = { name: data.options.user.name, email: data.options.user.email };
+		data.addcommand({
+			command: "git_commit",
+			parameters: c
+		});
+	};
+	data.clone = function(url, branch, user) {
+		data.addcommand({
+			command: "git_clone",
+			parameters: {
+				url: url,
+				branch: branch,
+				user: user,
+			}
+		});
+	};
+	data.checkout = function(id) {
+		data.addcommand({
+			command: "git_checkout",
+			parameters: {
+				id: id,
+				branch: data.checkedout.branch
+			}
+		});
+	};
+	data.stash = function(id) {
+		var prev_commit = data.repo.history[0];
+		data.commands.add(0, {
+			command: "git_stash",
+			parameters: {
+				author: { name: data.options.user.name, email: data.options.user.email },
+				message: prev_commit.message
+			}
+		});
+	};
+	data.apply_stash = function(index) {
+		data.addcommand({
+			command: "git_apply_stash",
+			parameters: {
+				index: index,
+			}
+		});
+	};
+	data.drop_stash = function(index) {
+		data.addcommand({
+			command: "git_drop_stash",
+			parameters: {
+				index: index,
+			}
+		});
+	};
 };
 
 Maggi.UI.labelwrap = function(dom, data, setdata, ui, onDataChange) {
@@ -131,7 +209,7 @@ Maggi.UI.labelwrap = function(dom, data, setdata, ui, onDataChange) {
 	Maggi.UI(dom, int_data, int_ui);
 };
 
-var projectui = function() {
+project.ui = function() {
 	var colorselectui = {
 		type: "select_OS",
 		choices: {
@@ -197,7 +275,6 @@ var projectui = function() {
 					user: {
 						children: {
 							name: { type: "input", class: "first", placeholder: "Full Name" },
-							username: { type: "input", class: "first", placeholder: "username" },
 							email: { type: "input", kind: "email", placeholder: "email" }
 						}
 					},
@@ -337,86 +414,83 @@ var projectui = function() {
 				}
 			},
 			commands: commands.ui,
-			view: { children: { revision: { type: "text" } }, class: "visibilityanimate hoverhighlight" },
-			revisions: {
-				popup: true,
-				popuptrigger: "view",
-				children: {},
-				selected: null,
-				builder: null,
-				class: "scroll"
-			},
-			checkout: {
+			checkedout: {
 				children: {
 					branch: "text",
 					id: { type: "text", format: ":%s" }
 				},
 				class: "visibilityanimate hoverhighlight"
 			},
-			history: {
+			repo: {
 				popup: true,
-				popuptrigger: "checkout",
+				popuptrigger: "checkedout",
 				children: {},
 				selected: null,
 				builder: null,
 				class: "scroll"
 			},
+			repo: null,
 			spacer: {}
 		},
-		order: ["connector", "prjjson", "prjjson_actions", "commands", "view", "revisions", "checkout", "history", "spacer", "optionsicon", "options"],
+		order: ["connector", "prjjson", "prjjson_actions", "checkedout", "repo", "spacer", "commands", "optionsicon", "options"],
 		class: "project",
 		builder: function(dom, data, ui) {
 			if (data == null) return;
-			var buildRevisionsView = function(dom, d, ui) {
-				var int_data = Maggi({
-					revisions: d,
-				});
-				var int_ui = Maggi({
-					visible: false,
-					children: {
-						revisionsLabel: { type: "label", label: "REVISIONS", class: "listlabel" },
-						revisions: revisionsui(data),
-					}
-				});
-				ui.bind("set", "selected", function(k, v) {
-					int_ui.children.revisions.selected = v;
-				});
-				int_ui.children.revisions.selected = ui.selected;
-				int_ui.children.revisions.bind("set", "selected", function(k, v) {
-					ui.visible = false;
-					ui.selected = v;
-				});
-				return Maggi.UI(dom, int_data, int_ui);
-			};
-
+			/*
 			var buildHistoryView = function(dom, d, ui) {
 				var int_data = Maggi({
 					history: d,
+					stashes: {},
+					branches: { 0: "master" }
 				});
 				var int_ui = Maggi({
-					visible: false,
+					visible: ui.visible,
 					children: {
+						branchLabel: { type: "label", label: "BRANCHES", class: "listlabel" },
+						branches: { childdefault: "text" },
+						stashLabel: { type: "label", label: "STASHES", class: "listlabel" },
+						stashes: commithistory.ui,
 						historyLabel: { type: "label", label: "HISTORY", class: "listlabel" },
 						history: commithistory.ui(data),
 					}
 				});
 				ui.bind("set", "selected", function(k, v) {
-					int_ui.children.history.selected = v;
+					int_ui.children.repo.children.history.selected = v;
 				});
-				int_ui.children.history.selected = ui.selected;
-				int_ui.children.history.bind("set", "selected", function(k, v) {
-					ui.visible = false;
+				int_ui.children.repo.children.history.selected = ui.selected;
+				int_ui.children.repo.children.history.bind("set", "selected", function(k, v) {
 					ui.selected = v;
 				});
 				return Maggi.UI(dom, int_data, int_ui);
 			};
 
-			ui.children.revisions.builder = buildRevisionsView;
 			ui.children.history.builder = buildHistoryView;
-
+			*/
+			ui.children.repo = repo.popupui(data);
+			/*
+			var buildRepoView = function(dom, d, ui) {
+				var int_data = Maggi({
+					repo: d,
+				});
+				var int_ui = Maggi({
+					visible: ui.visible,
+					children: {
+						repo: repo.ui()
+					}
+				});
+				ui.bind("set", "selected", function(k, v) {
+					int_ui.children.repo.children.history.selected = v;
+				});
+				int_ui.children.repo.children.history.selected = ui.selected;
+				int_ui.children.repo.children.history.bind("set", "selected", function(k, v) {
+					ui.selected = v;
+				});
+				return Maggi.UI(dom, int_data, int_ui);
+			};
+			//ui.children.repo.builder = buildRepoView;
+			*/
 			var genprjjsondata = function(cb) {
-				var rev = data.view.revision;
-				var k = childwithkv(data.revisions[rev].files, "name", "package.json");
+				var k = childwithkv(data.files, "name", "package.json");
 				var update = function() {
 					var d;
 					try {
@@ -424,7 +498,7 @@ var projectui = function() {
 						var i = d["Maggi.js"] && d["Maggi.js"].link && d["Maggi.js"].link.icon;
 						d.name = d["Maggi.js"] && d["Maggi.js"].title || d.name;
 						d.icon = i;
-						var files = data.revisions[rev].files;
+						var files = data.files;
 						for (var fidx in files) {
 							var f = files[fidx];
 							if (f.name == i)
@@ -443,25 +517,16 @@ var projectui = function() {
 				u.data = data;
 			});
 
-			var setrevision = function(k, v) { ui.children.revisions.selected = v; };
-			var revsethandler = function(k, v) { data.view.revision = v; };
-			var history_sethandler = function(k, v) {
-				if (v == null) return;
-				var commit = data.history[v];
-				if (commit == null) {
-					console.warn("commit not found",v);
-					return;
-				}
-				data.checkout.id = commit.id;
-				projectfuncs(data).checkout()({
-					id: data.checkout.id,
-					branch: data.checkout.branch
+			var setcoid = function(k) {
+				var id = data.checkedout.id;
+				var e = Object.entries(data.repo.history).find(function(v) {
+					return (v[1].id == id);
 				});
+				if (e) ui.children.repo.children.history.selected = e[0];
 			};
 			var handlers = [
-				[data.view, "set", "revision", setrevision],
-				[ui.children.revisions, "set", "selected", revsethandler],
-				[ui.children.history, "set", "selected", history_sethandler]
+				[data, "set", "checkedout", setcoid],
+				[data, "set", "history", setcoid],
 			];
 
 			return installBindings(handlers);
@@ -470,13 +535,13 @@ var projectui = function() {
 };
 
 
-var childwithkv = function(o, key, name) {
+var childwithkv = function(o, key, value) {
 	for (var k in o)
-		if (name == o[k][key]) return o[k];
+		if (o[k] instanceof Object && value == o[k][key]) return o[k];
 	return null;
 };
 
-var initproject = function(user, sources, complete) {
+project.data_from_files = function(user, sources, complete) {
 
 	var mime = {
 		js: "application/javascript",
@@ -488,12 +553,14 @@ var initproject = function(user, sources, complete) {
 		svg: "image/svg+xml"
 	};
 
-	var data = projectdata();
+	var data = project.data();
 	var rev = 0;
 	data.options.user = user;
 
-	var files = data.revisions[rev].files;
-	data.revisions[rev].message = "start of project";
+	var files = data.files;
+	data.repo.refs.branches = ["master"];
+	data.repo.history.add(0, commit.data({ author: user.name + " <" + user.email + ">" }));
+
 	var nfloaded = 0;
 	$.each(sources, function(idx, k) {
 		var fn = k;
@@ -512,11 +579,7 @@ var initproject = function(user, sources, complete) {
 		}, "text");
 	});
 
-
 	var filesloaded = function() {
-		var r = data.revisions[rev];
-		projectfuncs(data).commit(r)();
-		projectfuncs(data).branch(r)();
 		complete(data);
 	};
 	if (sources.length == 0) {
@@ -525,29 +588,82 @@ var initproject = function(user, sources, complete) {
 	}
 };
 
-var initproject_git = function(user, git_url, git_branch, complete) {
-	var data = projectdata({
-		commands: {
-			0: {
-				command: "git_clone",
-				parameters: { url: git_url, branch: git_branch, user: user }
-			}
-		}
-	});
-	complete(data);
-}
-
-var project = function(m, dom) {
-	var apply = function(project) {
-		m.data = project;
-		m.ui = prjui;
-	};
-	sampleprojects.Maggi(apply);
+project.data_from_git = function(user, git_url, git_branch, complete) {
 	/*
-	initproject_git({ name: "<nobody>", username: "username", email: "user@localhost" },
-		"https://github.com/thilomaurer/MaggiProjects.git",
-		"master",
-		apply);
+		var c = command.data.git_clone();
+		c.parameters.url = git_url;
+		c.parameters.branch = git_branch;
+		c.parameters.user = user;
+
+		//c.parameters.progress={step:100,steps:200};
+
+		var data = project.data({
+			commands: {
+				0: c
+			}
+		});
 		*/
-	dom.addClass("expand");
+	var data = project.data();
+	data.clone(git_url, git_branch, user);
+	complete(data);
+};
+
+
+project.samples = {};
+
+project.samples.Maggi = function(complete) {
+	project.data_from_files({ name: "Example User", email: "user@example.com" }, [
+			["package.json", "demos/empty/project.json"],
+			["main.js", "demos/empty/main.js"],
+			["index.html", "demos/empty/index.html"],
+		],
+		function(project) {
+			project.view.panes.add(0, { mode: "edit", filename: "package.json" });
+			project.view.panes.add(1, { mode: "edit", filename: "main.js" });
+			project.view.panes.add(2, { mode: "preview", filename: "main.js" });
+			project.view.panes.order = ["0", "1", "2"];
+			project.checkedout.branch = "master";
+			project.checkedout.id = null;
+			//project.history[0].author = { name: user.name, email: user.email };
+
+			complete(project);
+		}
+	);
+};
+
+project.samples.pwcalc = function(complete) {
+	project.data_from_files({ name: "Thilo Maurer", email: "tm@thilomaurer.de" }, [
+			["package.json", "demos/pwcalc/project.json"],
+			["README.md", "demos/pwcalc/README.md"],
+			["index.html", "demos/pwcalc/index.html"],
+			["pwcalc.js", "demos/pwcalc/pwcalc.js"],
+			["pwcalc.css", "demos/pwcalc/pwcalc.css"],
+			["utils.js", "demos/pwcalc/utils.js"],
+			["lock.svg", "demos/pwcalc/lock.svg"]
+		],
+		function(project) {
+			project.view.panes.add(0, { mode: "edit", filename: "README.md" });
+			project.view.panes.add(1, { mode: "edit", filename: "pwcalc.js" });
+			project.view.panes.add(2, { mode: "edit", filename: "pwcalc.css" });
+			project.view.panes.add(3, { mode: "preview", filename: "pwcalc.js" });
+			project.view.panes.order = ["0", "1", "2", "3"];
+			var user = project.options.user;
+			project.repo.history.add("1", commit.data({
+				message: "initial commit",
+				author: { name: user.name, email: user.email },
+				date: new Date().getTime(),
+				committed: true,
+				id: "012345789"
+			}));
+			project.repo.history.add("0", commit.data({
+				author: { name: user.name, email: user.email },
+				parent_ids: { 0: 0 },
+			}));
+			project.repo.stashes.add("0", stash.data({ message: "text", id: "fdsfsd", index: "0" }));
+			project.checkedout.branch = "master";
+			project.checkedout.id = null;
+			//project.checkedout.id = project.history[1].id;
+			complete(project);
+		}
+	);
 };

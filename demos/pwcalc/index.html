@@ -20,19 +20,19 @@
 					var el = document.createElement(e);
 					for (var k in attr)
 						el.setAttribute(k, attr[k]);
-					document.getElementsByTagName('head')[0].appendChild(el);
+					document.head.appendChild(el);
 				}
 				getJSON("package.json", function(package) {
-					document.title = package.name;
-					addElement("meta", { name: "author", content: package.author })
 					var pm = package["Maggi.js"];
+					document.title = pm.title || package.name;
+					addElement("meta", { name: "author", content: package.author })
 					for (k in pm.link)
 						if (pm.link[k])
 							addElement("link", { rel: k, href: pm.link[k] });
 					for (k in pm.meta)
 						if (pm.meta[k])
 							addElement("meta", { name: k, content: pm.meta[k] });
-					head.load(package["Maggi.js"].deps, function() {
+					head.load(pm.deps, function() {
 						var dom = $('body');
 						var m = Maggi.UI_devel(dom);
 						main(m);

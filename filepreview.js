@@ -18,18 +18,26 @@ var previewui = function(dom, s, sets, ui, onDataChange) {
 		return pkg;
 	};
 
+	//	var pkg = package_json();
+	var addbasepath = function(html) {
+		parser = new DOMParser();
+		htmlDoc = parser.parseFromString(html, "text/html");
+		var x = document.createElement("base");
+		x.href = ui.basepath;
+		htmlDoc.head.append(x);
+		return htmlDoc.innerHtml;
+	};
+
 	var builddoc_js = function() {
 		var startidx = s.file.name.lastIndexOf("\/") + 1;
 		var endidx = s.file.name.lastIndexOf(".");
 		var funcname = s.file.name.substring(startidx, endidx);
 
-		var pkg = package_json();
-		var projectbase = "projects/" + (pkg?pkg.name:"_null_") + "/";
 
 		var jshtml = "\
 <!DOCTYPE html><html lang=\"en\"><head><title></title><meta charset=\"utf-8\">\
-<base href=\"" + projectbase + "\">\
 <script src=\"node_modules/headjs/dist/1.0.0/head.load.js\"></script>\
+<base href=\"" + ui.basepath + "\">\
 <script type=\"application/javascript\">\
 (function() {\n\
     var getJSON=function(filename,callback) {\n\
@@ -57,6 +65,7 @@ var previewui = function(dom, s, sets, ui, onDataChange) {
 
 		doc.open();
 		doc.write(jshtml);
+
 		head = doc.head;
 		if (s.file && s.file.scope == "client") {
 			if (s.file.type == "text/html") {
@@ -107,31 +116,34 @@ var previewui = function(dom, s, sets, ui, onDataChange) {
 
 	var builddoc_html = function() {
 		var html = s.file.data;
+		parser = new DOMParser();
+		htmlDoc = parser.parseFromString(html, "text/html");
+		var x = document.createElement("base");
+		x.href = ui.basepath;
+		htmlDoc.head.prepend(x);
+		html = htmlDoc.documentElement.innerHTML;
+
 		doc.open();
 		doc.write(html);
 		doc.close();
 	};
 
 	var builddoc_md = function() {
-		var html = marked(s.file.data);
+		var body = marked(s.file.data);
+		var html = `
+			<!DOCTYPE html>
+			<html lang="en">
+				<head>
+					<title></title>
+					<meta charset="utf-8">
+					<base href="${ui.basepath}">
+					<link rel="stylesheet" id="github-markdown" type="text/css" href="node_modules/github-markdown-css/github-markdown.css">
+				</head>
+				<body class="markdown-body">${body}</body>
+			</html>
+		`;
 		doc.open();
 		doc.write(html);
-		var x = document.createElement("link");
-		x.rel = "stylesheet";
-		x.id = "github-markdown";
-		x.type = "text/css";
-		x.href = "node_modules/github-markdown-css/github-markdown.css";
-		doc.head.append(x);
-
-		var b = document.createElement("base");
-		var pkg = package_json();
-		if (pkg && pkg.name) {
-			var projectbase = "projects/" + pkg.name + "/";
-			b.href = projectbase;
-			doc.head.append(b);
-		}
-
-		doc.body.className = "markdown-body";
 		doc.close();
 	};
 
@@ -151,6 +163,10 @@ var previewui = function(dom, s, sets, ui, onDataChange) {
 	var to = function() {
 		var now = new Date().getTime();
 		var make = (maketime <= now);
+		var bb = function() {
+			doc = w.document;
+			builddoc();
+		};
 		if (make) {
 			if (iframe) {
 				iframe[0].contentWindow.stop();
@@ -163,13 +179,16 @@ var previewui = function(dom, s, sets, ui, onDataChange) {
 			}
 			if (s.detach) {
 				w = window.open();
+				bb();
 			} else {
 				iframe = $('<iframe>', { name: s.name }).appendTo(dom);
-				w = iframe[0].contentWindow;
+				w = null;
+				setTimeout(function() {
+					w = iframe[0].contentWindow;
+					bb();
+				});
 			}
 			detached = s.detach;
-			doc = w.document;
-			builddoc();
 		}
 	};
 
@@ -207,7 +226,6 @@ var previewui = function(dom, s, sets, ui, onDataChange) {
 			ElementOfFile[file.name].innerHTML = file.data;
 		}
 	};
-
 	var sethandler = function(k, v) {
 		if (k == "reload") to();
 		if (k == "detach") to();

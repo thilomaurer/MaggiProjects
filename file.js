@@ -3,7 +3,7 @@ var file = function(m, dom) {
 	m.ui = fileui();
 	m.ui.add("enabled", true);
 	m.ui.enabled = false;
-	m.ui.class += " mui-light";
+	//$("html").addClass("mui");
 };
 
 
@@ -113,8 +113,9 @@ var fileui = function() {
 
 	var ui = listitemui();
 	ui.children.removed = { type: "user", user: removed_user };
-	ui.children.details = { type: "label", class: "icon ion-ios-more" };
+	ui.children.details = { type: "label", class: "icon ion-ios-more", visible:true };
 	ui.editvisible = false;
+	ui.mode="";
 	ui.class+=" file";
 	ui = Maggi(ui);
 	ui.builder = function(dom, data, ui) {

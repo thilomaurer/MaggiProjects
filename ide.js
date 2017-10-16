@@ -1,31 +1,37 @@
+var ideheader = function() {
+	return {
+		wrap: true,
+		data: {
+			banner: {
+				logo: "node_modules/Maggi.js/Maggi.js.svg",
+				title: "aggi Projects",
+			},
+			newproject: { icon: "", name: "Create new Project..." }
+		},
+		children: {
+			banner: {
+				wrap: true,
+				children: {
+					logo: { type: "image", class: "logo" },
+					title: { type: "text" }
+				},
+				class: "visibilityanimate"
+			},
+			newproject: {
+				children: { icon: { class: "ion-md-add ion-lg" }, name: "text" },
+				class: "visibilityanimate prjjson hoverhighlight"
+			}
+		},
+		class: "ideheader",
+		//class: "cols",
+		visible: true
+	};
+};
+
 var ideui = function() {
 	return {
 		children: {
-			header: {
-				data: {
-					banner: {
-						logo: "node_modules/Maggi.js/Maggi.js.svg",
-						title: "aggi Projects",
-					},
-					newproject: { icon: "", name: "Create new Project..." }
-				},
-				children: {
-					newproject: {
-						children: { icon: { class: "ion-md-add ion-lg" }, name: "text" },
-						class: "visibilityanimate prjjson hoverhighlight"
-					},
-					banner: {
-						wrap: true,
-						children: {
-							logo: { type: "image", class: "logo" },
-							title: { type: "text" }
-						},
-						class: "visibilityanimate"
-					}
-				},
-				class: "cols",
-				visible: true
-			},
+			header: ideheader,
 			projects: {
 				class: "flexrows flexanimate",
 				childdefault: prjui,
@@ -112,7 +118,8 @@ var ideui = function() {
 		showheader: true,
 		class: "ide rows flexanimate",
 		builder: function(dom, data, ui) {
-			$('html').addClass("mui-light");
+			if (!($('html').hasClass("mui")||$('html').hasClass("mui-light")))
+				$('html').addClass("mui-light");
 			ui.bind("set", "offline", function(k, v) {
 				ui.children.connecting.visible = !v;
 			});
@@ -128,6 +135,7 @@ var ideui = function() {
 			};
 			var add_project = function(project) {
 				var id = gen_unused_id();
+				project.id = id;
 				data.projects.add(id, project);
 			};
 			ui.children.header.children.newproject.add("onClick", function(e) {
@@ -147,13 +155,21 @@ var ideui = function() {
 };
 
 var ide_init = function(m, dom) {
+	
 	m.data = { projects: {} };
+	/*
 	m.data.bind("set", "projects", function(k, v) {
+		console.log(k);
 		for (i in v) {
 			p = v[i];
 			pp = projectdata(p);
 			v[i] = pp;
 		}
+	});
+	*/
+	m.bind("set","data",function(k,v) {
+		if (k instanceof Array) return;
+		ide.revive(v);
 	});
 	m.ui = ideui();
 };
@@ -178,4 +194,22 @@ var toArray = function(o) {
 var ide = function(m) {
 	ide_init(m);
 	m.ui.children.connecting.visible = false;
+};
+
+ide.revive = function(data) {
+	console.log("ide.revive");
+	Maggi.revive(data, {
+		"projects": projects.revive
+	});
+	data.bind("add","projects",function(k,v) {
+		projects.revive(v);	
+	});
+};
+
+var projects = {};
+projects.revive = function(data) {
+	console.log("projects.revive");
+	Maggi.revive(data, {
+		"": project.revive
+	});
 };

@@ -36,3 +36,8 @@
 	padding-left: 10px;
 	padding-right: 10px;
 }
+
+.list #emptylabel {
+	color:gray;
+	text-align:center;
+}

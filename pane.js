@@ -1,8 +1,9 @@
 var panedata = function() {
 	var files = Maggi({});
-	var f = { name: "<unnamed>", type: "text", data: "", cursor: { row: 0, column: 0 } };
+	var f = { name: undefined, type: undefined, data: "", cursor: { row: 0, column: 0 } };
 	var p = Maggi({
 		file: f,
+		filename: f.name,
 		files: files,
 		addfile: null,
 		mode: "edit",
@@ -30,51 +31,8 @@ var panedata = function() {
 };
 
 var buildFilesEdit = function(dom, data, ui) {
-	var int_data = Maggi({
-		files: data,
-		actions: {
-			adder: { type: "class:ion-md-add", name: "Add File..." }
-		},
-	});
-	var int_ui = {
-		visible: false,
-		children: {
-			actions: listui(),
-			filesLabel: { type: "label", label: "FILES", class: "listlabel" },
-			files: filesui(),
-		},
-		builder: function(dom, int_data, int_ui) {
-			int_ui.children.actions.children.adder.add("enabled", true);
-			int_ui.children.actions.children.adder.enabled = false;
-			ui.add("addfile", null);
-
-			var setaddfile = function(k, v) {
-				int_ui.children.actions.children.adder.enabled = (v != null);
-			};
-			var setselectedaction = function(k, v) {
-				if (v == "adder") {
-					var filekey = ui.addfile({ name: "" });
-					int_ui.children.files.children[filekey].editvisible = true;
-				}
-				int_ui.children.actions.selected = null;
-			};
-			var setselectedfile = function(k, v) {
-				var openfile = function(file) {
-					if (file.type != "directory") {
-						ui.selected = v;
-						ui.visible = false;
-					}
-				};
-				if (v != null) openfile(v);
-			};
-			var handlers = [
-				[ui, "set", "addfile", setaddfile],
-				[int_ui.children.actions, "set", "selected", setselectedaction],
-				[int_ui.children.files, "set", "selected", setselectedfile]
-			];
-			return installBindings(handlers);
-		}
-	};
+	int_data = Maggi(files_editor.data(data));
+	int_ui = files_editor.ui(ui);
 	return Maggi.UI(dom, int_data, int_ui);
 };
 
@@ -117,16 +75,18 @@ var paneuiheader = function() {
 			},
 			spacer: { type: "label" }
 		},
-		order: ["file", "files", "spacer", "editor_actions", "preview_actions", "mode", "preview", "options", "actions"],
+		order: ["filename", "file", "files", "spacer", "editor_actions", "preview_actions", "mode", "preview", "options", "actions"],
 		class: "paneheader",
 		builder: function(dom, data, ui) {
 			if (data == null) return;
+
 			var setaddfile = function(k, v) {
 				ui.children.files.addfile = data.addfile;
 			};
 			var updateFile = function() {
 				var v = ui.children.files.selected;
-				data.file = data.files[v];
+				if (parseInt(v) >= 0)
+					data.filename = (data.files[v] && data.files[v].name) || undefined;
 			};
 			dom.ui.actions.ui.closepane.click(function() {
 				ui.children.actions.visible = false;
@@ -166,10 +126,10 @@ var paneuiheader = function() {
 			};
 			var previewTypes = ["text/javascript", "application/javascript", "text/html", "text/markdown"];
 			var updateModeVis = function(k, v) {
-				var canpreview = v && v.can_preview();
+				var canpreview = v ? v.can_preview() : false;
 				ui.children.preview.visible = canpreview;
 				if (canpreview === false) data.mode = "edit";
-				ui.children.editor_actions.children.beautify.visible = v && v.can_beautify();
+				ui.children.editor_actions.children.beautify.visible = v ? v.can_beautify() : false;
 			};
 			var updateRO = function(k, v) {
 				var editlabel = "edit";
@@ -218,13 +178,15 @@ var paneui = function() {
 		children: {
 			header: paneuiheader(),
 			preview: { type: "user", user: previewui, class: "flexrows" },
-			edit: { type: "editor", class: "flexrows", readonly: false, settings: { colorscheme: { day: "maggiui" }, editing: { useSoftTabs: false, displayIndentGuides: true, showInvisibles: true } } }
+			edit: { type: "editor", class: "flexrows", readonly: false, settings: { colorscheme: { day: "maggiui" }, editing: { useSoftTabs: false, displayIndentGuides: true, showInvisibles: true } } },
+			empty: { type: "label", label: "no file selected" }
 		},
+		projectid: null,
 		order: ["header", "edit"],
 		class: "pane flexrows",
 		builder: function(dom, data, ui) {
-			ui.children.header.add("data", data);
 			var updateMode = function(k, v) {
+				if (data.file == null) v = "empty";
 				ui.order = ["header", v];
 			};
 			var updateRO = function(k, v) {
@@ -234,32 +196,44 @@ var paneui = function() {
 				ui.children.header.visible = v;
 			};
 			var updateFile = function(k, v) {
-				data.preview.file = v;
-				data.edit.file = v;
+				var filename = data.filename;
+				var fileid = Object.values(data.files).findIndex(file => file.name == filename);
+				var f = data.files[fileid];
+				data.file = f;
+				data.preview.file = f;
+				data.edit.file = f;
+				updateMode("mode", data.mode);
+			};
+			var upid = function(k, v) {
+				ui.children.preview.basepath = "projects/" + v + "/";
 			};
 			var handlers = [
-				[data, "set", "file", updateFile],
+				[ui, "set", "projectid", upid],
+				[data, "set", "files", updateFile],
+				[data, "set", "filename", updateFile],
 				[data, "set", "mode", updateMode],
 				[data, "set", "readonly", updateRO],
 				[data, "set", "showcontrols", updateSH]
 			];
-			return installBindings(handlers);
+			var ppp = installBindings(handlers);
+			ui.children.header.add("data", data);
+			return ppp;
 		}
 	};
 };
 
 var pane = function(m, dom) {
 	m.data = panedata();
-	m.data.files.add("0", filedata({ name: "file.css", type: "text/css", data: "y { margin:0 }", cursor: { row: 100, column: 0 } }));
-	m.data.files.add("1", filedata({ name: "file.js", type: "text/javascript", data: "var x=function(a,b,c,d) { a=1; b=2; };" }));
-	m.data.files.add("2", filedata({ name: "file.html", type: "text/html", data: "<HTML><BODY>fsdfsdf</BODY></HTML>" }));
-	m.data.files.add("3", filedata({ name: "file.md", type: "text/markdown", data: "**bold** *italic*\n" }));
-	m.data.files.add("4", filedata({ name: "file.json", type: "application/json", data: '{ "a":1,\n"b":2}\n' }));
-	/*
-	for (i = 3; i < 50; i++)
-		m.data.files.add(i, filedata({ name: "file" + i + ".html", type: "text/html", data: "fsdfsdf" }));
-	*/
+	m.data.files = files.exampledata();
+
 	m.ui = paneui();
-	m.ui.children.header.children.files.selected = 4;
-	dom.addClass("mui expand");
+
+	m.data.filename = "file.css";
+	$("html").addClass("mui");
+	dom.addClass("expand");
+	return;
+	setTimeout(function() {
+		m.data.files = {};
+		console.log(m.data);
+	}, 1000);
 };

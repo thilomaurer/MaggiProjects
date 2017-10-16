@@ -17,11 +17,12 @@
 	padding: 5px;
 }
 
-.project #checkout > * {
+.project #checkedout > * {
 	display:inline;
 }
 
-.project #checkout,
+.project #commands,
+.project #checkedout,
 .project #view {
 	padding: 5px;
 	border-radius: 5px;

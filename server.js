@@ -6,6 +6,7 @@ var http = require('http'),
 	https = require('https'),
 	zlib = require('zlib'),
 	fs = require('fs'),
+	fse = require('fs-extra'),
 	pem = require('pem'),
 	mime = require('mime'),
 	Maggi = require('Maggi.js'),
@@ -23,6 +24,8 @@ var http = require('http'),
 	serverURL = "https://localhost:" + secureport,
 	parent_node_modules = fs.existsSync(__dirname + "/../../node_modules");
 
+Object.values || require('object.values').shim();
+Object.entries || require('object.entries').shim();
 
 function httpHandler(req, res) {
 	if (log.HTTP) console.log("GET", req.url);
@@ -65,14 +68,14 @@ function httpHandler(req, res) {
 	});
 }
 
-var getRevisionManifest = function(revision) {
+var getProjectManifest = function(project) {
 	var childwithkv = function(o, key, name) {
 		for (var k in o)
 			if (name == o[k][key]) return o[k];
 		return null;
 	};
 
-	var k = childwithkv(revision.files, "name", "package.json");
+	var k = childwithkv(project.files, "name", "package.json");
 	var d = null;
 	try {
 		d = JSON.parse(k.data);
@@ -82,50 +85,131 @@ var getRevisionManifest = function(revision) {
 	return d;
 };
 
-var exportRevision = function(revision) {
-	var d = getRevisionManifest(revision);
-	if (d === null) return;
-	var revname = d.name;
-	if (revname === "") {
-		console.warn("unable to export project revision with empty name");
-		return;
-	}
-	for (var k in revision.files) {
-		var file = revision.files[k];
-		var fp = __dirname + "/projects/" + revname + "/" + file.name;
-		writefile(fp, file.data, file.enc);
-	}
+var exportProjectFiles = function(p, ext) {
+	var dir = project_path(p);
+	if (ext) dir += ext;
+	return Promise.all(Object.values(p.files).map(function(file) {
+		if (file === null) return;
+		return fse.outputFile(dir + "/" + file.name, file.data, file.enc);
+	}));
 };
 
-var git_read_history = function(repo, project) {
-	repo.getMasterCommit().then(function(firstCommitOnMaster) {
-		var history = firstCommitOnMaster.history(git.Revwalk.SORT.Time);
-		var commits = [];
-		history.on("commit", function(commit) {
+var git_read_repo = function(repo, project) {
+	var s = git_read_stashes(repo).then(function(stashes) {
+		project.repo.stashes = stashes;
+	});
+	var r = git_read_refs(repo).then(function(refs) {
+		project.repo.refs = {
+			branches: refs.branches.map(r => r.sh),
+			tags: refs.tags.map(r => r.sh),
+			notes: refs.notes.map(r => r.sh),
+		};
+	});
+	var h = git_read_history(repo)
+		.then(function(commits) {
 			var c = {
-				id: commit.sha(),
-				author: commit.author().name() + " <" + commit.author().email() + ">",
-				date: new Date(commit.date()).getTime(),
-				message: commit.message(),
-				parent_ids: commit.parents().toString(),
-				committed: true
+				id: null,
+				author: { name: project.options.user.name, email: project.options.user.email },
+				date: null,
+				message: null,
+				parent_ids: {},
+				committed: false,
+				tags: {}
 			};
+			commits.unshift(c);
+			project.repo.history = commits;
+		});
+	return Promise.all([s, r, h]);
+};
+
+var git_read_stashes = function(repo, project) {
+	var stashes = [];
+	var stashCb = function(index, message, oid) {
+		stashes.push({ index: index, message: message, id: oid.tostrS() });
+	};
+
+	return git.Stash.foreach(repo, stashCb).then(function() {
+		return stashes;
+	});
+};
+
+var commit_history = function(commit) {
+	return new Promise((resolve, reject) => {
+		var eventEmitter = commit.history(git.Revwalk.SORT.Time);
+		var commits = [];
+		eventEmitter.on("commit", function(c) {
 			commits.push(c);
 		});
-		history.on("end", function() {
-			project.history = commits;
+		eventEmitter.on("end", function() {
+			resolve(commits);
 		});
-		history.start();
+		eventEmitter.on('error', reject);
+		eventEmitter.start();
 	});
-	var type = git.Reference.TYPE.SYMBOLIC;
-	repo.getReferenceNames(type).then(function(arrayString) {
-		console.log(arrayString);
-	});
+};
+
+var git_read_refs = function(repo) {
+
+	var type = git.Reference.TYPE.OID;
+	return repo.getReferences(type)
+		.then(function(refs) {
+			var refs = refs.map(function(r) {
+				return {
+					str: r.toString(),
+					target: r.target(),
+					targetid: r.target().tostrS(),
+					name: r.name(),
+					sh: r.shorthand(),
+					isConcrete: r.isConcrete(),
+					isSymbolic: r.isSymbolic(),
+					isBranch: r.isBranch(),
+					isTag: r.isTag(),
+					isHead: r.isHead(),
+					isNote: r.isNote(),
+					isRemote: r.isRemote(),
+					isValid: r.isValid()
+				};
+			});
+			return {
+				branches: refs.filter(r => r.isBranch),
+				tags: refs.filter(r => r.isTag),
+				remotes: refs.filter(r => r.isRemote),
+				notes: refs.filter(r => r.isNote),
+				heads: refs.filter(r => r.isHead),
+				//				tagbyid: tags.reduce(function(acc, r) { acc[r.target().tostrS()] = r.shorthand(); return acc; }, {}),
+			};
+		});
+};
+
+var git_read_history = function(repo) {
+
+	var type = git.Reference.TYPE.OID;
+	var refs;
+	return repo.getReferences(type)
+		.then(function(r) {
+			refs = r;
+			return repo.getMasterCommit();
+		})
+		.then(commit_history)
+		.then(function(commits) {
+			return commits.map(function(commit) {
+				var id = commit.sha();
+				return {
+					id: id,
+					author: { name: commit.author().name(), email: commit.author().email() },
+					date: new Date(commit.date()).getTime(),
+					message: commit.message(),
+					parent_ids: commit.parents().toString(),
+					committed: true,
+					tags: refs.filter(r => (r.target().tostrS() == id)).map(r => r.shorthand())
+				};
+			});
+		});
 };
 
 var git_import_commit = function(commit) {
 
-	var getFile = function(e) {
+	const getFile = function(e) {
 		var mime = {
 			js: "application/javascript",
 			html: "text/html",
@@ -155,253 +239,338 @@ var git_import_commit = function(commit) {
 		if (e.isTree()) {
 			return e.getTree().then(getDirectory);
 		}
-		console.log("unknown entry: " + e.path());
-		return null;
+		if (e.isSubmodule()) {
+			/*
+			e.toObject(commit.repo).then(function(o) {
+				console.log(o, o.url && o.url());
+			});
+			*/
+			return {
+				name: e.path(),
+				type: "submodule",
+				data: null,
+				cursor: { row: 0, column: 0 },
+				removed: false
+			};
+		}
+		var msg = "unknown entry: " + e.path();
+		console.warn(msg);
+		return { name: msg };
 	};
-	var flatten = arrays => [].concat.apply([], arrays);
-	var getDirectory = tree => Promise.all(tree.entries().map(getFile));
 
+	const flatten = arrays => [].concat.apply([], arrays);
+	const deepflatten = array => flatten(array.map(a => a instanceof Array ? deepflatten(a) : a));
+	const getDirectory = tree => Promise.all(tree.entries().map(getFile));
 
-	var project = projectdata();
-	var rev = project.revisions[0];
-	project.revisions.remove(0);
-
-	//project.checkout.branch = branch;
-	project.checkout.id = commit.sha();
-
-	rev.message = commit.message();
-	rev.committer = commit.committer().name();
-	rev.completed = commit.committer().when().time() * 1000;
-	rev.committed = true;
-	rev.revision = commit.sha();
-	rev.parentrevision = commit.parents().toString();
 	return commit.getTree()
 		.then(getDirectory)
-		.then(function(files) {
-			files = flatten(files);
-			rev.files = files;
-			project.freefileid = files.length;
-			project.revisions.add(rev.revision, rev);
-			projectfuncs(project).branch(rev)();
-			var fileid = files.findIndex(f => f.name.match(/readme\.md/i)) || 0;
-			var panes = project.view.panes;
-			panes.add(0, { fileid: fileid, mode: "edit" });
-			panes.add(1, { fileid: fileid, mode: "preview" });
-			panes.order = ["0", "1"];
-			return project;
-		});
-}
+		.then(deepflatten);
+};
 
 
-var git_clone = function(options, project_handle) {
+var git_clone = function(options, project) {
 	var url = options.url;
 	var branch = options.branch;
-	var dir = "projects/" + project_handle + ".git";
+	var dir = project_git_path(project);
 	console.log("Adding project via git clone from branch " + branch + " of repo " + url);
 
-	var repo;
-	return git.Clone(url, dir, { checkoutBranch: branch })
+	var cloneoptions = new git.CloneOptions();
+	var progress = options.progress;
+	if (progress) {
+		cloneoptions.fetchOpts.callbacks.transferProgress = function(tp) {
+			progress.step = tp.receivedObjects() + tp.indexedObjects();
+			progress.steps = tp.totalObjects() * 2;
+		};
+	}
+	cloneoptions.checkoutBranch = branch;
+	cloneoptions.fetchOpts.callbacks.credentials = function(url, userName) {
+		return git.Cred.sshKeyFromAgent(userName);
+	};
+	//cloneoptions.bare = 1;
+
+	var repo, commit;
+	return git.Clone(url, dir, cloneoptions)
 		.then(function(r) {
 			repo = r;
-			//repo.setIdent(options.user.name, options.user.email);
 			return repo.getHeadCommit();
 		})
-		.then(git_import_commit)
-		.then(function(project) {
-			git_read_history(repo, project);
-			return project;
+		.then(function(c) {
+			commit = c;
+			return c;
 		})
-		.catch(function(error) {
-			console.error(error);
+		.then(git_import_commit)
+		.then(function(files) {
+			project.checkedout = {
+				branch: branch,
+				id: null
+			};
+			project.freefileid = files.length;
+			project.files = files;
+			git_read_repo(repo, project).catch(function(error) {
+				console.error(error);
+			});
+
+			var fileid = files.findIndex(f => f.name.match(/readme\.md/i)) || 0;
+			var filename = files[fileid].name;
+			project.view.panes = {
+				0: { filename: filename, mode: "edit" },
+				1: { filename: filename, mode: "preview" },
+				order: ["0", "1"]
+			};
+			return project;
 		});
 };
 
-var git_checkout = function(options, project_handle) {
+var git_checkout = function(options, project) {
 	var id = options.id;
 	var branch = options.branch;
-	var dir = "projects/" + project_handle + ".git";
+	var dir = project_git_path(project);
 	console.log("Loading project via git checkout from branch " + branch + " of commit " + id);
 
+	var repo, commit;
 	return git.Repository.open(dir)
 		.then(function(r) {
 			repo = r;
-			//repo.setIdent(options.user.name, options.user.email);
 			return repo.getCommit(id);
 		})
-		.then(git_import_commit)
-		.then(function(project) {
-			git_read_history(repo, project);
-			return project;
+		.then(function(c) {
+			commit = c;
+			return c;
 		})
-		.catch(function(error) {
-			console.error(error);
+		.then(git_import_commit)
+		.then(function(files) {
+			project.checkedout = { branch: branch, id: commit.sha() };
+			project.freefileid = files.length;
+			project.files = files;
+			return project;
 		});
 };
 
+var git_push = function(options, project) {
+	var dir = project_git_path(project);
+	console.log("Pushing repo to server");
 
-var revision = function() {
-	var data = Maggi({
-		revision: 0,
-		started: new Date(),
-		completed: null,
-		committer: null,
-		committed: false,
-		parentrevision: null,
-		message: null,
-		files: []
-	});
-	return data;
-};
+	var branch = "master";
+	if (!branch.startsWith('refs/')) {
+		branch = 'refs/heads/' + branch;
+	}
+	var refSpecs = [branch + ":" + branch];
 
-var projectdata = function(o) {
-	var data = Maggi({
-		revisions: {
-			0: revision()
-		},
-		freefileid: 0,
-		view: {
-			revision: 0,
-			panes: {
-				order: {}
-			}
-		},
-		commands: {},
-		checkout: {
-			branch: "master",
-			id: "00000"
-		},
-		history: {
-
-		},
-		addfile: function(file) {
-			file = filedata(file);
-			var fileid = data.freefileid++;
-			var revid = data.view.revision;
-			data.revisions[revid].files.add(fileid, file);
-			return fileid;
-		},
-		options: {
-			colorscheme: "auto",
-			user: {
-				username: null,
-				name: null,
-				email: null,
-			},
-			editor: {
-				colorscheme: {
-					day: "maggiui",
-					night: "maggiui"
-				},
-				gutter: {
-					showGutter: true,
-					fixedWidthGutter: true,
-					highlightGutterLine: true,
-					showLineNumbers: true,
-				},
-				ui: {
-					animatedScroll: false,
-					hScrollBarAlwaysVisible: false,
-					vScrollBarAlwaysVisible: false,
-					showPrintMargin: false,
-					printMarginColumn: 80,
-					fadeFoldWidgets: false,
-					showFoldWidgets: true,
-					scrollPastEnd: true,
-					highlightActiveLine: true,
-					highlightSelectedWord: true,
-				},
-				editing: {
-					showInvisibles: false,
-					displayIndentGuides: true,
-					useSoftTabs: false,
-					tabSize: 4,
-					cursorStyle: "ace",
-					selectionStyle: "line",
-					keyboard: "gui"
+	var repo, commit;
+	return git.Repository.open(dir)
+		.then(function(repo) {
+			return repo.getRemote("origin");
+		})
+		.then(function(remote) {
+			return remote.push(
+				refSpecs, {
+					callbacks: {
+						credentials: function(url, userName) {
+							return git.Cred.sshKeyFromAgent(userName);
+						}
+					}
 				}
-			}
-		}
-	});
-	if (o) Maggi.merge(data, o);
-	return data;
+			);
+		})
 };
 
-var projectfuncs = function(data) {
-	var project = {
-		addfile: function(file) {
-			file = filedata(file);
-			var fileid = data.freefileid++;
-			var revid = data.view.revision;
-			data.revisions[revid].files.add(fileid, file);
-			return fileid;
-		},
-		branch: function(rev) {
-			return function() {
-				if (rev == null) return;
-				var newid = Object.keys(data.revisions).length;
-				var newrev = revision();
-				newrev.revision = newid;
-				newrev.parentrevision = rev.revision;
-				newrev.files = JSON.parse(JSON.stringify(rev.files));
-				data.revisions.add(newid, newrev);
-				data.view.revision = newid;
-				return newid;
-			};
-		},
-		commit: function(rev) {
-			return function() {
-				if (rev == null) return;
-				if (rev.committed) { alert("Error: Revision " + id + " already committed earlier."); return; }
-				rev.completed = new Date();
-				rev.committer = data.options.user.username;
-				rev.committed = true;
-			};
-		}
-	};
-	return project;
+var git_pull = function(options, project) {
+	var dir = project_git_path(project);
+	console.log("Pulling repo from server");
+
+	var branch = "master";
+	if (!branch.startsWith('refs/')) {
+		branch = 'refs/heads/' + branch;
+	}
+	return new Promise((resolve, reject) => reject("not implemented"));
 };
 
+var project_path = function(project) {
+	return __dirname + "/projects/" + project.id;
+};
 
-var run_project = function(project, p) {
+var project_git_path = function(project) {
+	return project_path(project) + ".git";
+};
 
-	var exec_command = function(cmd) {
-		if (cmd == null) return;
-		if (cmd.command == "git_clone")
-			git_clone(cmd.parameters, p).then(function(project) {
-				db.data.projects[p] = project;
-			});
-		if (cmd.command == "git_checkout")
-			git_checkout(cmd.parameters, p).then(function(project) {
-				db.data.projects[p] = project;
-			});
+var git_commit = function(options, project) {
+	console.log("Committing project via git");
+
+	var branch = "master";
+	if (!branch.startsWith('refs/')) {
+		branch = 'refs/heads/' + branch;
+	}
+	var repo, headCommit, tree, treebuilder;
+
+	var dir = project_git_path(project);
+	return git.Repository.open(dir)
+		.then(function(r) {
+			repo = r;
+			return repo.getBranchCommit(branch);
+		})
+		.then(function(commit) {
+			headCommit = commit;
+			return commit.getTree();
+		})
+		.then(function(t) {
+			tree = t;
+			return git.Treebuilder.create(repo, tree);
+		})
+		.then(function(tb) {
+			treebuilder = tb;
+			return Promise.all(Object.values(project.files).map(function(file) {
+				var buffer = Buffer.from(file.data, file.enc);
+				return git.Blob.createFromBuffer(repo, buffer, buffer.length)
+					.then(function(oid) {
+						return treebuilder.insert(file.name, oid, 33188);
+					});
+			}));
+		})
+		.then(function() {
+			var indexTreeId = treebuilder.write();
+			var author = git.Signature.now(options.author.name, options.author.email);
+			var committer = author;
+			return repo.createCommit(branch, author, committer, options.message, indexTreeId, [headCommit]);
+		})
+		.then(function(commitId) {
+			return git_read_repo(repo, project);
+		});
+};
+
+var git_stash = function(options, project) {
+	console.log("Stashing changes via git");
+
+	var branch = "master";
+
+	var repo, headCommit, tree, treebuilder;
+
+	var dir = project_git_path(project);
+	return git.Repository.open(dir)
+		.then(function(r) {
+			repo = r;
+			return exportProjectFiles(project, ".git")
+		}).then(function() {
+			var stasher = git.Signature.now(options.author.name, options.author.email);
+			var flags = 0;
+			return git.Stash.save(repo, stasher, options.message, flags);
+		})
+		.then(function(commitId) {
+			return repo.getHeadCommit();
+		})
+		.then(git_import_commit)
+		.then(function(files) {
+			project.checkedout = {
+				branch: branch,
+				id: null
+			};
+			project.freefileid = files.length;
+			project.files = files;
+			return git_read_repo(repo, project);
+		});
+};
+
+var git_drop_stash = function(options, project) {
+	var index = options.index;
+	console.log("Dropping stash " + index + " via git");
+
+	var repo;
+	var dir = project_git_path(project);
+	return git.Repository.open(dir)
+		.then(function(r) {
+			repo = r;
+			return git.Stash.drop(repo, index);
+		})
+		.then(function(result) {
+			return git_read_repo(repo, project);
+		});
+};
+
+var git_apply_stash = function(options, project) {
+	var index = options.index;
+	console.log("Applying stash " + index + " via git");
+
+	var repo;
+	var dir = project_git_path(project);
+	return git.Repository.open(dir)
+		.then(function(r) {
+			repo = r;
+			return git.Stash.apply(repo, index);
+		})
+		.then(function(result) {
+			return git_read_repo(repo, project);
+		});
+};
+
+var run_project = function(key, project) {
+	if (key instanceof Array) return;
+
+	var current = null;
+
+	var run = function() {
+		if (current != null) return;
+		var fc = first_command();
+		if (fc == null) return;
+		exec_command(fc).then(function() {
+			run();
+		}).catch(function(error) {
+			console.error("Error during command:", error)
+		});
 	};
 
-	var cmds, cmd;
-	cmds = project.commands;
-	if (cmds) cmd = cmds[0];
-	if (cmd) exec_command(cmd);
-	
-	project.commands.bind("add", function(k, v) {
-		exec_command(v);
-	});
+	var exec_command = function(fc) {
+		var cmd = fc[1];
+		var key = fc[0];
+		current = key;
+		var fs = {
+			"git_clone": git_clone,
+			"git_checkout": git_checkout,
+			"git_commit": git_commit,
+			"git_stash": git_stash,
+			"git_apply_stash": git_apply_stash,
+			"git_drop_stash": git_drop_stash,
+			"git_push": git_push,
+			"git_pull": git_pull,
+		};
+		var f = fs[cmd.command];
+		return f(cmd.parameters, project).then(function() {
+			current = null;
+			project.commands.remove(key);
+		}).catch(function(error) {
+			console.error(error);
+			var errormsg = error;
+			if (error.message) errormsg = error.message;
+			cmd.add("error", errormsg);
+			current = null;
+		});
+	};
+
+	var first_command = function() {
+		var cmds = project.commands;
+		cmds = cmds ? Object.entries(cmds) : [];
+		cmds = cmds && cmds.filter(c => c[1].error === undefined);
+		return cmds[0];
+	};
+
+	project.commands.bind("add", run);
+	run();
 }
 
 var dbchangehandler = function(k, v) {
 	if (
-		k.length == 8 &&
+		k.length == 6 &&
 		k[0] == "data" &&
 		k[1] == "projects" &&
-		k[3] == "revisions" &&
-		k[5] == "files" &&
-		k[7] == "data"
+		k[3] == "files" &&
+		k[5] == "data"
 	) {
 		var p = k[2];
-		var r = k[4];
-		var f = k[6];
+		var f = k[4];
 		var project = db.data.projects[p];
-		var revision = project.revisions[r];
-		exportRevision(revision);
+		exportProjectFiles(project).catch(function(error) {
+			console.error(error);
+		});
 	}
+	/*
 	if (
 		k.length == 3 &&
 		k[0] == "data" &&
@@ -409,9 +578,25 @@ var dbchangehandler = function(k, v) {
 	) {
 		var p = k[2];
 		var project = db.data.projects[p];
-		run_project(project, p);
+		run_project(p,project);
 	}
+	*/
 };
+
+var handledb = function(data) {
+	var revive_projects = function(projects) {
+		projects.bind("set", run_project);
+		projects.bind("add", run_project);
+		for (var p in projects)
+			run_project(p, projects[p]);
+	};
+	data.bind("add", "projects", function(k, projects) {
+		revive_projects(projects);
+	});
+	if (data.projects) revive_projects(data.projects);
+	data.bind("set", dbchangehandler);
+	data.bind("add", dbchangehandler);
+}
 
 var proxyCounter = 0;
 var proxyInProgress = 0;
@@ -525,15 +710,11 @@ function projectsHttpHandler(req, res) {
 	}
 	var k = decodeURI(u.pathname).split("/");
 	k.shift();
-	var prjname = k.shift();
+	var prjid = k.shift();
 	var prjs = db.data.projects;
-	for (var prjid in prjs) {
-		var prj = prjs[prjid];
-		var revid = prj.view.revision;
-		var rev = prj.revisions[revid];
-		var project = getRevisionManifest(rev);
-		if (project === null) continue;
-		if (project.name == prjname) {
+	for (var prjk in prjs) {
+		var prj = prjs[prjk];
+		if (prj.id == prjid) {
 			if (k[0] == "node_modules") {
 				var redir = "/";
 				if (parent_node_modules)
@@ -552,7 +733,7 @@ function projectsHttpHandler(req, res) {
 			}
 			if (k[k.length - 1] == "") k[k.length - 1] = "index.html";
 			var fn = k.join("/");
-			var files = rev.files;
+			var files = prj.files;
 			for (var kk in files) {
 				var file = files[kk];
 				if (file.name == fn) {
@@ -590,17 +771,23 @@ var load_certificates = () => new Promise((resolve, reject) => {
 	}
 });
 
+process.on("unhandledRejection", (error) => {
+	console.error(error); // This prints error with stack included (as for normal errors)
+	//throw error; // Following best practices re-throw error and let the process exit with error code
+});
+
 var start = function(options) {
 	app = https.createServer(options, httpHandler);
 	redirapp = http.createServer(redirectHandler);
 	io = require('socket.io').listen(app);
 	dbs = Maggi.db.server(io, dbname);
 	db = dbs[dbname];
-	db.bind("set", dbchangehandler);
-	db.bind("add", dbchangehandler);
+	handledb(db.data);
 	app.listen(secureport);
 	redirapp.listen(port);
 	console.log("Maggi Projects Server " + serverURL);
 }
 
+//setTimeout(function() {
 load_certificates().then(start);
+//},10000);

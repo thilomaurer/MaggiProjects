@@ -1,19 +1,62 @@
-.command>* {
+.command #parameters>* {
 	display: inline;
 }
 
-#commands>#activity {
+.command #error {
+	display: inline-block;
+	color: red;
+	padding-left:10px;
+}
+
+.commands>#activity {
 	margin-right: 4px;
 	display: inline-block;
 	animation: spin 3s linear infinite;
 }
 
-#commands>* {
-	display: inline;
+.command>.invisible {
+	display: none;
+}
+
+.commands>* {
+	display: inline-block;
+}
+
+.command>* {
+	display: inline-block;
 }
 
 @keyframes spin {
 	100% {
 		transform: rotate(360deg);
 	}
+}
+
+.progress>* {
+	display: inline;
+}
+
+.progress>.invisible {
+	display: none;
+}
+
+.progress>#ratio:before,
+.progress>#eta:before {
+	content: " - ";
+}
+
+.command>.progress:before {
+	content: "\a0\a0\a0";
+}
+
+.progressbar>#bar {
+	background-color: #08f;
+	width: 50%;
+	height: 2px;
+	border-radius: 1px;
+}
+
+.progressbar>#bar.invisible {
+	display: block;
+	opacity: 0;
 }

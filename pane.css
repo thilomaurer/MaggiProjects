@@ -11,6 +11,13 @@
 	flex:1 1 auto;
 }
 
+.pane > #empty {
+	color:hsla(0, 0%, 85%, 1);
+	text-align:center;
+	font-size:22px;
+	aheight:100%;
+}
+
 .pane .editor,
 .pane .ace_editor {
 	font-family:"DejaVu Sans Mono", monospace;
@@ -91,8 +98,17 @@
 	border-radius:5px;
 }
 
+.paneheader > .listitem > *.invisible {
+	display:none;
+}
+
+
 .paneheader > .listitem > * {
 	display:inline-block;
+}
+
+.paneheader > #file {
+	min-width:64px;
 }
 
 .icon {

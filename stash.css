@@ -1,0 +1,39 @@
+.stash>#apply,
+.stash>#drop {
+	float: right;
+}
+
+.stash #message {
+	font-weight: bold;
+}
+
+.stash #index {
+	background: black;
+	border-radius: 20px;
+	margin-right: 10px;
+	min-width: 24px;
+	text-align: center;
+	display: inline-block;
+}
+
+.stash>#message {
+	display: inline;
+	margin-top: 10px;
+}
+
+.stash>.button {
+	amargin-top: 5px;
+	margin-left: 10px;
+}
+
+.stash>#id {
+	font-family: "DejaVu Sans Mono", monospace;
+	margin-left: 10px;
+	font-size: 14px;
+	display: inline;
+}
+
+.stash {
+	overflow: hidden;
+	vertical-align: middle;
+}

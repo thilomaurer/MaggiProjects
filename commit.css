@@ -6,7 +6,8 @@
 .commit>#author,
 .commit>#committed,
 .commit>#id,
-.commit>#date {
+.commit>#date,
+.commit>#tags {
 	display: inline;
 	font-size: 14px;
 }
@@ -15,16 +16,37 @@
 	font-family: "DejaVu Sans Mono", monospace;
 }
 
+.commit>#stash,
 .commit>#commit,
+.commit>#checkout,
 .commit>#branch {
 	float: right;
 }
 
 .commit>.button {
+	margin-left: 10px;
+}
+
+.commit>#stash.button,
+.commit>#commit.button {
 	margin-top: 5px;
-	margin-left: 5px;
+	margin-left: 10px;
 }
 
 .commit {
 	overflow: hidden;
+}
+
+.commit>#author >*{
+	display: inline;
+}
+
+
+
+.commit #tags > * {
+	display:inline;
+	padding:0 5px 0 5px;
+	margin-left:5px;
+	background-color:#3af;
+	border-radius:4px;
 }

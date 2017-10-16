@@ -31,3 +31,5 @@ var pwcalc = function(m, dom) {
 	};
 
 };
+
+var main = pwcalc;
