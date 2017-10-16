@@ -248,10 +248,26 @@ var git_import_commit = function(commit) {
 			return {
 				name: e.path(),
 				type: "submodule",
+				enc: null,
 				data: null,
 				cursor: { row: 0, column: 0 },
 				removed: false
 			};
+		}
+		if (e.filemode()==git.TreeEntry.FILEMODE.LINK) {
+			if (e.type()==git.Object.TYPE.BLOB)
+			return e.getBlob().then(function(blob) {
+				var enc = blob.isBinary() && "base64" || "utf8";
+				var data= blob.content().toString(enc);
+				return {
+					name: e.path(),
+					type: "symlink",
+					enc: enc,
+					data: data,
+					cursor: { row: 0, column: 0 },
+					removed: false
+				};
+			});
 		}
 		var msg = "unknown entry: " + e.path();
 		console.warn(msg);
@@ -422,7 +438,10 @@ var git_commit = function(options, project) {
 				var buffer = Buffer.from(file.data, file.enc);
 				return git.Blob.createFromBuffer(repo, buffer, buffer.length)
 					.then(function(oid) {
-						return treebuilder.insert(file.name, oid, 33188);
+						var filemode=git.TreeEntry.FILEMODE.BLOB;
+						if (file.type=="symlink") filemode=git.TreeEntry.FILEMODE.LINK;
+						if (file.type=="submodule") filemode=git.TreeEntry.FILEMODE.BLOB;
+						return treebuilder.insert(file.name, oid, filemode);
 					});
 			}));
 		})
