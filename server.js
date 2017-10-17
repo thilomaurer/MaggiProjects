@@ -326,7 +326,8 @@ var git_clone = function(options, project) {
 				console.error(error);
 			});
 
-			var fileid = files.findIndex(f => f.name.match(/readme\.md/i)) || 0;
+			var fileid = files.findIndex(f => f.name.match(/readme\.md/i));
+			if (fileid < 0) fileid = 0;
 			var filename = files[fileid].name;
 			project.view.panes = {
 				0: { filename: filename, mode: "edit" },
