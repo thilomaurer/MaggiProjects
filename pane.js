@@ -91,7 +91,7 @@ var paneuiheader = function() {
 				var v = ui.children.files.selected;
 				if (parseInt(v) >= 0)
 					data.filename = (data.files[v] && data.files[v].name) || undefined;
-				else data.filename = undefined;
+				//else data.filename = undefined;
 			};
 			dom.ui.actions.ui.closepane.click(function() {
 				ui.children.actions.visible = false;

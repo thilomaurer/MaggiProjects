@@ -66,8 +66,6 @@ files_editor.ui = function(ext_ui) {
 				if (v != null) {
 					var filename = data.matchedfiles[v].name;
 					files_index = Object.entries(data.files).find(f => f[1].name == filename);
-					console.log(v,filename,files_index,files_index&&files_index[0]);
-					
 					ext_ui.selected = files_index&&files_index[0];
 					ext_ui.visible = false;
 				}
