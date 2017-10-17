@@ -32,7 +32,7 @@ files.exampledata = function() {
 		"2": filedata({ name: "file.html", type: "text/html", data: "<HTML><BODY>fsdfsdf</BODY></HTML>" }),
 		"3": filedata({ name: "file.md", type: "text/markdown", data: "**bold** *italic*\n" }),
 		"4": filedata({ name: "file.json", type: "application/json", data: '{ "a":1,\n"b":2}\n', removed: true }),
-		"5": filedata({ name: "file2.md", type: "text/markdown", data: "**bold** test *italic*\n" }),
+		"6": filedata({ name: "file2.md", type: "text/markdown", data: "**bold** test *italic*\n" }),
 	};
 	return files;
 };

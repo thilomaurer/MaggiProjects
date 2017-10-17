@@ -75,7 +75,7 @@ var paneuiheader = function() {
 			},
 			spacer: { type: "label" }
 		},
-		order: ["filename", "file", "files", "spacer", "editor_actions", "preview_actions", "mode", "preview", "options", "actions"],
+		order: ["file", "files", "spacer", "editor_actions", "preview_actions", "mode", "preview", "options", "actions"],
 		class: "paneheader",
 		builder: function(dom, data, ui) {
 			if (data == null) return;
@@ -83,10 +83,15 @@ var paneuiheader = function() {
 			var setaddfile = function(k, v) {
 				ui.children.files.addfile = data.addfile;
 			};
+			var removeFile = function(k, v) {
+				if (k instanceof Array) return;
+				updateFile();
+			};
 			var updateFile = function() {
 				var v = ui.children.files.selected;
 				if (parseInt(v) >= 0)
 					data.filename = (data.files[v] && data.files[v].name) || undefined;
+				else data.filename = undefined;
 			};
 			dom.ui.actions.ui.closepane.click(function() {
 				ui.children.actions.visible = false;
@@ -136,6 +141,7 @@ var paneuiheader = function() {
 				if (v == true) editlabel = "view";
 				ui.children.mode = { type: "select", choices: { edit: { label: editlabel }, preview: { label: "preview" } }, visible: true };
 			};
+			data.files.bind("remove", removeFile);
 			var handlers = [
 				[data, "set", "mode", updateMode],
 				[ui.children.files, "set", "selected", updateFile],
@@ -197,8 +203,8 @@ var paneui = function() {
 			};
 			var updateFile = function(k, v) {
 				var filename = data.filename;
-				var fileid = Object.values(data.files).findIndex(file => file.name == filename);
-				var f = data.files[fileid];
+				var fileentry = Object.entries(data.files).find(file => file[1].name == filename);
+				var f = fileentry && fileentry[1] || null;
 				data.file = f;
 				data.preview.file = f;
 				data.edit.file = f;
