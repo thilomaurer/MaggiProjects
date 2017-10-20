@@ -508,6 +508,10 @@ var git_drop_stash = function(options, project) {
 		});
 };
 
+var git_write_files = function(options, project) {
+	return exportProjectFiles(project, ".git")
+};
+
 var git_apply_stash = function(options, project) {
 	var index = options.index;
 	console.log("Applying stash " + index + " via git");
@@ -566,6 +570,7 @@ var run_project = function(key, project) {
 			"git_push": git_push,
 			"git_pull": git_pull,
 			"git_init": git_init,
+			"git_write_files": git_write_files,
 		};
 		var f = fs[cmd.command];
 		if (f==null) return new Promise((a,r)=>r("unknown command "+cmd.command));

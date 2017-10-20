@@ -195,6 +195,13 @@ project.revive = function(data) {
 			}
 		});
 	};
+	data.write_files = function() {
+		data.addcommand({
+			command: "git_write_files",
+			parameters: {
+			}
+		});
+	};
 };
 
 Maggi.UI.labelwrap = function(dom, data, setdata, ui, onDataChange) {
