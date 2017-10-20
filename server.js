@@ -95,7 +95,7 @@ var exportProjectFiles = function(p, ext) {
 		var pathname = dir + "/" + file.name;
 		var data = file.data || "";
 		if (file.removed == true)
-			return fse.unlink(pathname);
+			return fs.existsSync(pathname) && fse.unlink(pathname);
 		return fse.outputFile(pathname, data, file.enc);
 	}));
 };
