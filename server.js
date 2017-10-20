@@ -92,7 +92,11 @@ var exportProjectFiles = function(p, ext) {
 		if (file === null) return;
 		if (file.type == "symlink") return;
 		if (file.type == "submodule") return;
-		return fse.outputFile(dir + "/" + file.name, file.data, file.enc);
+		var pathname = dir + "/" + file.name;
+		var data = file.data || "";
+		if (file.removed == true)
+			return fse.unlink(pathname);
+		return fse.outputFile(pathname, data, file.enc);
 	}));
 };
 
@@ -256,20 +260,20 @@ var git_import_commit = function(commit) {
 				removed: false
 			};
 		}
-		if (e.filemode()==git.TreeEntry.FILEMODE.LINK) {
-			if (e.type()==git.Object.TYPE.BLOB)
-			return e.getBlob().then(function(blob) {
-				var enc = blob.isBinary() && "base64" || "utf8";
-				var data= blob.content().toString(enc);
-				return {
-					name: e.path(),
-					type: "symlink",
-					enc: enc,
-					data: data,
-					cursor: { row: 0, column: 0 },
-					removed: false
-				};
-			});
+		if (e.filemode() == git.TreeEntry.FILEMODE.LINK) {
+			if (e.type() == git.Object.TYPE.BLOB)
+				return e.getBlob().then(function(blob) {
+					var enc = blob.isBinary() && "base64" || "utf8";
+					var data = blob.content().toString(enc);
+					return {
+						name: e.path(),
+						type: "symlink",
+						enc: enc,
+						data: data,
+						cursor: { row: 0, column: 0 },
+						removed: false
+					};
+				});
 		}
 		var msg = "unknown entry: " + e.path();
 		console.warn(msg);
@@ -430,7 +434,7 @@ var git_commit = function(options, project) {
 		})
 		.then(function(commit) {
 			headCommit = commit;
-			if (commit==null) return null;
+			if (commit == null) return null;
 			return commit.getTree();
 		})
 		.then(function(t) {
@@ -443,15 +447,15 @@ var git_commit = function(options, project) {
 				var buffer = Buffer.from(file.data, file.enc);
 				return git.Blob.createFromBuffer(repo, buffer, buffer.length)
 					.then(function(oid) {
-						var filemode=git.TreeEntry.FILEMODE.BLOB;
-						if (file.type=="symlink") filemode=git.TreeEntry.FILEMODE.LINK;
-						if (file.type=="submodule") filemode=git.TreeEntry.FILEMODE.BLOB;
+						var filemode = git.TreeEntry.FILEMODE.BLOB;
+						if (file.type == "symlink") filemode = git.TreeEntry.FILEMODE.LINK;
+						if (file.type == "submodule") filemode = git.TreeEntry.FILEMODE.BLOB;
 						return treebuilder.insert(file.name, oid, filemode);
 					});
 			}));
 		})
 		.then(function() {
-			var parents=headCommit?[headCommit]:null;
+			var parents = headCommit ? [headCommit] : null;
 			var indexTreeId = treebuilder.write();
 			var author = git.Signature.now(options.author.name, options.author.email);
 			var committer = author;
@@ -575,7 +579,7 @@ var run_project = function(key, project) {
 			"git_write_files": git_write_files,
 		};
 		var f = fs[cmd.command];
-		if (f==null) return new Promise((a,r)=>r("unknown command "+cmd.command));
+		if (f == null) return new Promise((a, r) => r("unknown command " + cmd.command));
 		return f(cmd.parameters, project).then(function() {
 			current = null;
 			project.commands.remove(key);

@@ -1,5 +1,5 @@
 var file = function(m, dom) {
-	m.data = filedata({ name: "test.name", type: "tex/css", removed:true });
+	m.data = filedata({ name: "test.name", type: "tex/css", removed: true });
 	m.ui = fileui();
 	m.ui.add("enabled", true);
 	m.ui.enabled = false;
@@ -113,10 +113,10 @@ var fileui = function() {
 
 	var ui = listitemui();
 	ui.children.removed = { type: "user", user: removed_user };
-	ui.children.details = { type: "label", class: "icon ion-ios-more", visible:true };
+	ui.children.details = { type: "label", class: "icon ion-ios-more", visible: true };
 	ui.editvisible = false;
-	ui.mode="";
-	ui.class+=" file";
+	ui.mode = "";
+	ui.class += " file";
 	ui = Maggi(ui);
 	ui.builder = function(dom, data, ui) {
 		var repairfile = function(data) {
@@ -134,7 +134,7 @@ var fileui = function() {
 		var showEditor = function(k, v) {
 			if (v === true) {
 				makeFileEditor($('body'), data, function() {
-					ui.add("delete_item",true);
+					ui.add("delete_item", true);
 				}, function() {
 					ui.editvisible = false;
 				});
@@ -201,14 +201,14 @@ var fileeditui = function() {
 var makeFileEditor = function(dom, file, onDelete, onClose) {
 	var data = Maggi({
 		delete: function() {
-			if (true||confirm("Deletion of file '" + file.name + "' cannot be undone. \nContinue?")) {
+			if (true || confirm("Deletion of file '" + file.name + "' cannot be undone. \nContinue?")) {
 				data.close();
 				onDelete();
 			}
 		},
 		mark_removed: function() {
 			data.close();
-			file.removed=true;
+			file.removed = true;
 		},
 		close: function() {
 			removeOverlay();
@@ -224,7 +224,7 @@ var makeFileEditor = function(dom, file, onDelete, onClose) {
 		type: "object",
 		class: "popup",
 		children: {
-			title:{type:"label", label:"File Settings"},
+			title: { type: "label", label: "File Settings" },
 			data: fileeditui,
 			close: { type: "function", class: "right button blue", label: "Done", enabled: false },
 			upload: { type: "user", user: fileinput },
