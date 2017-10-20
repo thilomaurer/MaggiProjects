@@ -90,6 +90,8 @@ var exportProjectFiles = function(p, ext) {
 	if (ext) dir += ext;
 	return Promise.all(Object.values(p.files).map(function(file) {
 		if (file === null) return;
+		if (file.type == "symlink") return;
+		if (file.type == "submodule") return;
 		return fse.outputFile(dir + "/" + file.name, file.data, file.enc);
 	}));
 };
