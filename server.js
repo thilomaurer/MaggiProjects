@@ -444,7 +444,7 @@ var git_commit = function(options, project) {
 		.then(function(tb) {
 			treebuilder = tb;
 			return Promise.all(Object.values(project.files).map(function(file) {
-				if (file.removed == true) 
+				if (file.removed == true)
 					return treebuilder.remove(file.name);
 				var buffer = Buffer.from(file.data, file.enc);
 				return git.Blob.createFromBuffer(repo, buffer, buffer.length)
@@ -462,6 +462,14 @@ var git_commit = function(options, project) {
 			var author = git.Signature.now(options.author.name, options.author.email);
 			var committer = author;
 			return repo.createCommit(branch, author, committer, options.message, indexTreeId, parents);
+		})
+		.then(function(commitId) {
+			for (var k in project.files) {
+				var file = project.files[k];
+				if (file.removed == true)
+					project.files.remove(k);
+			}
+			return commitId;
 		})
 		.then(function(commitId) {
 			return git_read_repo(repo, project);
