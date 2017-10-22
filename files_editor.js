@@ -37,8 +37,7 @@ files_editor.ui = function(ext_ui) {
 			filesLabel: { type: "label", label: "FILES", class: "listlabel" },
 			filename: { type: "input", placeholder: "search by name or content" },
 			count: { type: "text", format: "%d matching files" },
-			//files: filesui(),
-			matchedfiles: filesui(),
+			matchedfiles: filesui()
 		},
 		builder: function(dom, data, ui) {
 			ui.children.actions.children.adder.add("enabled", true);

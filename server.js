@@ -444,6 +444,8 @@ var git_commit = function(options, project) {
 		.then(function(tb) {
 			treebuilder = tb;
 			return Promise.all(Object.values(project.files).map(function(file) {
+				if (file.removed == true) 
+					return treebuilder.remove(file.name);
 				var buffer = Buffer.from(file.data, file.enc);
 				return git.Blob.createFromBuffer(repo, buffer, buffer.length)
 					.then(function(oid) {

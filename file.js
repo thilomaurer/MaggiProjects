@@ -134,8 +134,6 @@ var fileui = function() {
 		var showEditor = function(k, v) {
 			if (v === true) {
 				makeFileEditor($('body'), data, function() {
-					ui.add("delete_item", true);
-				}, function() {
 					ui.editvisible = false;
 				});
 			}
@@ -198,14 +196,8 @@ var fileeditui = function() {
 	};
 };
 
-var makeFileEditor = function(dom, file, onDelete, onClose) {
+var makeFileEditor = function(dom, file, onClose) {
 	var data = Maggi({
-		delete: function() {
-			if (true || confirm("Deletion of file '" + file.name + "' cannot be undone. \nContinue?")) {
-				data.close();
-				onDelete();
-			}
-		},
 		mark_removed: function() {
 			data.close();
 			file.removed = true;
@@ -228,8 +220,7 @@ var makeFileEditor = function(dom, file, onDelete, onClose) {
 			data: fileeditui,
 			close: { type: "function", class: "right button blue", label: "Done", enabled: false },
 			upload: { type: "user", user: fileinput },
-			mark_removed: { type: "function", class: "left button orange", label: "Mark as Removed" },
-			delete: { type: "function", class: "left button red", label: "Delete File" },
+			mark_removed: { type: "function", class: "left button orange", label: "Mark as Removed" }
 		},
 		builder: function(dom, data, ui) {
 			data.bind("set", "upload", function(k, v) {
