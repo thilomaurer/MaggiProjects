@@ -224,3 +224,9 @@ command.ui.git_apply_stash = {
 		index: "text"
 	}
 };
+
+command.ui.git_write_files = {
+	children: {
+		action: { type: "label", label: "Writing files to project directory" },
+	}
+};

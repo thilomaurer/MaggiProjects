@@ -78,17 +78,22 @@ repo.ui = function(prjdata) {
 		},
 		builder: function(dom, data, ui) {
 			var push = function() {
-				if (window.confirm("Really push to GIT server?\nCannot be undone."))
+				if (window.confirm("Really push to GIT server?\nCannot be undone.")) {
 					prjdata.push();
+					ui.visible = false;
+				}
 			};
 			ui.children.push.onClick = push;
 			var pull = function() {
-				if (window.confirm("Really pull from GIT server?\nGUI will break on merge conflict."))
+				if (window.confirm("Really pull from GIT server?\nGUI will break on merge conflict.")) {
 					prjdata.pull();
+					ui.visible = false;
+				}
 			};
 			ui.children.pull.onClick = pull;
 			var write = function() {
 				prjdata.write_files();
+				ui.visible = false;
 			};
 			ui.children.write.onClick = write;
 		}
