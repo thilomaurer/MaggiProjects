@@ -143,13 +143,14 @@ project.revive = function(data) {
 			parameters: c
 		});
 	};
-	data.clone = function(url, branch, user) {
+	data.clone = function(url, branch, user, credentials) {
 		data.addcommand({
 			command: "git_clone",
 			parameters: {
 				url: url,
 				branch: branch,
 				user: user,
+				credentials: credentials
 			}
 		});
 	};
@@ -605,9 +606,9 @@ project.data_from_files = function(user, sources, complete) {
 	}
 };
 
-project.data_from_git = function(user, git_url, git_branch, complete) {
+project.data_from_git = function(user, git_url, git_branch, credentials, complete) {
 	var data = project.data();
-	data.clone(git_url, git_branch, user);
+	data.clone(git_url, git_branch, user, credentials);
 	complete(data);
 };
 

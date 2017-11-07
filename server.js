@@ -19,7 +19,7 @@ var http = require('http'),
 	app, redirapp, io, dbs, db,
 	dbname = "Maggi.UI.IDE",
 	secureport = process.argv[2] || 8443,
-	port = 8080,
+	port = process.argv[3] || 8080,
 	log = { HTTP: false, proxy: false },
 	serverURL = "https://localhost:" + secureport,
 	parent_node_modules = fs.existsSync(__dirname + "/../../node_modules");
@@ -293,6 +293,7 @@ var git_import_commit = function(commit) {
 var git_clone = function(options, project) {
 	var url = options.url;
 	var branch = options.branch;
+	var usePlainTextAuth = (options.credentials.username != null) || (options.credentials.password != null);
 	var dir = project_git_path(project);
 	console.log("Adding project via git clone from branch " + branch + " of repo " + url);
 
@@ -305,8 +306,14 @@ var git_clone = function(options, project) {
 		};
 	}
 	cloneoptions.checkoutBranch = branch;
+	var tries=0;
 	cloneoptions.fetchOpts.callbacks.credentials = function(url, userName) {
-		return git.Cred.sshKeyFromAgent(userName);
+		tries++;
+		if (tries>1) console.warn("Retrying with same credentials on git clone");
+		if (usePlainTextAuth)
+			return git.Cred.userpassPlaintextNew(options.credentials.username, options.credentials.password);
+		else
+			return git.Cred.sshKeyFromAgent(userName);
 	};
 	//cloneoptions.bare = 1;
 
@@ -446,7 +453,7 @@ var git_commit = function(options, project) {
 			return Promise.all(Object.values(project.files).map(function(file) {
 				if (file.removed == true)
 					return treebuilder.remove(file.name);
-				var buffer = Buffer.from(file.data||"", file.enc);
+				var buffer = Buffer.from(file.data || "", file.enc);
 				return git.Blob.createFromBuffer(repo, buffer, buffer.length)
 					.then(function(oid) {
 						var filemode = git.TreeEntry.FILEMODE.BLOB;
@@ -836,7 +843,7 @@ var start = function(options) {
 	db = dbs[dbname];
 	handledb(db.data);
 	app.listen(secureport);
-	redirapp.listen(port);
+	//redirapp.listen(port);
 	console.log("Maggi Projects Server " + serverURL);
 }
 

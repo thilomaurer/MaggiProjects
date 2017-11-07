@@ -47,6 +47,7 @@ var paneuiheader = function() {
 				order: [],
 				builder: buildFilesEdit,
 				selected: null,
+				popupfocus: "filename",
 				class: "scroll"
 			},
 			//mode:{type:"select",choices:{edit:{label:"edit"},preview:{label:"preview"}},visible:true},

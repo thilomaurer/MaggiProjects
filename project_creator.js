@@ -12,13 +12,19 @@ var makeProjectCreator = function(dom, result) {
 		},
 		import: {
 			data: {
-				url: "https://github.com/thilomaurer/pwcalc.git",
+				url: "",
 				branch: "master",
+				username: null,
+				password: null,
 			},
 			import: function() {
 				var prj = complete => project.data_from_git({ name: "<nobody>", username: "username", email: "user@localhost" },
 					data.import.data.url,
 					data.import.data.branch,
+					{
+						username: data.import.data.username,
+						password: data.import.data.password
+					},
 					complete);
 				res(prj);
 			}
@@ -40,8 +46,10 @@ var makeProjectCreator = function(dom, result) {
 				children: {
 					data: {
 						children: {
-							url: { type: "input", prefix: "URL:\xa0", placeholder: "git@github.com:user/example.git",class:"first" },
-							branch: { type: "input", prefix: "branch:\xa0", placeholder: "branch" },
+							url: { type: "input", prefix: "URL:\xa0", placeholder: "git@github.com:user/example.git", class: "first" },
+							branch: { type: "input", prefix: "branch:\xa0", placeholder: "branch", class: "first" },
+							username: { type: "input", placeholder: "username", class: "first" },
+							password: { type: "input", kind: "password", placeholder: "password" },
 						}
 					},
 					import: { type: "function", class: "blue button ", label: "Import", enabled: false }
