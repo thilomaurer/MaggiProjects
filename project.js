@@ -114,7 +114,7 @@ project.revive = function(data) {
 		data.addcommand({
 			command: "git_push",
 			parameters: {
-//				id: id
+				//id: id
 			}
 		});
 	};
@@ -122,7 +122,7 @@ project.revive = function(data) {
 		data.addcommand({
 			command: "git_pull",
 			parameters: {
-//				id: id
+				//id: id
 			}
 		});
 	};
@@ -192,15 +192,19 @@ project.revive = function(data) {
 	data.git_init = function() {
 		data.addcommand({
 			command: "git_init",
-			parameters: {
-			}
+			parameters: {}
 		});
 	};
 	data.write_files = function() {
 		data.addcommand({
 			command: "git_write_files",
-			parameters: {
-			}
+			parameters: {}
+		});
+	};
+	data.npm_install = function() {
+		data.addcommand({
+			command: "npm_install",
+			parameters: {}
 		});
 	};
 };
@@ -425,7 +429,9 @@ project.ui = function() {
 				popup: true,
 				popuptrigger: "prjjson",
 				children: {
-					actions: null
+					npm_install: { type: "function", label: "npm install", class: "button orange" },
+					write_files: { type: "function", label: "write files to project directory", class: "button gray" },
+					actions: null,
 				}
 			},
 			commands: commands.ui,
@@ -451,59 +457,7 @@ project.ui = function() {
 		class: "project",
 		builder: function(dom, data, ui) {
 			if (data == null) return;
-			/*
-			var buildHistoryView = function(dom, d, ui) {
-				var int_data = Maggi({
-					history: d,
-					stashes: {},
-					branches: { 0: "master" }
-				});
-				var int_ui = Maggi({
-					visible: ui.visible,
-					children: {
-						branchLabel: { type: "label", label: "BRANCHES", class: "listlabel" },
-						branches: { childdefault: "text" },
-						stashLabel: { type: "label", label: "STASHES", class: "listlabel" },
-						stashes: commithistory.ui,
-						historyLabel: { type: "label", label: "HISTORY", class: "listlabel" },
-						history: commithistory.ui(data),
-					}
-				});
-				ui.bind("set", "selected", function(k, v) {
-					int_ui.children.repo.children.history.selected = v;
-				});
-				int_ui.children.repo.children.history.selected = ui.selected;
-				int_ui.children.repo.children.history.bind("set", "selected", function(k, v) {
-					ui.selected = v;
-				});
-				return Maggi.UI(dom, int_data, int_ui);
-			};
-
-			ui.children.history.builder = buildHistoryView;
-			*/
 			ui.children.repo = repo.popupui(data);
-			/*
-			var buildRepoView = function(dom, d, ui) {
-				var int_data = Maggi({
-					repo: d,
-				});
-				var int_ui = Maggi({
-					visible: ui.visible,
-					children: {
-						repo: repo.ui()
-					}
-				});
-				ui.bind("set", "selected", function(k, v) {
-					int_ui.children.repo.children.history.selected = v;
-				});
-				int_ui.children.repo.children.history.selected = ui.selected;
-				int_ui.children.repo.children.history.bind("set", "selected", function(k, v) {
-					ui.selected = v;
-				});
-				return Maggi.UI(dom, int_data, int_ui);
-			};
-			//ui.children.repo.builder = buildRepoView;
-			*/
 			var genprjjsondata = function(cb) {
 				var k = childwithkv(data.files, "name", "package.json");
 				var update = function() {
@@ -531,7 +485,14 @@ project.ui = function() {
 				if (data == null) data = { name: "[unnamed]" };
 				u.data = data;
 			});
-
+			ui.children.prjjson_actions.children.npm_install.onClick = function() {
+				data.npm_install();
+				//ui.visible = false;
+			};
+			ui.children.prjjson_actions.children.write_files.onClick = function() {
+				data.write_files();
+				//ui.visible = false;
+			};
 			var setcoid = function(k) {
 				var id = data.checkedout.id;
 				var e = Object.entries(data.repo.history).find(function(v) {
@@ -574,7 +535,7 @@ project.data_from_files = function(user, sources, complete) {
 
 	var files = data.files;
 	data.repo.refs.branches = ["master"];
-	data.repo.history.add(0, commit.data({ author: {name:user.name, email: user.email }}));
+	data.repo.history.add(0, commit.data({ author: { name: user.name, email: user.email } }));
 	data.checkedout.branch = "master";
 	data.checkedout.id = null;
 	data.git_init();

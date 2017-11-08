@@ -54,7 +54,6 @@ repo.ui = function(prjdata) {
 		children: {
 			push: { type: "function", label: "push to GIT server", class: "button red", enabled: true, visible: true, onClick: null },
 			pull: { type: "function", label: "pull from GIT server", class: "button gray", enabled: true, visible: true, onClick: null },
-			write: { type: "function", label: "write files to project directory", class: "button gray", enabled: true, visible: true, onClick: null },
 			refs: {
 				children: {
 					branchLabel: { type: "label", label: "BRANCHES", class: "listlabel" },
@@ -91,11 +90,6 @@ repo.ui = function(prjdata) {
 				}
 			};
 			ui.children.pull.onClick = pull;
-			var write = function() {
-				prjdata.write_files();
-				ui.visible = false;
-			};
-			ui.children.write.onClick = write;
 		}
 	};
 };

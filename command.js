@@ -230,3 +230,9 @@ command.ui.git_write_files = {
 		action: { type: "label", label: "Writing files to project directory" },
 	}
 };
+
+command.ui.npm_install = {
+	children: {
+		action: { type: "label", label: "Install npm dependencies" },
+	}
+};

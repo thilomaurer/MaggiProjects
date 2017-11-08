@@ -2,7 +2,7 @@
 
 process.title = "MaggiProjects";
 
-var http = require('http'),
+const http = require('http'),
 	https = require('https'),
 	zlib = require('zlib'),
 	fs = require('fs'),
@@ -13,10 +13,10 @@ var http = require('http'),
 	mkdirp = require('mkdirp'),
 	git = require('nodegit'),
 	url = require('url'),
+	util = require('util'),
 	writefile = require('Maggi.js/writefile.js'),
 	keyfile = "key.pem",
 	certfile = "cert.pem",
-	app, redirapp, io, dbs, db,
 	dbname = "Maggi.UI.IDE",
 	secureport = process.argv[2] || 8443,
 	port = process.argv[3] || 8080,
@@ -24,8 +24,14 @@ var http = require('http'),
 	serverURL = "https://localhost:" + secureport,
 	parent_node_modules = fs.existsSync(__dirname + "/../../node_modules");
 
+var app, redirapp, io, dbs, db;
+
 Object.values || require('object.values').shim();
 Object.entries || require('object.entries').shim();
+util.promisify || require('util.promisify/shim')();
+
+const exec = util.promisify(require('child_process').exec);
+
 
 function httpHandler(req, res) {
 	if (log.HTTP) console.log("GET", req.url);
@@ -306,10 +312,10 @@ var git_clone = function(options, project) {
 		};
 	}
 	cloneoptions.checkoutBranch = branch;
-	var tries=0;
+	var tries = 0;
 	cloneoptions.fetchOpts.callbacks.credentials = function(url, userName) {
 		tries++;
-		if (tries>1) console.warn("Retrying with same credentials on git clone");
+		if (tries > 1) console.warn("Retrying with same credentials on git clone");
 		if (usePlainTextAuth)
 			return git.Cred.userpassPlaintextNew(options.credentials.username, options.credentials.password);
 		else
@@ -559,6 +565,13 @@ var git_init = function(options, project) {
 	return git.Repository.init(dir, isBare);
 };
 
+var npm_install = function(options, project) {
+	console.log("Installing project dependencies via npm install");
+
+	var dir = project_git_path(project);
+	return exec("npm install",{cwd:dir});
+};
+
 var run_project = function(key, project) {
 	if (key instanceof Array) return;
 
@@ -594,6 +607,7 @@ var run_project = function(key, project) {
 			"git_pull": git_pull,
 			"git_init": git_init,
 			"git_write_files": git_write_files,
+			"npm_install": npm_install
 		};
 		var f = fs[cmd.command];
 		if (f == null) return new Promise((a, r) => r("unknown command " + cmd.command));
