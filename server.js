@@ -91,9 +91,8 @@ var getProjectManifest = function(project) {
 	return d;
 };
 
-var exportProjectFiles = function(p, ext) {
+var exportProjectFiles = function(p) {
 	var dir = project_path(p);
-	if (ext) dir += ext;
 	return Promise.all(Object.values(p.files).map(function(file) {
 		if (file === null) return;
 		if (file.type == "symlink") return;
@@ -300,7 +299,7 @@ var git_clone = function(options, project) {
 	var url = options.url;
 	var branch = options.branch;
 	var usePlainTextAuth = (options.credentials.username != null) || (options.credentials.password != null);
-	var dir = project_git_path(project);
+	var dir = project_path(project);
 	console.log("Adding project via git clone from branch " + branch + " of repo " + url);
 
 	var cloneoptions = new git.CloneOptions();
@@ -360,7 +359,7 @@ var git_clone = function(options, project) {
 var git_checkout = function(options, project) {
 	var id = options.id;
 	var branch = options.branch;
-	var dir = project_git_path(project);
+	var dir = project_path(project);
 	console.log("Loading project via git checkout from branch " + branch + " of commit " + id);
 
 	var repo, commit;
@@ -383,7 +382,7 @@ var git_checkout = function(options, project) {
 };
 
 var git_push = function(options, project) {
-	var dir = project_git_path(project);
+	var dir = project_path(project);
 	console.log("Pushing repo to server");
 
 	var branch = "master";
@@ -411,7 +410,7 @@ var git_push = function(options, project) {
 };
 
 var git_pull = function(options, project) {
-	var dir = project_git_path(project);
+	var dir = project_path(project);
 	console.log("Pulling repo from server");
 
 	var branch = "master";
@@ -422,11 +421,7 @@ var git_pull = function(options, project) {
 };
 
 var project_path = function(project) {
-	return __dirname + "/projects/" + project.id;
-};
-
-var project_git_path = function(project) {
-	return project_path(project) + ".git";
+	return __dirname + "/projects/" + project.id +".git";
 };
 
 var git_commit = function(options, project) {
@@ -438,7 +433,7 @@ var git_commit = function(options, project) {
 	}
 	var repo, headCommit, tree, treebuilder;
 
-	var dir = project_git_path(project);
+	var dir = project_path(project);
 	return git.Repository.open(dir)
 		.then(function(r) {
 			repo = r;
@@ -496,11 +491,11 @@ var git_stash = function(options, project) {
 
 	var repo, headCommit, tree, treebuilder;
 
-	var dir = project_git_path(project);
+	var dir = project_path(project);
 	return git.Repository.open(dir)
 		.then(function(r) {
 			repo = r;
-			return exportProjectFiles(project, ".git")
+			return exportProjectFiles(project);
 		}).then(function() {
 			var stasher = git.Signature.now(options.author.name, options.author.email);
 			var flags = 0;
@@ -526,7 +521,7 @@ var git_drop_stash = function(options, project) {
 	console.log("Dropping stash " + index + " via git");
 
 	var repo;
-	var dir = project_git_path(project);
+	var dir = project_path(project);
 	return git.Repository.open(dir)
 		.then(function(r) {
 			repo = r;
@@ -538,7 +533,7 @@ var git_drop_stash = function(options, project) {
 };
 
 var git_write_files = function(options, project) {
-	return exportProjectFiles(project, ".git")
+	return exportProjectFiles(project)
 };
 
 var git_apply_stash = function(options, project) {
@@ -546,7 +541,7 @@ var git_apply_stash = function(options, project) {
 	console.log("Applying stash " + index + " via git");
 
 	var repo;
-	var dir = project_git_path(project);
+	var dir = project_path(project);
 	return git.Repository.open(dir)
 		.then(function(r) {
 			repo = r;
@@ -560,7 +555,7 @@ var git_apply_stash = function(options, project) {
 var git_init = function(options, project) {
 	console.log("Initializing repo via git");
 
-	var dir = project_git_path(project);
+	var dir = project_path(project);
 	var isBare = 0;
 	return git.Repository.init(dir, isBare);
 };
@@ -568,7 +563,7 @@ var git_init = function(options, project) {
 var npm_install = function(options, project) {
 	console.log("Installing project dependencies via npm install");
 
-	var dir = project_git_path(project);
+	var dir = project_path(project);
 	return exec("npm install",{cwd:dir});
 };
 
@@ -628,34 +623,6 @@ var run_project = function(key, project) {
 	run();
 }
 
-var dbchangehandler = function(k, v) {
-	if (
-		k.length == 6 &&
-		k[0] == "data" &&
-		k[1] == "projects" &&
-		k[3] == "files" &&
-		k[5] == "data"
-	) {
-		var p = k[2];
-		var f = k[4];
-		var project = db.data.projects[p];
-		exportProjectFiles(project).catch(function(error) {
-			console.error(error);
-		});
-	}
-	/*
-	if (
-		k.length == 3 &&
-		k[0] == "data" &&
-		k[1] == "projects"
-	) {
-		var p = k[2];
-		var project = db.data.projects[p];
-		run_project(p,project);
-	}
-	*/
-};
-
 var handledb = function(data) {
 	var revive_projects = function(projects) {
 		projects.bind("set", run_project);
@@ -667,8 +634,6 @@ var handledb = function(data) {
 		revive_projects(projects);
 	});
 	if (data.projects) revive_projects(data.projects);
-	data.bind("set", dbchangehandler);
-	data.bind("add", dbchangehandler);
 }
 
 var proxyCounter = 0;
