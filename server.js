@@ -754,10 +754,7 @@ function projectsHttpHandler(req, res) {
 		var prj = prjs[prjk];
 		if (prj.id == prjid) {
 			if (k[0] == "node_modules") {
-				var redir = "/";
-				if (parent_node_modules)
-					redir = "/../../";
-				var fp = __dirname + redir + k.join("/");
+				var fp = project_path(prj) + "/" + k.join("/");
 				fs.readFile(fp, function(err, data) {
 					if (err) {
 						console.log(err);
