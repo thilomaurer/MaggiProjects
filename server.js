@@ -389,7 +389,10 @@ var git_push = function(options, project) {
 	if (!branch.startsWith('refs/')) {
 		branch = 'refs/heads/' + branch;
 	}
-	var refSpecs = [branch + ":" + branch];
+	var refSpecs = [
+		branch + ":" + branch,
+		"refs/tags/*:refs/tags/*"
+	];
 
 	var repo, commit;
 	return git.Repository.open(dir)
