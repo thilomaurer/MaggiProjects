@@ -1,4 +1,4 @@
-var commands = function(m,dom) {
+var commands = function(m, dom) {
 	m.data = {
 		0: command.exampledata(),
 		1: command.exampledata()
@@ -9,7 +9,7 @@ var commands = function(m,dom) {
 
 commands.ui = function() {
 	return {
-		class:"commands",
+		class: "commands",
 		childdefault: command.ui,
 		visible: false,
 		children: {
@@ -27,6 +27,21 @@ commands.ui = function() {
 				up();
 				data.bind("add", up);
 				data.bind("remove", up);
+				data.bind("add", function(k, v) {
+					if (k instanceof Array) {
+						var id = k[0];
+						var cmd = data[id];
+						if (cmd.error)
+							ui.children[id].children.connector = {
+								type: "label",
+								class: "button red",
+								label: "Dismiss",
+								onClick: function() {
+									data.remove(id);
+								}
+							};
+					}
+				});
 			}
 		}
 	};

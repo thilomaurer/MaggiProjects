@@ -6,6 +6,7 @@
 	display: inline-block;
 	color: red;
 	padding-left:10px;
+	padding-right:10px;
 }
 
 .commands>#activity {
@@ -15,7 +16,7 @@
 }
 
 .command>.invisible {
-	display: none;
+	display: none !important;
 }
 
 .commands>* {

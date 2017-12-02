@@ -23,12 +23,12 @@ command.exampledata = function() {
 
 	var dir = 1;
 	setInterval(function() {
-		p.step += dir;
-		if (p.step > p.steps) p.step = p.steps;
 		if (p.step == p.steps)
-			setTimeout(function() {
-				dir *= -1;
-			}, 1000);
+			dir = -1;
+		if (p.step == 0)
+			dir = 1;
+		p.step += dir;
+		console.log(p.step);
 	}, 30);
 
 	setTimeout(function() {
@@ -36,7 +36,7 @@ command.exampledata = function() {
 	}, 1000);
 
 	return data;
-}
+};
 
 var progress = function() {
 
@@ -135,26 +135,16 @@ command.data.git_clone = function() {
 command.ui = function() {
 	return {
 		class: "command",
+		children: {
+			parameters: null,
+			error: { type: "text", visible: false },
+			connector: null,
+		},
 		builder(dom, data, ui) {
-			if (data == null) return;
-			var bb;
-			var rebuild = function(k) {
-				if (k instanceof Array) return;
-				if (bb) bb();
-				var int_ui = {
-					children: {
-						parameters: command.ui[data.command] || command.ui.default,
-						error: "text"
-					}
-				};
-				var int_data = {
-					parameters: 0
-				};
-				bb = Maggi.UI(dom, data, int_ui);
-				return bb;
-			};
-			data.bind("set", rebuild);
-			return rebuild();
+			ui.children.parameters = command.ui[data.command] || command.ui.default;
+			data.bind("add", "error", function() {
+				ui.children.error.visible = true;
+			});
 		}
 	};
 };
