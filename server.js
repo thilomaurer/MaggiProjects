@@ -390,9 +390,10 @@ var git_push = function(options, project) {
 		branch = 'refs/heads/' + branch;
 	}
 	var refSpecs = [
-		branch + ":" + branch,
-		"refs/tags/*:refs/tags/*"
+		branch + ":" + branch
 	];
+	var tags = Object.values(project.repo.refs.tags);
+	refSpecs = refSpecs.concat(tags.map(x => 'refs/tags/' + x + ":" + 'refs/tags/' + x));
 
 	var repo, commit;
 	return git.Repository.open(dir)
@@ -424,7 +425,7 @@ var git_pull = function(options, project) {
 };
 
 var project_path = function(project) {
-	return __dirname + "/projects/" + project.id +".git";
+	return __dirname + "/projects/" + project.id + ".git";
 };
 
 var git_commit = function(options, project) {
@@ -567,7 +568,7 @@ var npm_install = function(options, project) {
 	console.log("Installing project dependencies via npm install");
 
 	var dir = project_path(project);
-	return exec("npm install",{cwd:dir});
+	return exec("npm install", { cwd: dir });
 };
 
 var run_project = function(key, project) {
