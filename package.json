@@ -80,7 +80,7 @@
 			"node_modules/marked/marked.min.js",
 			"Maggi.UI.select_OS.js","Maggi.UI.select_OS.css",
 			"command.js", "command.css",
-			"commands.js", "commands.css",
+			"commands.js",
 			"commit.js", "commit.css",
 			"commithistory.js",
 			"stash.js", "stash.css",

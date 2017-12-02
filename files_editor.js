@@ -35,7 +35,7 @@ files_editor.ui = function(ext_ui) {
 		children: {
 			actions: listui(),
 			filesLabel: { type: "label", label: "FILES", class: "listlabel" },
-			filename: { type: "input", placeholder: "search by name or content" },
+			filename: { type: "input", placeholder: "search by name" },
 			count: { type: "text", format: "%d matching files" },
 			matchedfiles: filesui()
 		},
@@ -50,7 +50,8 @@ files_editor.ui = function(ext_ui) {
 			var setselectedaction = function(k, v) {
 				if (v == "adder") {
 					var filekey = ext_ui.addfile(filedata());
-					data.matchedfiles.add(filekey, data.files[filekey]);
+					if (data.matchedfiles[filekey] === undefined)
+						data.matchedfiles.add(filekey, data.files[filekey]);
 					ui.children.matchedfiles.children[filekey].editvisible = true;
 				}
 				ui.children.actions.selected = null;
@@ -65,27 +66,37 @@ files_editor.ui = function(ext_ui) {
 				if (v != null) {
 					var filename = data.matchedfiles[v].name;
 					files_index = Object.entries(data.files).find(f => f[1].name == filename);
-					ext_ui.selected = files_index&&files_index[0];
+					ext_ui.selected = files_index && files_index[0];
 					ext_ui.visible = false;
 				}
 			};
-			var updatematches = function(v) {
-				var matched = Object.values(data.files).filter(f => v == "" ? true : (f.name && f.name.includes(v)) || (f.data && f.data.includes(v)));
-				ui.children.matchedfiles.selected=null;
+			var updatematches = function() {
+				var v = data.filename;
+				//var contains = f => v == "" ? true : (f.name && f.name.includes(v)) || (f.data && f.data.includes(v));
+				var contains = f => v == "" ? true : (f.name && f.name.includes(v));
+				var matched = Object.values(data.files).filter(contains);
+				ui.children.matchedfiles.selected = null;
 				data.matchedfiles = matched;
 				data.count = matched.length;
 			};
-			var setfilename = function(k, v) {
-				updatematches(v);
+			var update_addremove = function(k, v) {
+				if (k instanceof Array) return;
+				updatematches();
 			};
+			data.files.bind("add", update_addremove);
+			data.files.bind("remove", update_addremove);
 			var handlers = [
 				[ext_ui, "set", "addfile", setaddfile],
 				[ui.children.actions, "set", "selected", setselectedaction],
 				[ui.children.files, "set", "selected", setselectedfile],
 				[ui.children.matchedfiles, "set", "selected", setselectedmatchedfile],
-				[data, "set", "filename", setfilename]
+				[data, "set", "filename", updatematches]
 			];
-			return installBindings(handlers);
+			var uninstallBindings = installBindings(handlers);
+			return function() {
+				uninstallBindings();
+				data.files.unbind(update_addremove);
+			};
 		}
 	};
 };

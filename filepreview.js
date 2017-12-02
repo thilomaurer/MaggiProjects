@@ -137,7 +137,7 @@ var previewui = function(dom, s, sets, ui, onDataChange) {
 					<title></title>
 					<meta charset="utf-8">
 					<base href="${ui.basepath}">
-					<link rel="stylesheet" id="github-markdown" type="text/css" href="node_modules/github-markdown-css/github-markdown.css">
+					<link rel="stylesheet" id="github-markdown" type="text/css" href="../../node_modules/github-markdown-css/github-markdown.css">
 				</head>
 				<body class="markdown-body">${body}</body>
 			</html>
