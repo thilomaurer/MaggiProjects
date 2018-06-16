@@ -164,6 +164,7 @@ var previewui = function(dom, s, sets, ui, onDataChange) {
 		var now = new Date().getTime();
 		var make = (maketime <= now);
 		var bb = function() {
+			if (w == null) return;
 			doc = w.document;
 			builddoc();
 		};

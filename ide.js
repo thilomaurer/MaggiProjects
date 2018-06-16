@@ -136,11 +136,13 @@ var ideui = function() {
 			var add_project = function(project) {
 				var id = gen_unused_id();
 				project.id = id;
+				project.npm_install();
 				data.projects.add(id, project);
 			};
 			ui.children.header.children.newproject.add("onClick", function(e) {
 				makeProjectCreator($('body'), function(prj) {
-					prj(add_project);
+					if (prj instanceof Function)
+						prj(add_project);
 				});
 			});
 			ui.children.projects.bind("set", "selected", function(k, v) {

@@ -18,11 +18,10 @@ const http = require('http'),
 	keyfile = "key.pem",
 	certfile = "cert.pem",
 	dbname = "Maggi.UI.IDE",
-	secureport = process.argv[2] || 8443,
-	port = process.argv[3] || 8080,
+	secureport = process.env.PORT || 8443,
 	log = { HTTP: false, proxy: false },
 	serverURL = "https://localhost:" + secureport,
-	parent_node_modules = fs.existsSync(__dirname + "/../../node_modules");
+	parent_node_modules = false && fs.existsSync(__dirname + "/../../node_modules");
 
 var app, redirapp, io, dbs, db;
 
@@ -537,6 +536,7 @@ var git_drop_stash = function(options, project) {
 };
 
 var git_write_files = function(options, project) {
+	console.log("Writing project files to filesystem");
 	return exportProjectFiles(project)
 };
 
@@ -823,7 +823,6 @@ var start = function(options) {
 	db = dbs[dbname];
 	handledb(db.data);
 	app.listen(secureport);
-	//redirapp.listen(port);
 	console.log("Maggi Projects Server " + serverURL);
 }
 

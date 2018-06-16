@@ -202,6 +202,7 @@ project.revive = function(data) {
 		});
 	};
 	data.npm_install = function() {
+		data.write_files();
 		data.addcommand({
 			command: "npm_install",
 			parameters: {}
@@ -487,11 +488,11 @@ project.ui = function() {
 			});
 			ui.children.prjjson_actions.children.npm_install.onClick = function() {
 				data.npm_install();
-				//ui.visible = false;
+				ui.children.prjjson_actions.visible = false;
 			};
 			ui.children.prjjson_actions.children.write_files.onClick = function() {
 				data.write_files();
-				//ui.visible = false;
+				ui.children.prjjson_actions.visible = false;
 			};
 			var setcoid = function(k) {
 				var id = data.checkedout.id;
