@@ -148,7 +148,7 @@
 .mui .ace_search .ace_search_field,
 .mui .ace_search .ace_searchbtn,
 .mui .ace_search .ace_replacebtn {
-	background: hsla(224, 8%, 24%, 1);
+	background-color: hsla(224, 8%, 24%, 1);
 	color: white;
 }
 
