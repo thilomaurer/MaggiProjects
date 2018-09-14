@@ -33,6 +33,7 @@ files.exampledata = function() {
 		"3": filedata({ name: "file.md", type: "text/markdown", data: "**bold** *italic*\n" }),
 		"4": filedata({ name: "file.json", type: "application/json", data: '{ "a":1,\n"b":2}\n', removed: true }),
 		"6": filedata({ name: "file2.md", type: "text/markdown", data: "**bold** test *italic*\n" }),
+		"7": filedata({ name: "file.png", type: "image/png", data: "**bold** test *italic*\n" }),
 	};
 	return files;
 };

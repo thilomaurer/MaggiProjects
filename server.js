@@ -44,7 +44,7 @@ function httpHandler(req, res) {
 		res.end('Malformatted URL: ' + req.url);
 		return;
 	}
-	var pn = u.pathname;
+	var pn = decodeURI(u.pathname);
 
 	var dir = "projects";
 	if (pn.indexOf("/" + dir + "/") === 0) {
@@ -227,7 +227,8 @@ var git_import_commit = function(commit) {
 			txt: "text/plain",
 			md: "text/markdown",
 			json: "application/json",
-			svg: "image/svg+xml"
+			svg: "image/svg+xml",
+			png: "image/png"
 		};
 		if (e.isBlob()) {
 			return e.getBlob().then(function(blob) {
@@ -427,6 +428,10 @@ var project_path = function(project) {
 	return __dirname + "/projects/" + project.id + ".git";
 };
 
+function onlyUnique(value, index, self) {
+	return self.indexOf(value) === index;
+}
+
 var git_commit = function(options, project) {
 	console.log("Committing project via git");
 
@@ -435,6 +440,57 @@ var git_commit = function(options, project) {
 		branch = 'refs/heads/' + branch;
 	}
 	var repo, headCommit, tree, treebuilder;
+
+	var treeify = function(files) {
+		var fs = [];
+		var dirs = {};
+		for (var fidx in files) {
+			var f = JSON.parse(JSON.stringify(files[fidx]));
+			var ff = f.name.split("/");
+			var hasdir = (ff.length > 1);
+			if (hasdir) {
+				var dirname = ff.shift();
+				f.name = ff.join("/");
+				if (dirs[dirname] == null) {
+					dirs[dirname] = {
+						name: dirname,
+						type: "directory",
+						files: []
+					};
+				}
+				dirs[dirname].files.push(f)
+			} else
+				fs.push(f);
+		}
+		for (var dir in dirs)
+			fs.push(dirs[dir]);
+		return fs;
+	};
+
+	var insertFilesTree = (repo, treebuilder, files) => {
+		files = treeify(files);
+		return Promise.all(Object.values(files).map(function(file) {
+			if (file.removed == true)
+				return treebuilder.remove(file.name);
+			if (file.type == "directory") {
+				return git.Treebuilder.create(repo, null)
+					.then(tb => {
+						return insertFilesTree(repo, tb, file.files)
+							.then(() => {
+								return treebuilder.insert(file.name, tb.write(), git.TreeEntry.FILEMODE.TREE);
+							});
+					});
+			}
+			var buffer = Buffer.from(file.data || "", file.enc);
+			return git.Blob.createFromBuffer(repo, buffer, buffer.length)
+				.then(function(oid) {
+					var filemode = git.TreeEntry.FILEMODE.BLOB;
+					if (file.type == "symlink") filemode = git.TreeEntry.FILEMODE.LINK;
+					if (file.type == "submodule") filemode = git.TreeEntry.FILEMODE.BLOB;
+					return treebuilder.insert(file.name, oid, filemode);
+				});
+		}));
+	};
 
 	var dir = project_path(project);
 	return git.Repository.open(dir)
@@ -454,18 +510,7 @@ var git_commit = function(options, project) {
 		})
 		.then(function(tb) {
 			treebuilder = tb;
-			return Promise.all(Object.values(project.files).map(function(file) {
-				if (file.removed == true)
-					return treebuilder.remove(file.name);
-				var buffer = Buffer.from(file.data || "", file.enc);
-				return git.Blob.createFromBuffer(repo, buffer, buffer.length)
-					.then(function(oid) {
-						var filemode = git.TreeEntry.FILEMODE.BLOB;
-						if (file.type == "symlink") filemode = git.TreeEntry.FILEMODE.LINK;
-						if (file.type == "submodule") filemode = git.TreeEntry.FILEMODE.BLOB;
-						return treebuilder.insert(file.name, oid, filemode);
-					});
-			}));
+			return insertFilesTree(repo, tb, project.files);
 		})
 		.then(function() {
 			var parents = headCommit ? [headCommit] : null;
@@ -776,7 +821,7 @@ function projectsHttpHandler(req, res) {
 			for (var kk in files) {
 				var file = files[kk];
 				if (file.name == fn) {
-					res.writeHead(200, { "Content-Type": file.type });
+					res.writeHead(200, { "Content-Type": file.type || "unknown" });
 					res.end(file.data, file.enc);
 					return;
 				}

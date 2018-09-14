@@ -1,5 +1,5 @@
 var listui=function() { 
-	var emptylabel=$("<div>",{id:"emptylabel",text:"no entries"})
+	var emptylabel=$("<div>",{id:"emptylabel",text:"no entries"});
 	return { 
 		type:"list",
 		childdefault:listitemui,

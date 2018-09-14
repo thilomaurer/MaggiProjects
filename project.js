@@ -527,7 +527,8 @@ project.data_from_files = function(user, sources, complete) {
 		txt: "text/plain",
 		md: "text/markdown",
 		json: "application/json",
-		svg: "image/svg+xml"
+		svg: "image/svg+xml",
+		png: "image/png"
 	};
 
 	var data = project.data();

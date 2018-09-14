@@ -173,7 +173,8 @@ var fileeditui = function() {
 					"text/plain": { label: "TXT" },
 					"text/markdown": { label: "MD" },
 					"image/svg+xml": { label: "SVG" },
-					"application/json": { label: "JSON" }
+					"application/json": { label: "JSON" },
+					"image/png": { label: "PNG" }
 				},
 				class: "fillhorizontal"
 			},
