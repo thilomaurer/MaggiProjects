@@ -189,6 +189,14 @@ project.revive = function(data) {
 			}
 		});
 	};
+	data.load_disk = function(index) {
+		data.addcommand({
+			command: "git_load_disk",
+			parameters: {
+				index: index,
+			}
+		});
+	};
 	data.git_init = function() {
 		data.addcommand({
 			command: "git_init",
@@ -432,6 +440,7 @@ project.ui = function() {
 				children: {
 					npm_install: { type: "function", label: "npm install", class: "button orange" },
 					write_files: { type: "function", label: "write files to project directory", class: "button gray" },
+					reload_disk: { type: "function", label: "reload from project directory", class: "button gray" },
 					actions: null,
 				}
 			},
@@ -492,6 +501,10 @@ project.ui = function() {
 			};
 			ui.children.prjjson_actions.children.write_files.onClick = function() {
 				data.write_files();
+				ui.children.prjjson_actions.visible = false;
+			};
+			ui.children.prjjson_actions.children.reload_disk.onClick = function() {
+				data.load_disk();
 				ui.children.prjjson_actions.visible = false;
 			};
 			var setcoid = function(k) {

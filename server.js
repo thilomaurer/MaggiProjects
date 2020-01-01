@@ -65,7 +65,7 @@ function httpHandler(req, res) {
 	fs.readFile(fp, function(err, data) {
 		if (err) {
 			console.log(err);
-			res.writeHead(500);
+			res.writeHead(404);
 			return res.end('Error loading ' + req.url);
 		}
 		res.writeHead(200, { "Content-Type": mime.lookup(pn) });
@@ -160,8 +160,7 @@ var commit_history = function(commit) {
 
 var git_read_refs = function(repo) {
 
-	var type = git.Reference.TYPE.OID;
-	return repo.getReferences(type)
+	return repo.getReferences()
 		.then(function(refs) {
 			var refs = refs.map(function(r) {
 				return {
@@ -193,9 +192,8 @@ var git_read_refs = function(repo) {
 
 var git_read_history = function(repo) {
 
-	var type = git.Reference.TYPE.OID;
 	var refs;
-	return repo.getReferences(type)
+	return repo.getReferences()
 		.then(function(r) {
 			refs = r;
 			return repo.getMasterCommit();
@@ -446,6 +444,10 @@ var git_commit = function(options, project) {
 		var dirs = {};
 		for (var fidx in files) {
 			var f = JSON.parse(JSON.stringify(files[fidx]));
+			if (f.name == null) {
+				console.warn("ignoring file with null name", f);
+				continue;
+			}
 			var ff = f.name.split("/");
 			var hasdir = (ff.length > 1);
 			if (hasdir) {
@@ -477,7 +479,10 @@ var git_commit = function(options, project) {
 					.then(tb => {
 						return insertFilesTree(repo, tb, file.files)
 							.then(() => {
-								return treebuilder.insert(file.name, tb.write(), git.TreeEntry.FILEMODE.TREE);
+								return tb.write();
+							})
+							.then(oid => {
+								return treebuilder.insert(file.name, oid, git.TreeEntry.FILEMODE.TREE);
 							});
 					});
 			}
@@ -512,9 +517,11 @@ var git_commit = function(options, project) {
 			treebuilder = tb;
 			return insertFilesTree(repo, tb, project.files);
 		})
-		.then(function() {
+		.then(() => {
+			return treebuilder.write();
+		})
+		.then(function(indexTreeId) {
 			var parents = headCommit ? [headCommit] : null;
-			var indexTreeId = treebuilder.write();
 			var author = git.Signature.now(options.author.name, options.author.email);
 			var committer = author;
 			return repo.createCommit(branch, author, committer, options.message, indexTreeId, parents);
@@ -562,6 +569,32 @@ var git_stash = function(options, project) {
 			project.files = files;
 			return git_read_repo(repo, project);
 		});
+};
+
+var git_load_disk = function(options, project) {
+	console.log("Loading repo from disk via git");
+
+	var branch = "master";
+
+	var repo, headCommit, tree, treebuilder;
+
+	var dir = project_path(project);
+	return git.Repository.open(dir)
+		.then(function(r) {
+			repo = r;
+			return repo.getHeadCommit();
+		})
+		.then(git_import_commit)
+		.then(function(files) {
+			project.checkedout = {
+				branch: branch,
+				id: null
+			};
+			project.freefileid = files.length;
+			project.files = files;
+			return git_read_repo(repo, project);
+		});
+
 };
 
 var git_drop_stash = function(options, project) {
@@ -647,6 +680,7 @@ var run_project = function(key, project) {
 			"git_stash": git_stash,
 			"git_apply_stash": git_apply_stash,
 			"git_drop_stash": git_drop_stash,
+			"git_load_disk": git_load_disk,
 			"git_push": git_push,
 			"git_pull": git_pull,
 			"git_init": git_init,
@@ -798,7 +832,7 @@ function projectsHttpHandler(req, res) {
 	var k = decodeURI(u.pathname).split("/");
 	k.shift();
 	var prjid = k.shift();
-	var prjs = db.data.projects;
+	var prjs = db.projects;
 	for (var prjk in prjs) {
 		var prj = prjs[prjk];
 		if (prj.id == prjid) {
@@ -864,11 +898,13 @@ var start = function(options) {
 	app = https.createServer(options, httpHandler);
 	redirapp = http.createServer(redirectHandler);
 	io = require('socket.io').listen(app);
-	dbs = Maggi.db.server(io, dbname);
-	db = dbs[dbname];
-	handledb(db.data);
-	app.listen(secureport);
-	console.log("Maggi Projects Server " + serverURL);
+	dbs = Maggi.db.server(io, { paths: ["*"], allow_create: false });
+	dbs.db(dbname).then(data => {
+		db = data;
+		handledb(data);
+		app.listen(secureport);
+		console.log("Maggi Projects Server " + serverURL);
+	});
 }
 
 //setTimeout(function() {

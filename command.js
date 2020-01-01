@@ -9,14 +9,7 @@ command.exampledata = function() {
 
 	data.parameters.url = "https://github.com/example.git";
 	data.parameters.branch = "master";
-	/*
-		m.data.command = "git_commit";
-		m.data.parameters = {
-			author: "Example User <user@example.com>",
-			branch: "master",
-			message: "test commit"
-		};
-	*/
+
 	var p = data.parameters.progress;
 	p.step = 0;
 	p.steps = 50;
@@ -142,8 +135,8 @@ command.ui = function() {
 		},
 		builder(dom, data, ui) {
 			ui.children.parameters = command.ui[data.command] || command.ui.default;
-			data.bind("add", "error", function() {
-				ui.children.error.visible = true;
+			data.bind("add", "error", function(k, v) {
+				ui.children.error.visible = !(v == null || v == "");
 			});
 		}
 	};
@@ -165,8 +158,6 @@ command.ui.git_clone = {
 		progress: progress.barui,
 	}
 };
-
-
 
 command.ui.git_checkout = {
 	children: {
@@ -205,6 +196,12 @@ command.ui.git_drop_stash = {
 	children: {
 		action: { type: "label", label: "Dropping stash  " },
 		index: "text"
+	}
+};
+
+command.ui.git_load_disk = {
+	children: {
+		action: { type: "label", label: "Loading from disk" }
 	}
 };
 
